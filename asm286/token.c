@@ -413,7 +413,7 @@ const char *pattern[ NUM_PATTERN ] = {
   "[A-Z_][A-Z_0-9]*",
 } ;
 
-void dump_pattern()
+void dump_pattern() 
 {
   unsigned int idx ;
   

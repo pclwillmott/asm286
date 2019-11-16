@@ -98,7 +98,7 @@ char *prdlst[] = {
    * Numerical Expressions
    */
   
-  SPD_GRP0_EXP    PT_DROP         SPD_CON_NUM,
+  SPD_GRP0_EXP    PT_DROP         SPD_CON_NUM, 
   SPD_GRP0_EXP    PT_EXECUTE      STK_OBRACE      SPD_NUM_EXP     STK_CBRACE,
   
   SPD_GRP1_EXP    PT_EXECUTE      SPD_GRP1_EXP    SPD_GRP1_OP     SPD_GRP0_EXP,
