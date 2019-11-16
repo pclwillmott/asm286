@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		DA72D9C5237726BE0009CA4A /* token.c in Sources */ = {isa = PBXBuildFile; fileRef = DA72D9C4237726BE0009CA4A /* token.c */; };
+		DA72D9C723782DCD0009CA4A /* action.c in Sources */ = {isa = PBXBuildFile; fileRef = DA72D9C623782DCD0009CA4A /* action.c */; };
+		DA72D9C923788BFF0009CA4A /* assemble.c in Sources */ = {isa = PBXBuildFile; fileRef = DA72D9C823788BFF0009CA4A /* assemble.c */; };
 		DAB4041D23770C27002137DF /* asm286.c in Sources */ = {isa = PBXBuildFile; fileRef = DAB4041C23770C27002137DF /* asm286.c */; };
 /* End PBXBuildFile section */
 
@@ -26,6 +28,8 @@
 /* Begin PBXFileReference section */
 		DA72D9C3237726400009CA4A /* asm286.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = asm286.h; sourceTree = "<group>"; };
 		DA72D9C4237726BE0009CA4A /* token.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = token.c; sourceTree = "<group>"; };
+		DA72D9C623782DCD0009CA4A /* action.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = action.c; sourceTree = "<group>"; };
+		DA72D9C823788BFF0009CA4A /* assemble.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = assemble.c; sourceTree = "<group>"; };
 		DAB4041923770C26002137DF /* asm286 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = asm286; sourceTree = BUILT_PRODUCTS_DIR; };
 		DAB4041C23770C27002137DF /* asm286.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = asm286.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -63,6 +67,8 @@
 				DAB4041C23770C27002137DF /* asm286.c */,
 				DA72D9C3237726400009CA4A /* asm286.h */,
 				DA72D9C4237726BE0009CA4A /* token.c */,
+				DA72D9C623782DCD0009CA4A /* action.c */,
+				DA72D9C823788BFF0009CA4A /* assemble.c */,
 			);
 			path = asm286;
 			sourceTree = "<group>";
@@ -123,8 +129,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA72D9C723782DCD0009CA4A /* action.c in Sources */,
 				DAB4041D23770C27002137DF /* asm286.c in Sources */,
 				DA72D9C5237726BE0009CA4A /* token.c in Sources */,
+				DA72D9C923788BFF0009CA4A /* assemble.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,0 +1,67 @@
+% Activate the following line by filling in the right side. If for example the name of the root file is Main.tex, write
+% "...root = Main.tex" if the chapter file is in the same directory, and "...root = ../Main.tex" if the chapter is in a subdirectory.
+ 
+%!TEX root =  
+
+\chapter[Defining And Initializing Data]{Defining And Initializing Data}
+
+This chapter has four major sections:
+\begin{itemize}
+\item An overview of assembler labels, variables, and data
+This section explains:
+\begin{itemize}
+\item Assembler label and variable types
+\item The relationship between assembler variable types and the values associated with variables: the processor or floating-point coprocessor data types
+\item How to specify data values in assembler programs
+\end{itemize}
+\item Assembler variables
+This section explains:
+\begin{itemize}
+\item Storage allocations for variables
+\item V ariable attributes
+\item Defining and initializing simple-type variables with the DBIT, DB, DW, DD, DP, DQ, and DT directives
+\item Defining compound types with the RECORD and STRUC directives; defining and initializing variables of these types (records and structures)
+\item Defining and initializing variables with DUP clause(s)
+\end{itemize}
+\item Assembler labels
+This section explains:
+\begin{itemize}
+\item Label attributes
+\item The location counter and the ORG and EVEN directives
+\item The LABEL directive
+\item Defining implicit NEAR labels
+\item The PROC directive
+\end{itemize}
+\item Using symbolic data, including named variables and labels, with the EQU and PURGE directives
+\end{itemize}
+
+\subsection*{Specifying Assembler Data Values}
+Assembler data can be expressed in binary, hexadecimal, octal, decimal, or ASCII form. Decimal values that represent integers or reals can be specified with a minus sign; a plus sign is redundant but accepted. Real numbers can also be expressed in floating-point decimal or in hexadecimal notations. Table 4-2 summarizes the valid ways of specifying data values in assembler programs.
+
+\begin{center}
+Table 4-2. Assembler Data Value Specification Rules
+\begin{tabular}{| l  l  l  p{6.5cm} |}
+\hline
+\textbf{Value in} & \textbf{Examples} & & \textbf{Rules of Formulation} \\ 
+\hline
+Binary & 1100011B & 110B & A sequence of 0's and 1's followed by the letter B. \\
+& & & \\
+Octal & 7777O & 4567Q & A sequence of digits in the range 0..7 followed by the letter O or the letter Q.\\
+& & & \\
+Decimal & 3309 & 3309D & A sequence of digits in the range 0..9 followed by an optional letter D.\\
+& & & \\
+Hexadecimal & 55H & 4BEACH & A sequence of digits in the range 0..9 and/or letters A..F followed by the letter H. A digit must begin the sequence.\\
+& & & \\
+ASCII & 'AB' & 'UPDATE.EXT' & Any ASCII string enclosed in single quotes.\\
+& & & \\
+Decimal & -1. & 1E-32 3.14159 & A rational number that may be preceded by a sign and followed by an optional exponent. A decimal point is required if no exponent is present but is optional otherwise. The exponent begins with the letter E followed by an optional sign and a sequence of digits in the range 0..9. \\ 
+& & & \\
+Hexadecimal & 40490FR & 0C0000R & A sequence of digits in the range 0..9 and/or letters A..F followed by the letter R. The sequence must begin with a digit, and the total number of digits and letters must be (8/16/20) or (9/17/21 with the first digit 0). \\
+\hline
+\end{tabular}
+\end{center}
+ A real hexadecimal specification must be the exact sequence of hex digits to fill the internal floating-point coprocessor representation of the floating-point number. For this reason, such values must have exactly 8, 16, or 20 hexadecimal digits, corresponding to the single, double, and extended precision reals that the floating- point coprocessor and the floating-point instructions handle. Such values can have 9, 17, or 21 hexadecimal digits only if the initial digit must be a zero because the value begins with a letter.
+
+Data values can be specified in an assembler program in a variety of formats, as shown in Table 4-2. The way the processor or floating-point coprocessor represents such data internally is called its storage format.
+
+See also: Processor storage formats, Appendix A floating-point coprocessor storage formats, Chapter 7

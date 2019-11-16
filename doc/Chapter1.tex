@@ -1,0 +1,138 @@
+% Activate the following line by filling in the right side. If for example the name of the root file is Main.tex, write
+% "...root = Main.tex" if the chapter file is in the same directory, and "...root = ../Main.tex" if the chapter is in a subdirectory.
+ 
+%!TEX root =  
+
+\chapter[Introduction]{Introduction}
+
+\section*{About This Manual}
+
+ASM286 supports the 80286 and 8086 microprocessors, and 80287 and 8087 floating-point coprocessors. Throughout this manual, the word "processor" refers to any of the above microprocessors and the words "floating-point coprocessor" refer to any of the above coprocessors.
+
+This manual is a reference for the ASM286 assembly language. It assumes that you are familiar with assembly language programming and 8086/80286 processor architecture. If you aren't, see the Intel 80286 Programmer's Reference Manual.
+
+\section*{About This Chapter}
+
+This chapter introduces the assembly language. It has three major sections:
+
+\begin{itemize}
+\item Lexical Elements
+
+This section describes the assembler character set, tokens, separators, identifiers, comments, and the difference between source file lines and logical statement lines.
+\item Statements
+
+This section introduces the assembler directives, processor instruction set, and
+floating-point instruction set.
+\item Program Structure
+
+This section provides a template for assembler programs together with a simple example program (see Appendix B for another example program). It summarizes the essential parts of every ASM286 program.
+\end{itemize}
+
+\section*{Lexical Elements}
+
+
+This section describes the lexical elements of the assembly language, except for its keywords and reserved words.
+See also: Keywords and reserved words, Appendix C
+
+\subsection*{Character Set}
+
+
+The assembler character set is a subset of the ASCII character set. Each character in a source file should be one of the following:
+
+Alphanumerics: \begin{verbatim}ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz
+0123456789\end{verbatim}
+
+SpecialCharacters: \begin{verbatim}+-*/()[]<>;'."_:?@$&\end{verbatim}
+
+Logical Delimiters: space, tab, and newline
+
+If a program contains any character that is not in the preceding set, the assembler treats the character as a logical space.
+
+Uppercase and lowercase letters are not distinguished from each other except in character strings. For example, xyz and XYZ are interchangeable, but 'xyz' and 'XYZ' are not equivalent character strings.
+
+The special characters and combinations of special characters have particular meanings in a program, as described throughout this manual.
+
+See also: ASCII character set, Appendix D
+
+\subsection*{Tokens and Separators}
+A token is the smallest meaningful unit of a source program, much as words are the smallest meaningful units of a sentence. A token is one of the following:
+\begin{itemize}
+\item An end of statement
+\item A delimiter
+\item An identifier
+\item A constant
+\item An assembler keyword or reserved word
+\end{itemize}
+A separator that is a logical space or a delimiter must be specified between two adjacent tokens that are identifiers, constants, keywords, and/or reserved words. The most commonly used separator is the space character.
+
+The end of statement token must be specified between two adjacent statements. The most commonly used statement terminator is the newline character.
+
+See also: Constants, Chapter 4 keywords and reserved words, Appendix C
+
+\subsubsection*{Logical Spaces}
+Any unbroken sequence of spaces can be used wherever a single space character is valid. Horizontal tabs are also used as token separators. The assembler interprets horizontal tabs as a single logical space. However, tabs are reproduced as multiple space characters in the print (listing) file to maintain the appearance of the source file.
+
+See also: Print file, ASM386 Macro Assembler Operating Instructions
+
+Logical spaces may not be specified within tokens such as identifiers, constants, keywords, or reserved words. The assembler treats any invalid character(s) in the context of a source file as a separator.
+
+\subsubsection*{Delimiters}
+Like logical spaces, delimiters mark the end of a token, but each delimiter has a different special meaning. Some examples are commas and colons.
+
+When a delimiter is present, a logical space between two tokens need not be specified. However, extra space or tab characters often make programs easier to read.
+
+Delimiters are described in context throughout this manual.
+\subsection*{Identifiers}
+An identifier is a name for a programmer-defined entity such as a segment, variable, label, or constant. Valid identifiers conform to the following rules:
+\begin{itemize}
+\item The initial character must be a letter (A...Z or a...z) or one of the following special characters:
+? A question mark (ASCII value: 3FH) @ An at sign (ASCII value: 40H)
+\_ An underscore (ASCII value: 5FH)
+\item The remaining characters may be letters, digits (0..9), and the preceding special characters. Separators may not be specified within identifiers.
+\item An identifier may be up to 255 characters in length; it is considered unique only up to 31 characters.
+\item Every identifier within a program module represents one and only one entity. A named entity is accessible from anywhere in the module when it is referenced by name. The assembler does not have identifier scope rules that allow you to specify the same name for two distinct entities in different contexts.
+\end{itemize}
+\subsection*{Continued Statements and Comments}
+An assembler statement usually occupies a single source file line. A source file line is a sequence of characters ended by a newline character.
+
+However, the end of line in a source file is not necessarily the logical end of a statement. Assembler statements do terminate with a newline character, but logical statements can extend over several lines by using the continuation character (\&).
+
+The end of line in a source file always terminates a comment. The semicolon (;) is the initial character of a comment.
+
+Valid comments and statements conform to the following rules:
+\begin{itemize}
+\item A comment begins with a semicolon (;) and ends when the line that contains it is terminated. The assembler ignores comments.
+\item A statement or comment may be continued on subsequent continuation lines. The first character following the line terminator that is not a logical space must be an ampersand (\&).
+\item Statements and comments may extend over many source file lines if they conform to the following:
+\begin{itemize}
+\item Symbols (such as identifiers, keywords, and reserved words) cannot be broken across continuation lines.
+\item Character strings must be closed with an apostrophe on one line and reopened with an apostrophe on a subsequent continuation line, with an intervening comma (,) after the ampersand. Space and tab characters within a character string are significant; they are not treated as logical spaces.
+\item If a comment is continued, the first character following the ampersand that is not a logical space must be a semicolon (;).
+\end{itemize}
+\end{itemize}
+
+\subsection*{Examples}
+The following examples illustrate the difference between the end of a source file line and the logical end of an assembler statement. The notation $<$newline$>$ represents the newline character. Both examples are equivalent.
+\begin{enumerate}
+\item This example has a single statement on a single source file line. The end of the source file line and the logical end of the statement are the same.
+\begin{verbatim}
+;         1         2         3         4<newline>
+; 234567890123456789012345678901234567890<newline>
+<newline>                 ; interpreted as logical space 
+MOV AX, FOO<newline>
+\end{verbatim}
+\item This example has many ends of lines in the source file, but it has only one logical end of statement.
+\begin{verbatim}
+;         1         2         3         4<newline>
+; 234567890123456789012345678901234567890<newline>
+<newline>                 ; interpreted as logical space 
+MOV                       ; this ASM286<newline>
+& AX,                     ; statement extends<newline>
+&                         ; <newline>
+&                         ; <newline>
+&                         ; over<newline>
+&                         ; several lines<newline>
+& FOO                     ; statement ends here<newline>
+<newline> 
+\end{verbatim}
+\end{enumerate}

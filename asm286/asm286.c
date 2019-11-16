@@ -1,5 +1,5 @@
 /*
- *-------------------------------------------------------------------------------
+ *------------------------------------------------------------------------------
  *
  *  ASM286 - i286 (80286) Assembler
  *
@@ -17,15 +17,185 @@
  *
  *  Copyright (c) 2019 Paul C. L. Willmott. See license at end.
  *
- *-------------------------------------------------------------------------------
+ *------------------------------------------------------------------------------
  */
 
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include "asm286.h"
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    printf("Hello, World!\n");
-    return 0;
+
+/*
+ *------------------------------------------------------------------------------
+ */
+
+  if ( process("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE.ASM" ) ) {
+    printf("error\n");
+    goto fail;
+  }
+
+fail:
+  
+/*
+ * Finished.
+ */
+  
+  return 0 ;
+  
+}
+
+/*
+ * This routine assembles a single file.
+ * It returns 0 on success and -1 on failure.
+ */
+
+int process(const char *filename) {
+  
+  int result = -1, is_continue = 0, in_string, has_string ;
+  
+  unsigned long idx, len ;
+  
+  FILE *fp = NULL ;
+  
+  #define MAX_LINE (256)
+  
+  char linebuf[MAX_LINE], statement[MAX_LINE] ;
+  
+  char *wptr ;
+  
+/*
+ *------------------------------------------------------------------------------
+ */
+  
+  if ( ( fp = fopen(filename, "r")) == NULL ) {
+    goto fail;
+  }
+  
+  strcpy(statement, "") ;
+  
+  while ( fgets(linebuf, sizeof(linebuf), fp) ) {
+    
+    char *ptr = linebuf ;
+    
+/*
+ * If it is not a continuation line then assemble the statement.
+ */
+    
+    if ( ! ( is_continue = ( linebuf[0] == '&' ) ) ) {
+      if ( strlen(statement) > 0 ) {
+        if ( assemble(statement) ) {
+          goto fail ;
+        }
+        strcpy(statement, "") ;
+      }
+    }
+    
+/*
+ * Remove newline.
+ */
+    
+    len = strlen(linebuf) ;
+    
+    if ( linebuf[len-1] == '\n' ) {
+      linebuf[--len] = '\0' ;
+    }
+    
+ /*
+  * Strip comments from new line.
+  */
+    
+    in_string = 0 ;
+    has_string = 0 ;
+    
+    for ( idx = 0; idx < len; idx++ ) {
+      
+      char c = linebuf[idx];
+      
+      int is_quote = ( c == '\'' ) ;
+      
+      if ( in_string ) {
+        if ( is_quote ) {
+          in_string = 0 ;
+        }
+      }
+      else if ( is_quote ) {
+        in_string = 1 ;
+        has_string = 1 ;
+      }
+      else if ( c == ';' ) {
+        linebuf[idx] = '\0' ;
+        break;
+      }
+      
+    }
+    
+/*
+ * Line continuation and string concatenation.
+ */
+    
+    if ( is_continue ) {
+      
+      char *eptr = &statement[strlen(statement)-1] ;
+      
+      ptr++ ;
+
+      if ( *ptr == ',' ) {
+        
+        ptr++ ;
+        
+        while ( *ptr && isspace(*ptr) ) {
+          ptr++ ;
+        }
+        
+        if ( *eptr == '\'' && *ptr == '\'' ) {
+          *eptr = '\0' ;
+          ptr++ ;
+        }
+        
+      }
+      
+    }
+    
+/*
+ * Remove trailing whitespace.
+ */
+    
+    wptr = &linebuf[strlen(linebuf)-1] ;
+    
+    while ( wptr > ptr && isspace(*wptr)) {
+      *wptr-- = '\0' ;
+    }
+    
+    strcat( statement, ptr ) ;
+    
+  }
+
+  if ( strlen(statement) > 0 ) {
+    if ( assemble(statement) ) {
+      goto fail ;
+    }
+  }
+
+/*
+ * Tidy-Up.
+ */
+  
+  result = 0 ;
+  
+fail:
+  
+  if ( fp != NULL ) {
+    fclose(fp) ;
+  }
+  
+/*
+ * Finished.
+ */
+  
+  return result ;
+  
 }
 
 /*

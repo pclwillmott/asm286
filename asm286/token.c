@@ -20,9 +20,13 @@
  *------------------------------------------------------------------------------
  */
 
+#include <string.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "asm286.h"
 
-const char *keyword[ NUM_KEYWORDS ] = {
+const char *pattern[ NUM_PATTERN ] = {
   "_",
   "-",
   ";",
@@ -30,10 +34,10 @@ const char *keyword[ NUM_KEYWORDS ] = {
   "?",
   ".",
   "'",
-  "(",
-  ")",
-  "[",
-  "]",
+  "{(}",
+  "{)}",
+  "{[}",
+  "{]}",
   "@",
   "*",
   "/",
@@ -43,6 +47,7 @@ const char *keyword[ NUM_KEYWORDS ] = {
   "<",
   ">",
   "$",
+  ",",
   "AAA",
   "AAD",
   "AAM",
@@ -399,7 +404,437 @@ const char *keyword[ NUM_KEYWORDS ] = {
   "XCHG",
   "XLAT",
   "XOR",
+  "[0-1]+B",
+  "[0-7]+O|Q",
+  "(-|+)?[0-9]+D?",
+  "([0-9][0-9A-F]*H)|([0-9][0-9A-F]*R)",
+  "((-|+)?[0-9]+([.][0-9]*)?E(+|-)?[0-9]+)|((-|+)?[0-9]+[.][0-9]*)",
+  "(['][^']*['])+",
+  "[A-Z_][A-Z_0-9]*",
 } ;
+
+void dump_pattern()
+{
+  unsigned int idx ;
+  
+  for ( idx = 0; idx < NUM_PATTERN - 7; idx++ ) {
+    unsigned int B = idx % 127 + 1 ;
+    unsigned int A = idx / 127 + 1 ;
+//    printf("#define STK_%-11s \"\\%03o\\%03o\"\n", pattern[idx], A, B ) ;
+  }
+  for ( idx = 0; idx < NUM_PATTERN - 7; idx++ ) {
+ //   printf("  TOK_%-11s = %3i,\n", pattern[idx], idx ) ;
+  }
+  printf("%i\n", 0177 * 127 + 0177 - 1) ;
+}
+
+int match_pattern
+(
+  const char *statement,
+  const char *pattern,
+  const char **match,
+  unsigned long *matchlen
+)
+{
+  
+  int result = -1 ;
+  
+  const char *sptr = statement ;
+  
+  char cv[128] ;
+  
+  char *expression = NULL, *ptr ;
+  
+/*
+ *------------------------------------------------------------------------------
+ */
+
+/*
+ * Keep going until all of the pattern has been matched.
+ */
+  
+  int skip_next = 0 ;
+  
+  while ( *pattern ) {
+    
+    unsigned long seglen = 0 ;
+    
+    char start = *pattern, stop = '\0' ;
+    
+    const char *save = sptr ;
+    
+    switch ( *pattern ) {
+      case '(':
+        stop = ')' ;
+        break ;
+      case '[':
+        stop = ']' ;
+        break ;
+      case '{':
+        stop = '}' ;
+        break ;
+      default:
+        seglen = 1 ;
+        break ;
+    }
+    
+    if ( ! seglen ) {
+      
+      int count = 1 ;
+      
+      const char *temp = pattern + 1 ;
+      
+      while ( *temp && count ) {
+        if ( *temp == start ) {
+          count++ ;
+        }
+        else if ( *temp == stop ) {
+          count-- ;
+        }
+        temp++ ;
+      }
+
+      seglen = temp - pattern ;
+      
+      if ( start == '(' || start == '{' ) {
+        if (expression != NULL ) {
+          free(expression) ;
+        }
+        if ( ( expression = (char *) malloc( seglen + 1 - 2 ) ) == NULL ) {
+          goto fail;
+        }
+        strncpy( expression, pattern + 1 , seglen - 2 ) ;
+        expression[seglen - 2] = '\0' ;
+      }
+      else if ( start == '[' ) {
+        
+        temp = pattern + 1 ;
+        
+        char lc = *temp ;
+        
+        ptr = cv ;
+        
+        if ( lc == '^' ) {
+          
+          unsigned int cc ;
+          
+          for ( cc = 1; cc < 128; cc++ ) {
+            temp = pattern + 1 ;
+            while ( ( lc = *temp++ ) != stop ) {
+              if ( lc == cc ) {
+                break ;
+              }
+            }
+            if ( lc == stop ) {
+              *ptr++ = (char) cc ;
+            }
+          }
+          
+        }
+        else {
+        
+          while ( ( lc = *temp ) != stop ) {
+            
+            if ( *(temp+1) == '-' ) {
+              char cc ;
+              for ( cc = lc; cc <= *(temp+2); cc++ ) {
+                *ptr++ = cc ;
+              }
+              temp += 3 ;
+            }
+            else {
+              *ptr++ = lc ;
+              temp++ ;
+            }
+            
+          }
+          
+        }
+        
+        *ptr = '\0' ;
+        
+      }
+      
+    }
+    
+    char operator = *(pattern+seglen) ;
+    
+    switch ( operator ) {
+      case '?':
+      case '*':
+      case '+':
+        seglen++ ;
+        break;
+    }
+    
+    pattern += seglen ;
+    
+    if ( skip_next ) {
+      skip_next = 0 ;
+      continue;
+    }
+    
+    int found_count = 0 ;
+    
+    int more_to_find ;
+    
+    int is_success ;
+    
+    do {
+      
+      int is_match ;
+      
+      char ct = toupper(*sptr) ;
+      
+      switch ( start ) {
+        case '(':
+          {
+            const char *match ;
+            unsigned long matchlen ;
+            if ( ( is_match = ! match_pattern( sptr, expression, &match, &matchlen ) ) ) {
+              sptr += matchlen;
+            }
+          }
+          break ;
+        case '[':
+          ptr = cv ;
+          while ( *ptr && ct != *ptr ) {
+            ptr++ ;
+          }
+          if ( ( is_match = *ptr ) ) {
+            sptr++;
+          }
+          break ;
+        case '{':
+          ptr = expression ;
+          while ( *sptr && *ptr && *sptr == *ptr ) {
+            sptr++ ;
+            ptr++ ;
+          }
+          is_match = ! *ptr ;
+          break ;
+        default:
+          if ( ( is_match = ( ct == start ) ) ) {
+            sptr++ ;
+          }
+          break ;
+      }
+      
+      if ( is_match ) {
+        found_count++ ;
+      }
+ 
+      switch ( operator ) {
+        case '?':
+          is_success = 1 ;
+          more_to_find = 0 ;
+          break;
+        case '*':
+          is_success = 1 ;
+          more_to_find = is_match ;
+          break;
+        case '+':
+          is_success = ( found_count > 0 ) ;
+          more_to_find = is_match ;
+          break;
+        default:
+          is_success = is_match ;
+          more_to_find = 0 ;
+          break;
+      }
+      
+    } while ( more_to_find && *sptr ) ;
+
+/*
+ * Handle Or.
+ */
+    
+    if ( *pattern == '|' ) {
+      skip_next = is_success ;
+      if ( ! skip_next ) {
+        sptr = save ;
+      }
+      pattern++;
+    }
+    
+/*
+ * Bomb if no match.
+ */
+    
+    else if ( ! is_success ) {
+      goto fail ;
+    }
+
+  }
+
+  *matchlen = sptr - statement ;
+  
+  *match = statement ;
+  
+/*
+ * Tidy-Up.
+ */
+  
+  result = 0 ;
+  
+fail:
+  
+  if (expression != NULL ) {
+    free(expression) ;
+  }
+  
+/*
+ * Finished.
+ */
+  
+  return result ;
+  
+}
+
+void delete_tlist( tlist_node_t **tlist )
+{
+  
+  tlist_node_t *ptr = *tlist ;
+  
+/*
+ *------------------------------------------------------------------------------
+ */
+
+  while ( ptr != NULL ) {
+    tlist_node_t *temp = ptr ;
+    if ( temp->token != NULL ) {
+      free(temp->token) ;
+    }
+    free( temp ) ;
+    ptr = ptr->next ;
+  }
+  
+  *tlist = NULL ;
+  
+/*
+ * Finished.
+ */
+
+}
+
+tlist_node_t * tokenize
+(
+  const char *statement
+)
+{
+  
+  int idx, result = -1 ;
+  
+  const char *sptr = statement, *best = NULL ;
+  
+  char *token = NULL ;
+  
+  unsigned long bestlen = 0 ;
+  
+  int bestidx = -1 ;
+  
+  tlist_node_t *tlist = NULL, *last = NULL ;
+  
+/*
+ *------------------------------------------------------------------------------
+ */
+  
+/*
+ * Keep going until all of statement has been tokenized.
+ */
+  
+  while ( *sptr ) {
+    
+/*
+ * Skip whitespace.
+ */
+    while ( *sptr && isspace( *sptr ) ) {
+      sptr++ ;
+    }
+
+/*
+ * Check each pattern and find the longest match.
+ */
+    
+    bestlen = 0 ;
+    
+    for ( idx = 0; idx < NUM_PATTERN; idx++ ) {
+      
+      const char *match = NULL ;
+      
+      unsigned long matchlen = 0 ;
+      
+      if ( ! match_pattern( sptr, pattern[idx], &match, &matchlen ) ) {
+        if ( matchlen > bestlen ) {
+          bestlen = matchlen ;
+          bestidx = idx ;
+          best = match ;
+        }
+      }
+      
+    }
+
+/*
+ * Fail if none found.
+ */
+    
+    if ( ! bestlen ) {
+      goto fail ;
+    }
+    
+    tlist_node_t *node ;
+    
+    if ( ( node = (tlist_node_t *) malloc( sizeof(tlist_node_t) ) ) == NULL ) {
+      free(token) ;
+      goto fail ;
+    }
+    
+    node->token_id = bestidx ;
+    
+    if ( ( node->token = (char *) malloc( bestlen + 1 ) ) == NULL ) {
+      goto fail ;
+    }
+    
+    strncpy(node->token, best, bestlen) ;
+    node->token[bestlen] = '\0' ;
+    
+    node->next = NULL ;
+    
+    if ( last == NULL ) {
+      tlist = node ;
+    }
+    else {
+      last->next = node ;
+    }
+    last = node ;
+    
+/*
+ * Move onto the next part of the statement.
+ */
+    
+    sptr += bestlen ;
+    
+  }
+  
+/*
+ * Tidy-Up.
+ */
+  
+  result = 0 ;
+  
+fail:
+  
+  if ( result ) {
+    delete_tlist( &tlist ) ;
+  }
+  
+  /*
+   * Finished.
+   */
+  
+  return tlist ;
+
+}
 
 /*
  *------------------------------------------------------------------------------
