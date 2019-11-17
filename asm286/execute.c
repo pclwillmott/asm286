@@ -5,15 +5,15 @@
  *
  *  Description:
  *
- *    assemble.c       Assemble a single statement
+ *    execute.c       Execute a production
  *
  *  This revision:
  *
- *    2019 November 17 Paul Willmott Error handling added.
+ *    2019 November 17 Paul Willmott Baseline.
  *
  *  Revision History:
  *
- *    2019 November 10 Paul Willmott Baseline.
+ *    2019 November 17 Paul Willmott Baseline.
  *
  *  Copyright (c) 2019 Paul C. L. Willmott. See license at end.
  *
@@ -21,69 +21,11 @@
  */
 
 #include <stdio.h>
-#include "asm286.h" 
+#include "asm286.h"
 
-int assemble( const char *statement, int lineno ) {
-
-  int result = -1 ;
-  
-  tlist_node_t *tlist = NULL, *tp ;
-
-  ptree_node_t *pt ;
-  
-/*
- *------------------------------------------------------------------------------
- */
-
-  if ( ( tlist = tokenize( statement, lineno ) ) == NULL ) {
-    goto fail ;
-  }
-
-/*
- * Try and find a match.
- */
-  
-  tp = tlist ;
-  
-  if ( ( ( pt = match ( PRD_NUM_EXP, &tp, 0 ) ) == NULL ) || ( tp != NULL ) ) {
-    error ( ERR_SYNTAX_ERROR, lineno ) ;
-    goto fail ;
-  }
-  
-/*
- * Execute command.
- */
-  
-  else if ( ! execute ( pt ) ) {
-    goto fail ;
-  }
-  
-/*
- * Tidy-Up
- */
-  
-  if ( pt != NULL ) {
-    delete_ptree ( pt, 1, 1, 0 ) ;
-  }
-  
-  delete_tlist ( &tlist ) ;
-
-/*
- * Tidy-Up.
- */
-  
-  result = 0 ;
-  
-fail:
-  
-  delete_tlist( &tlist ) ;
-  
-/*
- * Finished.
- */
-  
-  return result ;
-  
+int execute ( ptree_node_t *ptree )
+{
+  return 0 ;
 }
 
 /*

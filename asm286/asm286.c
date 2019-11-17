@@ -32,7 +32,6 @@ int main(int argc, const char * argv[]) {
  */
 
   if ( process("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE.ASM" ) ) {
-    printf("error\n");
     goto fail;
   }
 
@@ -65,6 +64,8 @@ int process(const char *filename) {
   
   char *wptr ;
   
+  unsigned int line_number = 1, stmt_line = 1 ;
+  
 /*
  *------------------------------------------------------------------------------
  */
@@ -85,10 +86,11 @@ int process(const char *filename) {
     
     if ( ! ( is_continue = ( linebuf[0] == '&' ) ) ) {
       if ( strlen(statement) > 0 ) {
-        if ( assemble(statement) ) {
+        if ( assemble(statement, stmt_line ) ) {
           goto fail ;
         }
         strcpy(statement, "") ;
+        stmt_line = line_number ;
       }
     }
     
@@ -170,10 +172,12 @@ int process(const char *filename) {
     
     strcat( statement, ptr ) ;
     
+    line_number++ ;
+    
   }
 
   if ( strlen(statement) > 0 ) {
-    if ( assemble(statement) ) {
+    if ( assemble(statement, stmt_line ) ) {
       goto fail ;
     }
   }

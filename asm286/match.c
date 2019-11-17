@@ -5,84 +5,75 @@
  *
  *  Description:
  *
- *    assemble.c       Assemble a single statement
+ *    match.c       Match a production to a list of tokens.
  *
  *  This revision:
  *
- *    2019 November 17 Paul Willmott Error handling added.
+ *    2019 November 17 Paul Willmott Baseline.
  *
  *  Revision History:
  *
- *    2019 November 10 Paul Willmott Baseline.
+ *    2019 November 17 Paul Willmott Baseline.
  *
  *  Copyright (c) 2019 Paul C. L. Willmott. See license at end.
  *
  *------------------------------------------------------------------------------
  */
 
-#include <stdio.h>
-#include "asm286.h" 
+#include <stdlib.h>
+#include "asm286.h"
 
-int assemble( const char *statement, int lineno ) {
-
-  int result = -1 ;
+ptree_node_t * match
+(
+ int production_id,
+ tlist_node_t **toklst,
+ int start_arg
+)
+{
   
-  tlist_node_t *tlist = NULL, *tp ;
-
-  ptree_node_t *pt ;
+  return NULL ;
   
-/*
- *------------------------------------------------------------------------------
- */
+}
 
-  if ( ( tlist = tokenize( statement, lineno ) ) == NULL ) {
-    goto fail ;
+void delete_ptree
+(
+ ptree_node_t *ptree,
+ int kill_root,
+ int kill_strings,
+ int start_arg
+)
+{
+  
+  int arg_index ;
+  
+  /*
+   *-----------------------------------------------------------------------------
+   */
+  
+  if ( ptree->production_id >= PRODUCTION_OFFSET ) {
+    
+    for ( arg_index = start_arg; arg_index < ptree->num_args; arg_index++ ) {
+      delete_ptree ( ptree->args[ arg_index ], 1, kill_strings, 0 ) ;
+    }
+    /*
+     if ( ( kill_strings ) && ( ptree->value_type == to_char ( TOK_STRING ) ) ) {
+     free ( ptree->value.s ) ;
+     }
+     */
+    
+    if ( ptree->num_args ) {
+      free ( ptree->args ) ;
+    }
+    
   }
-
-/*
- * Try and find a match.
- */
   
-  tp = tlist ;
-  
-  if ( ( ( pt = match ( PRD_NUM_EXP, &tp, 0 ) ) == NULL ) || ( tp != NULL ) ) {
-    error ( ERR_SYNTAX_ERROR, lineno ) ;
-    goto fail ;
+  if ( kill_root ) {
+    free ( ptree ) ;
   }
   
 /*
- * Execute command.
+ * Finished
  */
-  
-  else if ( ! execute ( pt ) ) {
-    goto fail ;
-  }
-  
-/*
- * Tidy-Up
- */
-  
-  if ( pt != NULL ) {
-    delete_ptree ( pt, 1, 1, 0 ) ;
-  }
-  
-  delete_tlist ( &tlist ) ;
-
-/*
- * Tidy-Up.
- */
-  
-  result = 0 ;
-  
-fail:
-  
-  delete_tlist( &tlist ) ;
-  
-/*
- * Finished.
- */
-  
-  return result ;
   
 }
 

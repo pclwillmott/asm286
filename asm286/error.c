@@ -5,15 +5,15 @@
  *
  *  Description:
  *
- *    assemble.c       Assemble a single statement
+ *    error.c       Display error message
  *
  *  This revision:
  *
- *    2019 November 17 Paul Willmott Error handling added.
+ *    2019 November 17 Paul Willmott Baseline.
  *
  *  Revision History:
  *
- *    2019 November 10 Paul Willmott Baseline.
+ *    2019 November 17 Paul Willmott Baseline.
  *
  *  Copyright (c) 2019 Paul C. L. Willmott. See license at end.
  *
@@ -21,68 +21,50 @@
  */
 
 #include <stdio.h>
-#include "asm286.h" 
+#include "asm286.h"
 
-int assemble( const char *statement, int lineno ) {
-
-  int result = -1 ;
+void error( int err, int lineno )
+{
   
-  tlist_node_t *tlist = NULL, *tp ;
-
-  ptree_node_t *pt ;
+  const char *message[ NUM_ERR ] = {
+    "Internal error",
+    "Out of memory",
+    "Line buffer overflow",
+    "Syntax error",
+    "String too long",
+    "Identifier too long",
+  } ;
+  
+  char tmp_str[ 128 ] ;
   
 /*
- *------------------------------------------------------------------------------
+ *-----------------------------------------------------------------------------
  */
-
-  if ( ( tlist = tokenize( statement, lineno ) ) == NULL ) {
-    goto fail ;
+  
+/*
+ * Output error message.
+ */
+  
+  if ( ( err > 0 ) && ( err <= NUM_ERR ) ) {
+    sprintf ( tmp_str, "%s", message[ err - 1 ] ) ;
   }
-
-/*
- * Try and find a match.
- */
-  
-  tp = tlist ;
-  
-  if ( ( ( pt = match ( PRD_NUM_EXP, &tp, 0 ) ) == NULL ) || ( tp != NULL ) ) {
-    error ( ERR_SYNTAX_ERROR, lineno ) ;
-    goto fail ;
-  }
-  
-/*
- * Execute command.
- */
-  
-  else if ( ! execute ( pt ) ) {
-    goto fail ;
+  else {
+    sprintf ( tmp_str, "Error %i", err ) ;
   }
   
-/*
- * Tidy-Up
- */
+  fprintf ( stderr, "%s", tmp_str ) ;
   
-  if ( pt != NULL ) {
-    delete_ptree ( pt, 1, 1, 0 ) ;
+  if ( lineno > 0 ) {
+    fprintf ( stderr, " at line %i", lineno ) ;
   }
+    
+  fprintf( stderr, "\n" ) ;
   
-  delete_tlist ( &tlist ) ;
-
-/*
- * Tidy-Up.
- */
-  
-  result = 0 ;
-  
-fail:
-  
-  delete_tlist( &tlist ) ;
+  return ;
   
 /*
- * Finished.
+ * Finished
  */
-  
-  return result ;
   
 }
 

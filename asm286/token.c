@@ -415,17 +415,18 @@ const char *pattern[ NUM_PATTERN ] = {
 
 void dump_pattern() 
 {
+  return ;
   unsigned int idx ;
   
   for ( idx = 0; idx < NUM_PATTERN - 7; idx++ ) {
-    unsigned int B = idx % 127 + 1 ;
-    unsigned int A = idx / 127 + 1 ;
+//    unsigned int B = idx % 127 + 1 ;
+//    unsigned int A = idx / 127 + 1 ;
 //    printf("#define STK_%-11s \"\\%03o\\%03o\"\n", pattern[idx], A, B ) ;
   }
   for ( idx = 0; idx < NUM_PATTERN - 7; idx++ ) {
  //   printf("  TOK_%-11s = %3i,\n", pattern[idx], idx ) ;
   }
-  printf("%i\n", 0177 * 127 + 0177 - 1) ;
+//  printf("%i\n", 0177 * 127 + 0177 - 1) ;
 }
 
 int match_pattern
@@ -501,6 +502,7 @@ int match_pattern
           free(expression) ;
         }
         if ( ( expression = (char *) malloc( seglen + 1 - 2 ) ) == NULL ) {
+          error( ERR_OUT_OF_MEMORY, -1 ) ;
           goto fail;
         }
         strncpy( expression, pattern + 1 , seglen - 2 ) ;
@@ -660,7 +662,7 @@ int match_pattern
 /*
  * Bomb if no match.
  */
-    
+
     else if ( ! is_success ) {
       goto fail ;
     }
@@ -717,17 +719,12 @@ void delete_tlist( tlist_node_t **tlist )
 
 }
 
-tlist_node_t * tokenize
-(
-  const char *statement
-)
+tlist_node_t * tokenize( const char *statement, int lineno )
 {
   
   int idx, result = -1 ;
   
   const char *sptr = statement, *best = NULL ;
-  
-  char *token = NULL ;
   
   unsigned long bestlen = 0 ;
   
@@ -750,6 +747,10 @@ tlist_node_t * tokenize
  */
     while ( *sptr && isspace( *sptr ) ) {
       sptr++ ;
+    }
+    
+    if ( ! *sptr ) {
+      break;
     }
 
 /*
@@ -779,19 +780,21 @@ tlist_node_t * tokenize
  */
     
     if ( ! bestlen ) {
+      error( ERR_SYNTAX_ERROR, lineno ) ;
       goto fail ;
     }
     
     tlist_node_t *node ;
     
     if ( ( node = (tlist_node_t *) malloc( sizeof(tlist_node_t) ) ) == NULL ) {
-      free(token) ;
+      error( ERR_OUT_OF_MEMORY, -1 ) ;
       goto fail ;
     }
     
     node->token_id = bestidx ;
     
     if ( ( node->token = (char *) malloc( bestlen + 1 ) ) == NULL ) {
+      error( ERR_OUT_OF_MEMORY, -1 ) ;
       goto fail ;
     }
     

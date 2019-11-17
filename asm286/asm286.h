@@ -9,9 +9,11 @@
  *
  *  This revision:
  *
- *    2019 November 10 Paul Willmott Production string constants added.
+ *    2019 November 17 Paul Willmott Error codes added.
  *
  *  Revision History:
+ *
+ *    2019 November 10 Paul Willmott Production string constants added.
  *
  *    2019 November 9 Paul Willmott Baseline.
  *
@@ -22,6 +24,21 @@
 
 #ifndef asm286_h
 #define asm286_h
+
+/*
+ * Error codes.
+ */
+
+enum {
+  ERR_INTERNAL_ERROR           =  1,
+  ERR_OUT_OF_MEMORY            =  2,
+  ERR_LINE_BUFFER_OVERFLOW     =  3,
+  ERR_SYNTAX_ERROR             =  4,
+  ERR_STRING_TOO_LONG          =  5,
+  ERR_IDENTIFIER_TOO_LONG      =  6,
+} ;
+
+#define NUM_ERR ( 6 )
 
 /*
  * Token string constants.
@@ -899,6 +916,8 @@ enum {
   PRD_LAST        = 16255,
 } ;
 
+#define PRODUCTION_OFFSET (8128)
+
 /*
  * Token List Node
  */
@@ -912,14 +931,44 @@ struct tlist_node_t {
 } ;
 
 /*
+ * Value Type
+ */
+
+typedef union {
+  int    i ;
+  double d ;
+  char  *s ;
+} value_t ;
+
+/*
+ * Parse Tree Node
+ */
+
+typedef struct ptree_node_t ptree_node_t ;
+
+struct ptree_node_t {
+  unsigned int production_id ;
+  unsigned int variant ;
+  unsigned int num_args ;
+  unsigned int exec_type ;
+  ptree_node_t **args ;
+  unsigned int value_type ;
+  value_t value ;
+} ;
+
+/*
  * Prototypes.
  */
 
 int process(const char *) ;
-int assemble(const char *) ;
-tlist_node_t * tokenize(const char *) ;
-void delete_tlist( tlist_node_t **tlist ) ;
+int assemble(const char *, int ) ;
+tlist_node_t * tokenize(const char *, int) ;
+void delete_tlist( tlist_node_t ** ) ;
 void dump_pattern( void ) ;
+void error( int, int ) ;
+ptree_node_t * match( int, tlist_node_t **, int ) ;
+void delete_ptree( ptree_node_t *, int, int, int ) ;
+int execute ( ptree_node_t * ) ;
 
 #endif /* asm286_h */
 
