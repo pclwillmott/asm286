@@ -404,6 +404,7 @@ const char *pattern[ NUM_PATTERN ] = {
   "XCHG",
   "XLAT",
   "XOR",
+  "SBB",
   "[0-1]+B",
   "[0-7]+O|Q",
   "(-|+)?[0-9]+D?",

@@ -21,11 +21,101 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include "asm286.h"
 
-int execute ( ptree_node_t *ptree )
+enum {
+  SUCCESS = 1,
+  FAIL = 0,
+} ;
+
+int execute( ptree_node_t *ptree )
 {
-  return 0 ;
+  
+  unsigned int arg_index ;
+  
+/*
+ *-----------------------------------------------------------------------------
+ */
+  
+/*
+ * Only process productions.
+ */
+  
+  if ( ptree->production_id < PRODUCTION_OFFSET )  {
+    return SUCCESS ;
+  }
+  
+/*
+ * Evaluate all the nodes from the bottom up and left to right.
+ */
+  
+  for ( arg_index = 0; arg_index < ptree->num_args; arg_index++ ) {
+    if ( ! execute ( ptree->args[ arg_index ] ) ) {
+      return FAIL ;
+    }
+  }
+  
+/*
+ * Skip non-action productions.
+ */
+  
+  if ( ptree->exec_type == XT_IGNORE ) {
+    return SUCCESS ;
+  }
+  
+/*
+ * If production is not an action production then drop through
+ * value of the first argument.
+ */
+  
+  if ( ptree->exec_type == XT_DROP ) {
+    
+    ptree->value_type = ptree->args[ 0 ]->value_type ;
+    
+    if ( ptree->value_type == TOK_STRING ) {
+      ptree->value.s = NULL ;
+//      if ( ! setstr ( &ptree->value.s, ptree->args[ 0 ]->value.s ) ) {
+//        return FAIL ;
+//      }
+      
+    }
+    else {
+      CPYVALUE( ptree->value, ptree->args[ 0 ]->value ) ;
+    }
+    
+    return SUCCESS ;
+    
+  }
+  
+/*
+ * Jump Table
+ */
+  
+  switch ( ptree->production_id ) {
+    case PRD_AAA:
+      printf("AAA\n");
+      break;
+    case PRD_AAD:
+      printf("AAD\n");
+      break;
+    case PRD_AAM:
+      printf("AAM\n");
+      break;
+    case PRD_AAS:
+      printf("AAS\n");
+      break;
+    case PRD_ADC:
+      printf("ADC %i\n", ptree->args[1]->production_id);
+      break;
+  }
+  
+  return SUCCESS ;
+  
+/*
+ * Finished
+ */
+  
 }
 
 /*

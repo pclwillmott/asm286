@@ -44,7 +44,7 @@ enum {
  * Token string constants.
  */
 
-#define NUM_PATTERN ( 383 )  /* Number of token patterns */
+#define NUM_PATTERN ( 384 )  /* Number of token patterns */
 
 #define STK_UNDERSCORE  "\001\001"
 #define STK_MINUS       "\001\002"
@@ -427,18 +427,19 @@ enum {
 #define STK_XCHG        "\003\170"
 #define STK_XLAT        "\003\171"
 #define STK_XOR         "\003\172"
+#define STK_SBB         "\003\173"
 
 /*
  * END OF AUTONUBER SECTION
  */
 
-#define STK_INTEGERBIN  "\003\173"
-#define STK_INTEGEROCT  "\003\174"
-#define STK_INTEGERDEC  "\003\175"
-#define STK_INTEGERHEX  "\003\176"
-#define STK_DOUBLE      "\003\177"
-#define STK_STRING      "\004\001"
-#define STK_IDENTIFIER  "\004\002"
+#define STK_INTEGERBIN  "\003\174"
+#define STK_INTEGEROCT  "\003\175"
+#define STK_INTEGERDEC  "\003\176"
+#define STK_INTEGERHEX  "\003\177"
+#define STK_DOUBLE      "\004\001"
+#define STK_STRING      "\004\002"
+#define STK_IDENTIFIER  "\004\003"
 
 /*
  * Production string constants.
@@ -448,46 +449,63 @@ enum {
  * Number Operators
  */
 
-#define SPD_GRP1_OP    "\100\001"
-#define SPD_GRP2_OP    "\100\002"
-#define SPD_GRP3_OP    "\100\003"
-#define SPD_GRP4_OP    "\100\004"
-#define SPD_GRP5_OP    "\100\005"
-#define SPD_GRP6_OP    "\100\006"
-#define SPD_GRP7_OP    "\100\007"
-#define SPD_GRP8_OP    "\100\010"
-#define SPD_GRP9_OP    "\100\011"
-#define SPD_GRP10_OP   "\100\012"
+#define SPD_GRP1_OP    "\101\001"
+#define SPD_GRP2_OP    "\101\002"
+#define SPD_GRP3_OP    "\101\003"
+#define SPD_GRP4_OP    "\101\004"
+#define SPD_GRP5_OP    "\101\005"
+#define SPD_GRP6_OP    "\101\006"
+#define SPD_GRP7_OP    "\101\007"
+#define SPD_GRP8_OP    "\101\010"
+#define SPD_GRP9_OP    "\101\011"
+#define SPD_GRP10_OP   "\101\012"
 
 /*
  * Variables and Constants
  */
 
-#define SPD_CON_NUM    "\100\013"
-#define SPD_CON_STR    "\100\014"
+#define SPD_CON_NUM    "\101\013"
+#define SPD_CON_STR    "\101\014"
 
 /*
  * Number Expressions
  */
 
-#define SPD_GRP0_EXP   "\100\015"  /* EXECUTE */
-#define SPD_GRP1_EXP   "\100\016"  /* EXECUTE */
-#define SPD_GRP2_EXP   "\100\017"  /* EXECUTE */
-#define SPD_GRP3_EXP   "\100\020"  /* EXECUTE */
-#define SPD_GRP4_EXP   "\100\021"  /* EXECUTE */
-#define SPD_GRP5_EXP   "\100\022"  /* EXECUTE */
-#define SPD_GRP6_EXP   "\100\023"  /* EXECUTE */
-#define SPD_GRP7_EXP   "\100\024"  /* EXECUTE */
-#define SPD_GRP8_EXP   "\100\025"  /* EXECUTE */
-#define SPD_GRP9_EXP   "\100\026"  /* EXECUTE */
-#define SPD_NUM_EXP    "\100\027"  /* EXECUTE */
+#define SPD_GRP0_EXP   "\101\015"  /* EXECUTE */
+#define SPD_GRP1_EXP   "\101\016"  /* EXECUTE */
+#define SPD_GRP2_EXP   "\101\017"  /* EXECUTE */
+#define SPD_GRP3_EXP   "\101\020"  /* EXECUTE */
+#define SPD_GRP4_EXP   "\101\021"  /* EXECUTE */
+#define SPD_GRP5_EXP   "\101\022"  /* EXECUTE */
+#define SPD_GRP6_EXP   "\101\023"  /* EXECUTE */
+#define SPD_GRP7_EXP   "\101\024"  /* EXECUTE */
+#define SPD_GRP8_EXP   "\101\025"  /* EXECUTE */
+#define SPD_GRP9_EXP   "\101\026"  /* EXECUTE */
+#define SPD_NUM_EXP    "\101\027"  /* EXECUTE */
 
 /*
  * String Expressions
  */
 
-#define SPD_STRING     "\100\030"
-#define SPD_STR_EXP    "\100\031"  /* EXECUTE */
+#define SPD_STRING     "\101\030"
+#define SPD_STR_EXP    "\101\031"  /* EXECUTE */
+
+/*
+ * Statements
+ */
+
+#define SPD_STMT       "\101\032"   
+#define SPD_AAA        "\101\033"
+#define SPD_AAD        "\101\034"
+#define SPD_AAM        "\101\035"
+#define SPD_AAS        "\101\036"
+#define SPD_REG16      "\101\037"
+#define SPD_ADC        "\101\040"
+#define SPD_REG8       "\101\041"
+#define SPD_REGSEG     "\101\042"
+#define SPD_ALUOP      "\101\043"
+#define SPD_JMPOP      "\101\044"
+#define SPD_JR         "\101\045"
 
 #define SPD_LAST       "\177\177"
 
@@ -870,15 +888,20 @@ enum {
   TOK_XCHG        = 373,
   TOK_XLAT        = 374,
   TOK_XOR         = 375,
+  TOK_SBB         = 376,
   
-  TOK_INTEGERBIN  = 376,
-  TOK_INTEGEROCT  = 377,
-  TOK_INTEGERDEC  = 378,
-  TOK_INTEGERHEX  = 379,
-  TOK_DOUBLE      = 380,
-  TOK_STRING      = 381,
-  TOK_IDENTIFIER  = 382,
+  TOK_INTEGERBIN  = 377,
+  TOK_INTEGEROCT  = 378,
+  TOK_INTEGERDEC  = 379,
+  TOK_INTEGERHEX  = 380,
+  TOK_DOUBLE      = 381,
+  TOK_STRING      = 382,
+  TOK_IDENTIFIER  = 383,
 
+/*
+ * Productions
+ */
+  
   PRD_GRP1_OP     = 8128,
   PRD_GRP2_OP     = 8129,
   PRD_GRP3_OP     = 8130,
@@ -889,18 +912,8 @@ enum {
   PRD_GRP8_OP     = 8135,
   PRD_GRP9_OP     = 8136,
   PRD_GRP10_OP    = 8137,
-  
-  /*
-   * Variables and Constants
-   */
-  
   PRD_CON_NUM     = 8138,
   PRD_CON_STR     = 8139,
-  
-  /*
-   * Number Expressions
-   */
-  
   PRD_GRP0_EXP    = 8140,
   PRD_GRP1_EXP    = 8141,
   PRD_GRP2_EXP    = 8142,
@@ -912,23 +925,30 @@ enum {
   PRD_GRP8_EXP    = 8148,
   PRD_GRP9_EXP    = 8149,
   PRD_NUM_EXP     = 8150,
+  PRD_STRING      = 8151,
+  PRD_STR_EXP     = 8152,
+  PRD_STMT        = 8153,
+  PRD_AAA         = 8154,
+  PRD_AAD         = 8155,
+  PRD_AAM         = 8156,
+  PRD_AAS         = 8157,
+  PRD_REG16       = 8158,
+  PRD_ADC         = 8159,
+  PRD_REG8        = 8160,
+  PRD_REGSEG      = 8161,
+  PRD_ALUOP       = 8162,
+  PRD_JMPOP       = 8163,
+  PRD_JR          = 8164,
 
-  PRD_LAST        = 16255,
+  PRD_LAST        = 16128,
+
+  XT_IGNORE       = 0001,
+  XT_DROP         = 0002,
+  XT_EXECUTE      = 0003,
+
 } ;
 
 #define PRODUCTION_OFFSET (8128)
-
-/*
- * Token List Node
- */
-
-typedef struct tlist_node_t tlist_node_t ;
-
-struct tlist_node_t {
-  unsigned int token_id ;
-  char *token ;
-  tlist_node_t *next ;
-} ;
 
 /*
  * Value Type
@@ -957,6 +977,26 @@ struct ptree_node_t {
 } ;
 
 /*
+ * Token List Node
+ */
+
+typedef struct tlist_node_t tlist_node_t ;
+
+struct tlist_node_t {
+  unsigned int token_id ;
+  char *token ;
+  unsigned int value_type ;
+  value_t value ;
+  tlist_node_t *next ;
+} ;
+
+/*
+ * Helper Macros.
+ */
+
+#define CPYVALUE(TGT, SRC) memcpy( &TGT, &SRC, sizeof( value_t ) )
+
+/*
  * Prototypes.
  */
 
@@ -969,6 +1009,8 @@ void error( int, int ) ;
 ptree_node_t * match( int, tlist_node_t **, int ) ;
 void delete_ptree( ptree_node_t *, int, int, int ) ;
 int execute ( ptree_node_t * ) ;
+unsigned int pid( const char * ) ;
+unsigned char to_byte( char ) ;
 
 #endif /* asm286_h */
 

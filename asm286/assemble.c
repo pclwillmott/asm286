@@ -45,7 +45,7 @@ int assemble( const char *statement, int lineno ) {
   
   tp = tlist ;
   
-  if ( ( ( pt = match ( PRD_NUM_EXP, &tp, 0 ) ) == NULL ) || ( tp != NULL ) ) {
+  if ( ( ( pt = match ( PRD_STMT, &tp, 0 ) ) == NULL ) || ( tp != NULL ) ) {
     error ( ERR_SYNTAX_ERROR, lineno ) ;
     goto fail ;
   }
