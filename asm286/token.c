@@ -27,6 +27,9 @@
 #include "asm286.h"
 
 const char *pattern[ NUM_PATTERN ] = {
+  // PUT 80386/7 opcodes here <- change start index for option arg
+  // PUT 80286/7 opcodes here
+  // PUT 8086/7 opcodes here
   "_",
   "-",
   ";",

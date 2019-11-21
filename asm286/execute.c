@@ -93,20 +93,12 @@ int execute( ptree_node_t *ptree )
  */
   
   switch ( ptree->production_id ) {
-    case PRD_AAA:
-      printf("AAA\n");
-      break;
-    case PRD_AAD:
-      printf("AAD\n");
-      break;
-    case PRD_AAM:
-      printf("AAM\n");
-      break;
-    case PRD_AAS:
-      printf("AAS\n");
-      break;
-    case PRD_ADC:
-      printf("ADC %i\n", ptree->args[1]->production_id);
+    case PRD_SIMPLE:
+      {
+        const unsigned char opcode[] = {
+          0x00,
+        } ;
+      }
       break;
   }
   
@@ -116,6 +108,17 @@ int execute( ptree_node_t *ptree )
  * Finished
  */
   
+}
+
+void dep(unsigned char db)
+{
+  
+}
+
+void depw(unsigned short dw)
+{
+  dep( dw & 0xff ) ;
+  dep( dw >> 8 ) ;
 }
 
 /*

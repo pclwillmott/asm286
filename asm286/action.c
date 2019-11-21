@@ -131,88 +131,159 @@ char *prdlst[] = {
   SPD_NUM_EXP     PT_EXECUTE      SPD_NUM_EXP     SPD_GRP10_OP    SPD_GRP9_EXP,
   SPD_NUM_EXP     PT_DROP         SPD_GRP9_EXP,
 
+  SPD_db          SPD_NUM_EXP,
+  
+  SPD_dw          SPD_NUM_EXP,
+  
 /*
+ * ----------
  * Statements
+ * ----------
  */
   
-  SPD_AAA         PT_EXECUTE      STK_AAA,
-  SPD_AAD         PT_EXECUTE      STK_AAD,
-  SPD_AAM         PT_EXECUTE      STK_AAM,
-  SPD_AAS         PT_EXECUTE      STK_AAS,
+/*
+ * Simple operands.
+ */
   
-  SPD_ADC         PT_EXECUTE      STK_ADC         SPD_REG16       STK_COMMA       SPD_REG16,
+  SPD_SIMPLE      PT_EXECUTE      STK_AAA,
+  SPD_SIMPLE      PT_EXECUTE      STK_AAD,
+  SPD_SIMPLE      PT_EXECUTE      STK_AAM,
+  SPD_SIMPLE      PT_EXECUTE      STK_AAS,
+  SPD_SIMPLE      PT_EXECUTE      STK_CBW,
+  SPD_SIMPLE      PT_EXECUTE      STK_CLC,
+  SPD_SIMPLE      PT_EXECUTE      STK_CLD,
+  SPD_SIMPLE      PT_EXECUTE      STK_CLI,
+  SPD_SIMPLE      PT_EXECUTE      STK_CLTS,
+  SPD_SIMPLE      PT_EXECUTE      STK_CMC,
+  SPD_SIMPLE      PT_EXECUTE      STK_CWD,
+  SPD_SIMPLE      PT_EXECUTE      STK_DAA,
+  SPD_SIMPLE      PT_EXECUTE      STK_DAS,
+  SPD_SIMPLE      PT_EXECUTE      STK_HLT,
+  SPD_SIMPLE      PT_EXECUTE      STK_IRET,
+  SPD_SIMPLE      PT_EXECUTE      STK_LAHF,
+  SPD_SIMPLE      PT_EXECUTE      STK_LEAVE,
+  SPD_SIMPLE      PT_EXECUTE      STK_NOP,
+  SPD_SIMPLE      PT_EXECUTE      STK_POPA,
+  SPD_SIMPLE      PT_EXECUTE      STK_POPF,
+  SPD_SIMPLE      PT_EXECUTE      STK_PUSHA,
+  SPD_SIMPLE      PT_EXECUTE      STK_PUSHF,
+  SPD_SIMPLE      PT_EXECUTE      STK_SAHF,
+  SPD_SIMPLE      PT_EXECUTE      STK_STC,
+  SPD_SIMPLE      PT_EXECUTE      STK_STD,
+  SPD_SIMPLE      PT_EXECUTE      STK_STI,
+  SPD_SIMPLE      PT_EXECUTE      STK_WAIT,
+
+  SPD_STMT        PT_IGNORE       SPD_SIMPLE,
   
-  SPD_STMT        PT_DROP         SPD_AAA,
-  SPD_STMT        PT_DROP         SPD_AAD,
-  SPD_STMT        PT_DROP         SPD_AAM,
-  SPD_STMT        PT_DROP         SPD_AAS,
-  SPD_STMT        PT_DROP         SPD_ADC,
+  SPD_rw          PT_IGNORE       STK_AX,
+  SPD_rw          PT_IGNORE       STK_CX,
+  SPD_rw          PT_IGNORE       STK_DX,
+  SPD_rw          PT_IGNORE       STK_BX,
+  SPD_rw          PT_IGNORE       STK_SP,
+  SPD_rw          PT_IGNORE       STK_BP,
+  SPD_rw          PT_IGNORE       STK_SI,
+  SPD_rw          PT_IGNORE       STK_DI,
 
-  SPD_REG16       PT_IGNORE       STK_AX,
-  SPD_REG16       PT_IGNORE       STK_CX,
-  SPD_REG16       PT_IGNORE       STK_DX,
-  SPD_REG16       PT_IGNORE       STK_BX,
-  SPD_REG16       PT_IGNORE       STK_SP,
-  SPD_REG16       PT_IGNORE       STK_BP,
-  SPD_REG16       PT_IGNORE       STK_SI,
-  SPD_REG16       PT_IGNORE       STK_DI,
+  SPD_rb          PT_IGNORE       STK_AL,
+  SPD_rb          PT_IGNORE       STK_CL,
+  SPD_rb          PT_IGNORE       STK_DL,
+  SPD_rb          PT_IGNORE       STK_BL,
+  SPD_rb          PT_IGNORE       STK_AH,
+  SPD_rb          PT_IGNORE       STK_CH,
+  SPD_rb          PT_IGNORE       STK_DH,
+  SPD_rb          PT_IGNORE       STK_BH,
+  
+  SPD_IND_BX      PT_IGNORE       STK_OBRACE      STK_BX          STK_CBRACE,
+  SPD_IND_BP      PT_IGNORE       STK_OBRACE      STK_BP          STK_CBRACE,
+  SPD_IND_SI      PT_IGNORE       STK_OBRACE      STK_SI          STK_CBRACE,
+  SPD_IND_DI      PT_IGNORE       STK_OBRACE      STK_DI          STK_CBRACE,
+  
+  SPD_rm          PT_IGNORE       SPD_IND_BX      STK_PLUS        SPD_IND_SI      STK_PLUS    SPD_DISP
+  SPD_rm          PT_IGNORE       SPD_IND_BX      STK_PLUS        SPD_IND_DI      STK_PLUS    SPD_DISP
+  SPD_rm          PT_IGNORE       SPD_IND_BP      STK_PLUS        SPD_IND_SI      STK_PLUS    SPD_DISP
+  SPD_rm          PT_IGNORE       SPD_IND_BP      STK_PLUS        SPD_IND_DI      STK_PLUS    SPD_DISP
+  SPD_rm          PT_IGNORE       SPD_IND_SI      STK_PLUS        SPD_DISP
+  SPD_rm          PT_IGNORE       SPD_IND_DI      STK_PLUS        SPD_DISP
+  SPD_rm          PT_IGNORE       SPD_IND_BP      STK_PLUS        SPD_DISP
+  SPD_rm          PT_IGNORE       SPD_IND_BX      STK_PLUS        SPD_DISP
+  
+  SPD_eb          PT_IGNORE       SPD_rb,
+  SPD_eb          PT_IGNORE       SPD_rm,
 
-  SPD_REG8        PT_IGNORE       STK_AL,
-  SPD_REG8        PT_IGNORE       STK_CL,
-  SPD_REG8        PT_IGNORE       STK_DL,
-  SPD_REG8        PT_IGNORE       STK_BL,
-  SPD_REG8        PT_IGNORE       STK_AH,
-  SPD_REG8        PT_IGNORE       STK_CH,
-  SPD_REG8        PT_IGNORE       STK_DH,
-  SPD_REG8        PT_IGNORE       STK_BH,
+  SPD_ew          PT_IGNORE       SPD_rw,
+  SPD_ew          PT_IGNORE       SPD_rm,
+  
+  SPD_RS          PT_IGNORE       STK_ES,
+  SPD_RS          PT_IGNORE       STK_CS,
+  SPD_RS          PT_IGNORE       STK_SS,
+  SPD_RS          PT_IGNORE       STK_DS,
 
-  SPD_REGSEG      PT_IGNORE       STK_ES,
-  SPD_REGSEG      PT_IGNORE       STK_CS,
-  SPD_REGSEG      PT_IGNORE       STK_SS,
-  SPD_REGSEG      PT_IGNORE       STK_DS,
-
-  SPD_ALUOP       PT_IGNORE       STK_ADC,
   SPD_ALUOP       PT_IGNORE       STK_ADD,
-  SPD_ALUOP       PT_IGNORE       STK_AND,
-  SPD_ALUOP       PT_IGNORE       STK_CMP,
   SPD_ALUOP       PT_IGNORE       STK_OR,
+  SPD_ALUOP       PT_IGNORE       STK_ADC,
   SPD_ALUOP       PT_IGNORE       STK_SBB,
+  SPD_ALUOP       PT_IGNORE       STK_AND,
   SPD_ALUOP       PT_IGNORE       STK_SUB,
   SPD_ALUOP       PT_IGNORE       STK_XOR,
+  SPD_ALUOP       PT_IGNORE       STK_CMP,
+  
+  SPD_ALU         PT_IGNORE       SPD_ALUOP       STK_AL          STK_COMMA       SPD_db,
+  SPD_ALU         PT_IGNORE       SPD_ALUOP       STK_AX          STK_COMMA       SPD_dw,
+  SPD_ALU         PT_IGNORE       SPD_ALUOP       SPD_eb          STK_COMMA       SPD_rb,
+  SPD_ALU         PT_IGNORE       SPD_ALUOP       SPD_ew          STK_COMMA       SPD_rw,
+  SPD_ALU         PT_IGNORE       SPD_ALUOP       SPD_rb          STK_COMMA       SPD_eb,
+  SPD_ALU         PT_IGNORE       SPD_ALUOP       SPD_rw          STK_COMMA       SPD_ew,
 
-  SPD_JMPOP       PT_IGNORE       STK_JA,
-  SPD_JMPOP       PT_IGNORE       STK_JNBE,
-  SPD_JMPOP       PT_IGNORE       STK_JAE,
-  SPD_JMPOP       PT_IGNORE       STK_JNB,
-  SPD_JMPOP       PT_IGNORE       STK_JB,
-  SPD_JMPOP       PT_IGNORE       STK_JNAE,
-  SPD_JMPOP       PT_IGNORE       STK_JBE,
-  SPD_JMPOP       PT_IGNORE       STK_JNA,
-  SPD_JMPOP       PT_IGNORE       STK_JC,
-  SPD_JMPOP       PT_IGNORE       STK_JCXZ,
-  SPD_JMPOP       PT_IGNORE       STK_JE,
-  SPD_JMPOP       PT_IGNORE       STK_JZ,
-  SPD_JMPOP       PT_IGNORE       STK_JG,
-  SPD_JMPOP       PT_IGNORE       STK_JNLE,
-  SPD_JMPOP       PT_IGNORE       STK_JGE,
-  SPD_JMPOP       PT_IGNORE       STK_JNL,
-  SPD_JMPOP       PT_IGNORE       STK_JL,
-  SPD_JMPOP       PT_IGNORE       STK_JNGE,
-  SPD_JMPOP       PT_IGNORE       STK_JLE,
-  SPD_JMPOP       PT_IGNORE       STK_JNG,
-  SPD_JMPOP       PT_IGNORE       STK_JNC,
-  SPD_JMPOP       PT_IGNORE       STK_JNE,
-  SPD_JMPOP       PT_IGNORE       STK_JNZ,
-  SPD_JMPOP       PT_IGNORE       STK_JNO,
-  SPD_JMPOP       PT_IGNORE       STK_JNS,
-  SPD_JMPOP       PT_IGNORE       STK_JNP,
-  SPD_JMPOP       PT_IGNORE       STK_JNO,
-  SPD_JMPOP       PT_IGNORE       STK_JO,
-  SPD_JMPOP       PT_IGNORE       STK_JP,
-  SPD_JMPOP       PT_IGNORE       STK_JPE,
-  SPD_JMPOP       PT_IGNORE       STK_JS,
+  SPD_JMPOP       PT_IGNORE       STK_JO,   // 0x70
+  SPD_JMPOP       PT_IGNORE       STK_JNO,  // 0x71
+  SPD_JMPOP       PT_IGNORE       STK_JB,   // 0x72
+  SPD_JMPOP       PT_IGNORE       STK_JNAE, // 0x72
+  SPD_JMPOP       PT_IGNORE       STK_JC,   // 0x72
+  SPD_JMPOP       PT_IGNORE       STK_JAE,  // 0x73
+  SPD_JMPOP       PT_IGNORE       STK_JNB,  // 0x73
+  SPD_JMPOP       PT_IGNORE       STK_JNC,  // 0x73
+  SPD_JMPOP       PT_IGNORE       STK_JE,   // 0x74
+  SPD_JMPOP       PT_IGNORE       STK_JZ,   // 0x74
+  SPD_JMPOP       PT_IGNORE       STK_JNE,  // 0x75
+  SPD_JMPOP       PT_IGNORE       STK_JNZ,  // 0x75
+  SPD_JMPOP       PT_IGNORE       STK_JBE,  // 0x76
+  SPD_JMPOP       PT_IGNORE       STK_JNA,  // 0x76
+  SPD_JMPOP       PT_IGNORE       STK_JA,   // 0x77
+  SPD_JMPOP       PT_IGNORE       STK_JNBE, // 0x77
+  SPD_JMPOP       PT_IGNORE       STK_JS,   // 0x78
+  SPD_JMPOP       PT_IGNORE       STK_JNS,  // 0x79
+  SPD_JMPOP       PT_IGNORE       STK_JP,   // 0x7a
+  SPD_JMPOP       PT_IGNORE       STK_JPE,  // 0x7a
+  SPD_JMPOP       PT_IGNORE       STK_JNP,  // 0x7b
+  SPD_JMPOP       PT_IGNORE       STK_JPO,  // 0x7b
+  SPD_JMPOP       PT_IGNORE       STK_JL,   // 0x7c
+  SPD_JMPOP       PT_IGNORE       STK_JNGE, // 0x7c
+  SPD_JMPOP       PT_IGNORE       STK_JGE,  // 0x7d
+  SPD_JMPOP       PT_IGNORE       STK_JNL,  // 0x7d
+  SPD_JMPOP       PT_IGNORE       STK_JLE,  // 0x7e
+  SPD_JMPOP       PT_IGNORE       STK_JNG,  // 0x7e
+  SPD_JMPOP       PT_IGNORE       STK_JG,   // 0x7f
+  SPD_JMPOP       PT_IGNORE       STK_JNLE, // 0x7f
+  SPD_JMPOP       PT_IGNORE       STK_JCXZ, // 0xe3
 
-  SPD_JR          PT_EXECUTE      SPD_JMPOP      SPD_NUM_EXP,
+  SPD_JR          PT_EXECUTE      SPD_JMPOP       SPD_NUM_EXP,
+  
+  SPD_VARIABLE    PT_EXECUTE      STK_IDENTIFIER  SPD_VAR_TYPE    SPD_INITLIST,
+  SPD_VARIABLE    PT_EXECUTE      SPD_VAR_TYPE    SPD_INITLIST,
+
+  PRD_VAR_TYPE    PT_IGNORE       STK_DB,
+  PRD_VAR_TYPE    PT_IGNORE       STK_DW,
+  PRD_VAR_TYPE    PT_IGNORE       STK_DD,
+  PRD_VAR_TYPE    PT_IGNORE       STK_DP,
+  PRD_VAR_TYPE    PT_IGNORE       STK_DQ,
+  PRD_VAR_TYPE    PT_IGNORE       STK_DT,
+
+  SPD_INITLIST    PT_DROP         SPD_INITLIST    STK_COMMA       SPD_INITITEM,
+  SPD_INITLIST    PT_DROP         SPD_INITITEM,
+  
+  SPD_INITITEM    PT_DROP         SPD_NUM_EXP,
+  SPD_INITITEM    PT_DROP         SPD_STR_EXP,
+  SPD_INITITEM    PT_DROP         STK_QMARK,
   
   SPD_LAST,
   

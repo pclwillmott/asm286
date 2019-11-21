@@ -506,6 +506,7 @@ enum {
 #define SPD_ALUOP      "\101\043"
 #define SPD_JMPOP      "\101\044"
 #define SPD_JR         "\101\045"
+#define SPD_DB         "\101\046"
 
 #define SPD_LAST       "\177\177"
 
@@ -939,6 +940,7 @@ enum {
   PRD_ALUOP       = 8162,
   PRD_JMPOP       = 8163,
   PRD_JR          = 8164,
+  PRD_DB          = 8165,
 
   PRD_LAST        = 16128,
 

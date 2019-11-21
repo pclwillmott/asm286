@@ -65,3 +65,94 @@ Hexadecimal & 40490FR & 0C0000R & A sequence of digits in the range 0..9 and/or 
 Data values can be specified in an assembler program in a variety of formats, as shown in Table 4-2. The way the processor or floating-point coprocessor represents such data internally is called its storage format.
 
 See also: Processor storage formats, Appendix A floating-point coprocessor storage formats, Chapter 7
+
+\subsection*{Initializing Variables}
+Assembler variables can be initialized by:
+\begin{itemize}
+\item Variable or segment names that represent logical addresses
+\item Constants (see Table 4-2)
+\item Constant expressions
+\end{itemize}
+
+A series of operands and operators is called an expression. An expression that yields a constant value is called a constant expression.
+
+See also: Assembler expressions, Chapter 5
+
+The assembler evaluates constant expressions in programs.
+
+\subsection*{How the Assembler Evaluates Constant Expressions}
+The assembler can perform arithmetic operations on 8-, and 16-bit numbers. The assembler interprets these numbers as integer or ordinal data types.
+
+An integer value specified with a sign is a constant expression. The assembler evaluates integer or ordinal operands and expressions using 32-bit two's complement integer arithmetic.
+
+By using this arithmetic, the assembler can evaluate expressions whose operands' sizes might extend beyond the storage type of the result. As long as the expression's value fits in the storage type of the destination, the assembler does not generate an error when intermediate results are too large. The assembler does generate an error if the final result is too large to fit in the destination.
+
+\subsection*{Variables}
+A variable defines a logical address for the storage of value(s). An assembler variable is not required to have a name as long as its associated value(s) are accessible. But, every variable has a type; records and structures have a compound type.
+
+Assembler variables must be defined with a storage allocation statement. A storage allocation specifies a type (storage size in bytes) and defines a logical address for a variable that gives access to the variable's value(s). A storage allocation statement may also specify initial value(s) for a variable.
+
+Use the DB, DW, DD, DP, DQ, or DT directive to allocate storage for simple-type variables of the following sizes:
+
+\begin{tabular}{l l}
+DB & 8-bits (byte)\\
+DW & 16-bits (word)\\
+DD & 32-bits (dword)\\
+DP & 48-bits (pword)\\
+DQ & 64-bits (qword)\\
+DT & 80-bits (10 bytes)\\
+\end{tabular}
+
+Use a DUP clause within any assembler data allocation statement to allocate and optionally initialize a sequence of storage units of a single variable type. DUP defines an array-like variable whose element values are accessed by an offset from the variable name or from the initially specified storage unit.
+
+\subsection*{Syntax}
+
+\begin{tabular}{p{2cm} p{12.5cm}}
+& \begin{verbatim}[name] dtyp init [,...]\end{verbatim}\\
+Where: & \\
+& \\
+name & is the name of the variable. Within the module, it must be a unique identifier.\\
+& \\
+dtyp & is DB, DW, DD, DP, DQ, or DT.\\
+& \\
+init & is the initial value to be stored in the allocated space. init can be a numeric constant (expressed in binary, hexadecimal, decimal, or octal), an ASCII string, or the question mark character (?), which specifies storage with undefined value(s). dtyp restricts the values that may be specified for init.\\
+\end{tabular}
+
+\subsection*{Defining and Initializing Variables of a Simple Type}
+All assembler variable definitions use the DB, DW, DD, DQ, DP, or DT directives. The template components of compound variable types are simple types defined with these directives.
+
+\subsection*{DB Directive}
+\subsection*{Syntax}
+\begin{tabular}{p{2cm} p{12.5cm}}
+& \begin{verbatim} [name] DB init [,...] \end{verbatim} \\
+Where: & \\
+& \\
+name & is the name of the variable. Within the module, it must be a unique identifier. \\
+& \\
+init & is a question mark (?), a constant expression, or a string of up to 255 ASCII characters enclosed in single quotes ('). \\
+\end{tabular}
+\subsection*{Discussion}
+DB reserves storage for and optionally initializes a variable of type BYTE. ? reserves storage with an undefined value.
+
+Numeric initial values can be specified in binary, octal, decimal, or hexadecimal (see Table 4-2). The specified constant or constant expression must evaluate to a number in the range 0..255 (processor ordinal) or -128..127 (processor integer).
+
+The components of character string values must be ASCII characters and the whole string must be enclosed in single quotes. To include a single quote character within such a string, specify two single quotes ('').
+
+Each ASCII character requires a byte of storage. In BYTE strings, successive characters occupy successive bytes. The name of the variable represents the logical address of the first character in such a string.
+
+\subsection*{Examples}
+\begin{enumerate}
+\item This example initializes the variable ABYTE to the constant value 100 (decimal). It reserves storage for another byte with an undefined value.
+\begin{verbatim}
+ ABYTE DB 100
+ DB ?
+\end{verbatim}
+\item This example initializes three successive bytes to the values 4, 10, and 200, respectively.
+\begin{verbatim}
+BYTES3 DB 4,10,200
+\end{verbatim}
+\item This example initializes seven bytes containing the ASCII values of the characters A, B, C, ' , D, E, and F, respectively.
+\begin{verbatim}
+STRGWQUOT DB 'ABC''DEF'
+\end{verbatim}
+\end{enumerate}
