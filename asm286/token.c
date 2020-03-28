@@ -15,7 +15,7 @@
  *
  *    2019 November 9 Paul Willmott Baseline.
  *
- *  Copyright (c) 2019 Paul C. L. Willmott. See license at end.
+ *  Copyright (c) 2019-2020 Paul C. L. Willmott. See license at end.
  *
  *------------------------------------------------------------------------------
  */
@@ -27,9 +27,6 @@
 #include "asm286.h"
 
 const char *pattern[ NUM_PATTERN ] = {
-  // PUT 80386/7 opcodes here <- change start index for option arg
-  // PUT 80286/7 opcodes here
-  // PUT 8086/7 opcodes here
   "_",
   "-",
   ";",
@@ -55,34 +52,34 @@ const char *pattern[ NUM_PATTERN ] = {
   "AAD",
   "AAM",
   "AAS",
-  "ABS",
+ // "ABS",
   "ADC",
   "ADD",
   "AH",
   "AL",
-  "ALIGN",
+//  "ALIGN", // ASM386
   "AND",
   "ARPL",
-  "ASSUME",
+//  "ASSUME",
   "AX",
   "BH",
-  "BIT",
-  "BITOFFSET",
+//  "BIT", // ASM386
+//  "BITOFFSET", // ASM386
   "BL",
   "BOUND",
   "BP",
-  "BSF",
-  "BSR",
-  "BSWAP",
-  "BT",
-  "BTC",
-  "BTR",
-  "BTS",
+//  "BSF",   /* 386 */
+//  "BSR",   /* 386 */
+//  "BSWAP",
+//  "BT",    /* 386 */
+//  "BTC",   /* 386 */
+//  "BTR",   /* 386 */
+//  "BTS",   /* 386 */
   "BX",
-  "BYTE",
+//  "BYTE",
   "CALL",
   "CBW",
-  "CDQ",
+//  "CDQ",   /* 386 */
   "CH",
   "CL",
   "CLC",
@@ -92,65 +89,68 @@ const char *pattern[ NUM_PATTERN ] = {
   "CMC",
   "CMP",
   "CMPS",
-  "CMPXCHG",
-  "COMM",
-  "COMMON",
-  "CR0",
-  "CR1",
-  "CR2",
+  "CMPSB",
+  "CMPSW",
+//  "CMPSD",  /* 386 */
+//  "CMPXCHG",
+//  "COMM", // MAYBE ASM386
+//  "COMMON",
+//  "CR0",   /* 386 */
+//  "CR1",   /* 386 */
+//  "CR2",   /* 386 */
   "CS",
   "CWD",
-  "CWDE",
+//  "CWDE",  /* 386 */
   "CX",
   "DAA",
   "DAS",
   "DB",
-  "DBIT",
+//  "DBIT", // ASM386
   "DD",
   "DEC",
   "DH",
   "DI",
   "DIV",
   "DL",
-  "DP",
-  "DQ",
-  "DR0",
-  "DR1",
-  "DR2",
-  "DR3",
-  "DR6",
-  "DR7",
+//  "DP", // ASM386
+//"DQ",
+//  "DR0",  /* 386 */
+//  "DR1",  /* 386 */
+//  "DR2",  /* 386 */
+//  "DR3",  /* 386 */
+//  "DR6",  /* 386 */
+//  "DR7",  /* 386 */
   "DS",
-  "DT",
+//  "DT",
   "DUP",
   "DW",
-  "DWORD",
+//  "DWORD",
   "DX",
-  "EAX",
-  "EBP",
-  "EBX",
-  "ECX",
-  "EDI",
-  "EDX",
+//  "EAX", /* 386 */
+//  "EBP", /* 386 */
+//  "EBX", /* 386 */
+//  "ECX", /* 386 */
+//  "EDI", /* 386 */
+//  "EDX", /* 386 */
   "END",
-  "ENDP",
-  "ENDS",
+//  "ENDP",
+//  "ENDS",
   "ENTER",
-  "EO",
+//  "EO",
   "EQ",
   "EQU",
-  "ER",
+//  "ER",
   "ES",
-  "ESC",
-  "ESI",
-  "ESP",
-  "EVEN",
-  "EXTRN",
+//  "ESC",
+//  "ESI",
+//  "ESP",
+//  "EVEN", // ASM386
+//  "EXTRN",
   "F2XM1",
   "FABS",
   "FADD",
   "FADDP",
-  "FAR",
+//  "FAR",
   "FBLD",
   "FBSTP",
   "FCHS",
@@ -158,14 +158,14 @@ const char *pattern[ NUM_PATTERN ] = {
   "FCOM",
   "FCOMP",
   "FCOMPP",
-  "FCOS",
+//  "FCOS", // 387
   "FDECSTP",
-  "FDISI",
+//  "FDISI",
   "FDIV",
   "FDIVP",
   "FDIVR",
   "FDIVRP",
-  "FENI",
+//  "FENI",
   "FFREE",
   "FIADD",
   "FICOM",
@@ -192,10 +192,10 @@ const char *pattern[ NUM_PATTERN ] = {
   "FLDZ",
   "FMUL",
   "FMULP",
-  "FNCLEX",
-  "FNDISI",
-  "FNENI",
-  "FNINIT",
+//  "FNCLEX",
+//  "FNDISI",
+//  "FNENI",
+ // "FNINIT",
   "FNOP",
   "FNSAVE",
   "FNSTCW",
@@ -203,16 +203,16 @@ const char *pattern[ NUM_PATTERN ] = {
   "FNSTSW",
   "FPATAN",
   "FPREM",
-  "FPREM1"
+//  "FPREM1" // 387
   "FPTAN",
   "FRNDINT",
   "FRSTOR",
-  "FS",
+//  "FS",      /* 386 */
   "FSAVE",
   "FSCALE",
   "FSETPM",
-  "FSIN",
-  "FSINCOS",
+//  "FSIN", // 387
+//  "FSINCOS", // 387
   "FSQRT",
   "FST",
   "FSTCW",
@@ -224,9 +224,9 @@ const char *pattern[ NUM_PATTERN ] = {
   "FSUBR",
   "FSUBRP",
   "FTST",
-  "FUCOM",
-  "FUCOMP",
-  "FUCOMPP",
+//  "FUCOM", // 387
+//  "FUCOMP", // 387
+//  "FUCOMPP", // 387
   "FWAIT",
   "FXAM",
   "FXCH",
@@ -234,21 +234,25 @@ const char *pattern[ NUM_PATTERN ] = {
   "FYL2X",
   "FYL2XP1",
   "GE",
-  "GS",
+//  "GS",      /* 386 */
   "GT",
   "HIGH",
-  "HIGHW",
+//  "HIGHW", // ASM386
   "HLT",
   "IDIV",
   "IMUL",
   "IN",
   "INC",
   "INS",
+  "INSB",
+  "INSW",
+//  "INSD",  /* 386 */
   "INT",
   "INTO",
-  "INVD",
-  "INVLPG",
+//  "INVD",
+ // "INVLPG",
   "IRET",
+//  "IRETD", /* 386 */
   "JA",
   "JAE",
   "JB",
@@ -256,7 +260,7 @@ const char *pattern[ NUM_PATTERN ] = {
   "JC",
   "JCXZ",
   "JE",
-  "JECXZ",
+//  "JECXZ", /* 386 */
   "JG",
   "JGE",
   "JL",
@@ -291,123 +295,177 @@ const char *pattern[ NUM_PATTERN ] = {
   "LEAVE",
   "LENGTH",
   "LES",
-  "LFS",
+//  "LFS",  /* 386 */
   "LGDT",
-  "LGS",
+//  "LGDTD",  /* 386 */
+//  "LGDTW", /* 386 */
+//  "LGS",  /* 386 */
   "LIDT",
+//  "LIDTD",  /* 386 */
+//  "LIDTW",  /* 386 */
   "LLDT",
   "LMSW",
   "LOCK",
   "LODS",
+  "LODSB",
+  "LODSW",
+//  "LODSD", /* 386 */
   "LOOP",
-  "LOOPD",
+//  "LOOPD",
   "LOOPE",
-  "LOOPED",
+//  "LOOPED",
   "LOOPNE",
-  "LOOPNED",
+  "LOOPNZ",
+  "LOOPZ",
+//  "LOOPNED",
   "LOW",
-  "LOWW",
+//  "LOWW", // ASM386
   "LSL",
-  "LSS",
+//  "LSS", /* 386 */
   "LT",
   "LTR",
-  "MASK",
-  "MOD",
+//  "MASK",
+//  "MOD",
   "MOV",
   "MOVS",
-  "MOVSX",
-  "MOVZX",
+  "MOVSB",
+  "MOVSW",
+//  "MOVSD", /* 386 */
+//  "MOVSX", /* 386 */
+//  "MOVZX",/* 386 */
   "MUL",
-  "NAME",
+//  "NAME",
   "NE",
-  "NEAR",
+//  "NEAR",
   "NEG",
   "NOP",
   "NOT",
-  "NOTHING",
-  "OFFSET",
+//  "NOTHING",
+//  "OFFSET",
   "OR",
   "ORG",
   "OUT",
   "OUTS",
+  "OUTSB",
+  "OUTSW",
+//  "OUTSD", /* 386 */
   "POP",
   "POPA",
-  "POPAD",
+//  "POPAD", /* 386 */
   "POPF",
-  "POPFD",
-  "PROC",
-  "PROCLEN",
-  "PTR",
-  "PUBLIC",
-  "PURGE",
+//  "POPFD", /* 386 */
+//  "PROC",
+//  "PROCLEN",
+//  "PTR",
+//  "PUBLIC",
+//  "PURGE",
   "PUSH",
   "PUSHA",
-  "PUSHAD",
+//  "PUSHAD", /* 386 */
   "PUSHF",
-  "PUSHFD",
-  "PWORD",
-  "QWORD",
+//  "PUSHFD", /* 386 */
+//  "PWORD", // ASM386
+//  "QWORD",
   "RCL",
   "RCR",
-  "RECORD",
+//  "RECORD",
+  "REP",
   "REPE",
   "REPNE",
   "RET",
-  "RO",
+//  "RO",
   "ROL",
   "ROR",
-  "RW",
+//  "RW",
   "SAHF",
   "SAL",
   "SAR",
+  "SBB",
   "SCAS",
-  "SEG",
-  "SEGMENT",
-  "SET",
+  "SCASB",
+  "SCASW",
+//  "SCASD", /* 386 */
+//  "SEG",
+//  "SEGMENT",
+//  "SET", /* 386 */
+//  "SETAE", /* 386 */
+//  "SETB", /* 386 */
+//  "SETC", /* 386 */
+//  "SETE", /* 386 */
+//  "SETG", /* 386 */
+//  "SETGE", /* 386 */
+//  "SETL", /* 386 */
+//  "SETLE", /* 386 */
+//  "SETNA", /* 386 */
+//  "SETNAE", /* 386 */
+//  "SETNB", /* 386 */
+//  "SETNBE", /* 386 */
+//  "SETNC", /* 386 */
+//  "SETNE", /* 386 */
+//  "SETNG", /* 386 */
+//  "SETNGE", /* 386 */
+//  "SETNL", /* 386 */
+//  "SETNLE", /* 386 */
+//  "SETNO", /* 386 */
+//  "SETNP", /* 386 */
+//  "SETNS", /* 386 */
+//  "SETNZ", /* 386 */
+//  "SETO", /* 386 */
+//  "SETP", /* 386 */
+//  "SETPO", /* 386 */
+//  "SETPE", /* 386 */
+//  "SETS", /* 386 */
+//  "SETZ", /* 386 */
   "SGDT",
+//  "SGDTD", /* 386 */
+//  "SGDTW", /* 386 */
   "SHL",
-  "SHLD",
-  "SHORT",
+//  "SHLD", /* 386 */
+//  "SHORT",
   "SHR",
-  "SHRD",
+//  "SHRD", /* 386 */
   "SI",
   "SIDT",
-  "SIZE",
+//  "SIDTD", /* 386 */
+//  "STDTW", /* 386 */
+//  "SIZE",
   "SLDT",
   "SMSW",
   "SP",
   "SS",
-  "STACKSEG",
-  "STACKSTART",
+//  "STACKSEG",
+//  "STACKSTART",
   "STC",
   "STD",
   "STI",
   "STOS",
+  "STOSB",
+  "STOSW",
+//  "STOSD", /* 386 */
   "STR",
-  "STRUC",
+//  "STRUC",
   "SUB",
-  "TBYTE",
+//  "TBYTE",
   "TEST",
-  "THIS",
+//  "THIS",
   "TR3",
   "TR4",
   "TR5",
-  "TR6",
-  "TR7",
-  "TYPE",
-  "USE16",
-  "USE32",
+//  "TR6",  /* 386 */
+//  "TR7",  /* 386 */
+//  "TYPE",
+//  "USE16", // ASM386
+//  "USE32", // ASM386
   "VERR",
   "VERW",
   "WAIT",
-  "WBINVD",
-  "WIDTH",
-  "WORD",
-  "XADD",
+//  "WBINVD",
+//  "WIDTH",
+//  "WORD",
+//  "XADD",
   "XCHG",
   "XLAT",
   "XOR",
-  "SBB",
   "[0-1]+B",
   "[0-7]+O|Q",
   "(-|+)?[0-9]+D?",
@@ -847,7 +905,7 @@ fail:
  *------------------------------------------------------------------------------
  *  ASM286
  *
- *  Copyright (c) 2019 Paul C. L. Willmott
+ *  Copyright (c) 2019-2020 Paul C. L. Willmott
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to
