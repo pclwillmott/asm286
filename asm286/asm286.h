@@ -41,6 +41,15 @@ enum {
 #define NUM_ERR ( 6 )
 
 /*
+ * Token types.
+ */
+
+#define KEYWORD          "\001"
+#define RESERVED         "\002"
+#define KEYWORD_RESERVED "\003"
+#define SPECIAL          "\004"
+
+/*
  * Token string constants.
  */
 
