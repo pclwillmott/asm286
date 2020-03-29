@@ -72,7 +72,7 @@ See also: Constants, Chapter 4 keywords and reserved words, Appendix C
 \subsubsection*{Logical Spaces}
 Any unbroken sequence of spaces can be used wherever a single space character is valid. Horizontal tabs are also used as token separators. The assembler interprets horizontal tabs as a single logical space. However, tabs are reproduced as multiple space characters in the print (listing) file to maintain the appearance of the source file.
 
-See also: Print file, ASM386 Macro Assembler Operating Instructions
+See also: Print file, ASM286 Macro Assembler Operating Instructions
 
 Logical spaces may not be specified within tokens such as identifiers, constants, keywords, or reserved words. The assembler treats any invalid character(s) in the context of a source file as a separator.
 
@@ -86,8 +86,11 @@ Delimiters are described in context throughout this manual.
 An identifier is a name for a programmer-defined entity such as a segment, variable, label, or constant. Valid identifiers conform to the following rules:
 \begin{itemize}
 \item The initial character must be a letter (A...Z or a...z) or one of the following special characters:
-? A question mark (ASCII value: 3FH) @ An at sign (ASCII value: 40H)
-\_ An underscore (ASCII value: 5FH)
+\begin{itemize}
+\item ? A question mark (ASCII value: 3FH) 
+\item @ An at sign (ASCII value: 40H)
+\item \_ An underscore (ASCII value: 5FH)
+\end{itemize}
 \item The remaining characters may be letters, digits (0..9), and the preceding special characters. Separators may not be specified within identifiers.
 \item An identifier may be up to 255 characters in length; it is considered unique only up to 31 characters.
 \item Every identifier within a program module represents one and only one entity. A named entity is accessible from anywhere in the module when it is referenced by name. The assembler does not have identifier scope rules that allow you to specify the same name for two distinct entities in different contexts.

@@ -91,7 +91,7 @@ int execute( ptree_node_t *ptree )
 /*
  * Jump Table
  */
-  
+/*
   switch ( ptree->production_id ) {
     case PRD_SIMPLE:
       {
@@ -101,7 +101,7 @@ int execute( ptree_node_t *ptree )
       }
       break;
   }
-  
+ */
   return SUCCESS ;
   
 /*

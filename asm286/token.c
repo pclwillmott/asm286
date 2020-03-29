@@ -26,6 +26,11 @@
 #include <stdlib.h>
 #include "asm286.h"
 
+/*
+ * Note: The RESERVED, KEYWORD, and KEYWORD_RESERVED flags are placeholders
+ * in case EQU/PURGE function is added in the future.
+ */
+
 const char *pattern[ NUM_PATTERN ] = {
   RESERVED         "_",
   RESERVED         "-",
@@ -57,6 +62,7 @@ const char *pattern[ NUM_PATTERN ] = {
   KEYWORD          "ADD",
   RESERVED         "AH",
   RESERVED         "AL",
+  RESERVED         "ALIGN",
   KEYWORD_RESERVED "AND",
   KEYWORD          "ARPL",
   RESERVED         "ASSUME",
@@ -302,7 +308,7 @@ const char *pattern[ NUM_PATTERN ] = {
   RESERVED         "PROCLEN",
   RESERVED         "PTR",
   RESERVED         "PUBLIC",
-  RESERVED         "PURGE",
+//RESERVED         "PURGE",
   KEYWORD          "PUSH",
   KEYWORD          "PUSHA",
   KEYWORD          "PUSHF",
@@ -381,22 +387,105 @@ const char *pattern[ NUM_PATTERN ] = {
   SPECIAL          "([0-9][0-9A-F]*H)|([0-9][0-9A-F]*R)",
   SPECIAL          "((-|+)?[0-9]+([.][0-9]*)?E(+|-)?[0-9]+)|((-|+)?[0-9]+[.][0-9]*)",
   SPECIAL          "(['][^']*['])+",
-  SPECIAL          "[A-Z_][A-Z_0-9]*",
+  SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*",
 } ;
 
 void dump_pattern() 
 {
-  return ;
-  unsigned int idx ;
   
-  for ( idx = 0; idx < NUM_PATTERN - 7; idx++ ) {
-//    unsigned int B = idx % 127 + 1 ;
-//    unsigned int A = idx / 127 + 1 ;
-//    printf("#define STK_%-11s \"\\%03o\\%03o\"\n", pattern[idx], A, B ) ;
+  unsigned int idx, line ;
+/*
+  for ( idx = 0; idx < NUM_PATTERN -7; idx++ ) {
+    unsigned int B = idx % 127 + 1 ;
+    unsigned int A = idx / 127 + 1 ;
+    printf("#define STK_%-11s \"\\%03o\\%03o\"\n", pattern[idx]+1, A, B ) ;
   }
+ */
+  /*
   for ( idx = 0; idx < NUM_PATTERN - 7; idx++ ) {
- //   printf("  TOK_%-11s = %3i,\n", pattern[idx], idx ) ;
+    printf("  TOK_%-11s = %3i,\n", pattern[idx]+1, idx ) ;
   }
+   */
+
+  char *keywords[500];
+  int num_keywords = 0;
+  for ( idx = 21; idx < NUM_PATTERN - 7; idx++ ) {
+    if (*pattern[idx] == 1 || *pattern[idx] == 3) {
+      keywords[num_keywords++] = pattern[idx];
+    }
+  }
+  
+  int NUM_LINES = 47;
+  int NUM_COLUMNS = 5;
+  int last_print = 0;
+  int first_print = 0;
+  for (int i = 0; i<1;i++) {
+    printf("\\begin{table}\n");
+    printf("\\caption{Assembler Keywords}\n\n");
+    printf("\\begin{tabular}{p{2.5cm} p{2.5cm} p{2.5cm} p{2.5cm} p{2.5cm}}\n\\\\\n");
+    for ( line = 0; line < NUM_LINES; line++ ) {
+      int printed = 0;
+      int item;
+      for (item = 0; item < NUM_COLUMNS;item ++) {
+        idx = first_print + line + item * NUM_LINES;
+        if (idx < num_keywords) {
+          if (item > 0) {
+            printf(" & ");
+          }
+          printf("%s", keywords[idx]+1);
+          last_print = idx;
+          printed = 1;
+        }
+      }
+      if (printed) {
+        printf("\\\\\n") ;
+      }
+    }
+    printf("\\end{tabular}\n");
+    printf("\\end{table}\n\n");
+//    printf("%i\n", last_print);
+    first_print = last_print + 1;
+  }
+// RESERVED WORDS
+  
+  num_keywords = 0;
+  for ( idx = 21; idx < NUM_PATTERN - 7; idx++ ) {
+    if (*pattern[idx] == 2 || *pattern[idx] == 3) {
+      keywords[num_keywords++] = pattern[idx];
+    }
+  }
+  
+  NUM_LINES = 20;
+  last_print = 0;
+  first_print = 0;
+  for (int i = 0; i<1;i++) {
+    printf("\\begin{table}\n");
+    printf("\\caption{Assembler Reserved Words}\n\n");
+    printf("\\begin{tabular}{p{2.5cm} p{2.5cm} p{2.5cm} p{2.5cm} p{2.5cm}}\n\\\\\n");
+    for ( line = 0; line < NUM_LINES; line++ ) {
+      int printed = 0;
+      int item;
+      for (item = 0; item < NUM_COLUMNS;item ++) {
+        idx = first_print + line + item * NUM_LINES;
+        if (idx < num_keywords) {
+          if (item > 0) {
+            printf(" & ");
+          }
+          printf("%s", keywords[idx]+1);
+          last_print = idx;
+          printed = 1;
+        }
+      }
+      if (printed) {
+        printf("\\\\\n") ;
+      }
+    }
+    printf("\\end{tabular}\n");
+    printf("\\end{table}\n\n");
+    //    printf("%i\n", last_print);
+    first_print = last_print + 1;
+  }
+
 //  printf("%i\n", 0177 * 127 + 0177 - 1) ;
 }
 

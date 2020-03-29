@@ -45,14 +45,11 @@ char *prdlst[] = {
   
   SPD_GRP2_OP     PT_IGNORE       STK_PTR,
   SPD_GRP2_OP     PT_IGNORE       STK_OFFSET,
-  SPD_GRP2_OP     PT_IGNORE       STK_BITOFFSET,
   SPD_GRP2_OP     PT_IGNORE       STK_SEG,
   SPD_GRP2_OP     PT_IGNORE       STK_TYPE,
   SPD_GRP2_OP     PT_IGNORE       STK_THIS,
 
   
-  SPD_GRP3_OP     PT_IGNORE       STK_HIGHW,
-  SPD_GRP3_OP     PT_IGNORE       STK_LOWW,
   SPD_GRP3_OP     PT_IGNORE       STK_HIGH,
   SPD_GRP3_OP     PT_IGNORE       STK_LOW,
 
@@ -131,9 +128,9 @@ char *prdlst[] = {
   SPD_NUM_EXP     PT_EXECUTE      SPD_NUM_EXP     SPD_GRP10_OP    SPD_GRP9_EXP,
   SPD_NUM_EXP     PT_DROP         SPD_GRP9_EXP,
 
-  SPD_db          SPD_NUM_EXP,
+//  SPD_db          SPD_NUM_EXP,
   
-  SPD_dw          SPD_NUM_EXP,
+//  SPD_dw          SPD_NUM_EXP,
   
 /*
  * ----------
@@ -144,7 +141,7 @@ char *prdlst[] = {
 /*
  * Simple operands.
  */
-  
+ /*
   SPD_SIMPLE      PT_EXECUTE      STK_AAA,
   SPD_SIMPLE      PT_EXECUTE      STK_AAD,
   SPD_SIMPLE      PT_EXECUTE      STK_AAM,
@@ -284,7 +281,7 @@ char *prdlst[] = {
   SPD_INITITEM    PT_DROP         SPD_NUM_EXP,
   SPD_INITITEM    PT_DROP         SPD_STR_EXP,
   SPD_INITITEM    PT_DROP         STK_QMARK,
-  
+  */
   SPD_LAST,
   
 } ;

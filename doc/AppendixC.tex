@@ -1,0 +1,92 @@
+% Activate the following line by filling in the right side. If for example the name of the root file is Main.tex, write
+% "...root = Main.tex" if the chapter file is in the same directory, and "...root = ../Main.tex" if the chapter is in a subdirectory.
+ 
+%!TEX root =  
+
+\chapter[Keywords And Reserved Words]{Keywords And Reserved Words}
+This appendix lists assembler keywords and reserved words. Keywords consist of processor and numerics coprocessor mnemonics. Reserved words consist of all predefined keywords except the mnemonics.
+
+Note that AND, NOT, OR, XOR, SHR, and SHL function as both processor instructions and assembler operators.
+
+\begin{table}
+\caption{Assembler Keywords}
+
+\begin{tabular}{p{2.5cm} p{2.5cm} p{2.5cm} p{2.5cm} p{2.5cm}}
+\\
+AAA & FFREE & FSTP & JNLE & POPF\\
+AAD & FIADD & FSTSW & JNO & PUSH\\
+AAM & FICOM & FSUB & JNP & PUSHA\\
+AAS & FICOMP & FSUBP & JNS & PUSHF\\
+ADC & FIDIV & FSUBR & JNZ & RCL\\
+ADD & FIDIVR & FSUBRP & JO & RCR\\
+AND & FILD & FTST & JP & REP\\
+ARPL & FIMUL & FWAIT & JPE & REPE\\
+BOUND & FINCSTP & FXAM & JPO & REPNE\\
+BSWAP & FINIT & FXCH & JS & REPNZ\\
+CALL & FIST & FXTRACT & JZ & RET\\
+CBW & FISTP & FYL2X & LAHF & ROL\\
+CLC & FISUB & FYL2XP1 & LAR & ROR\\
+CLD & FISUBR & HLT & LDS & SAHF\\
+CLI & FLD & IDIV & LEA & SAL\\
+CLTS & FLD1 & IMUL & LEAVE & SAR\\
+CMC & FLDCW & IN & LES & SBB\\
+CMP & FLDENV & INC & LGDT & SCAS\\
+CMPS & FLDL2E & INS & LIDT & SCASB\\
+CMPSB & FLDL2T & INSB & LLDT & SCASW\\
+CMPSW & FLDLG2 & INSW & LMSW & SETBE\\
+CMPXCHG & FLDLN2 & INT & LOCK & SGDT\\
+CWD & FLDPI & INTO & LODS & SHL\\
+DAA & FLDZ & INVD & LODSB & SHR\\
+DAS & FMUL & INVLPG & LODSW & SIDT\\
+DEC & FMULP & IRET & LOOP & SLDT\\
+DIV & FNCLEX & JA & LOOPE & SMSW\\
+ENTER & FNDISI & JAE & LOOPNE & STC\\
+ESC & FNENI & JB & LOOPNZ & STD\\
+F2XM1 & FNINIT & JBE & LOOPZ & STI\\
+FABS & FNOP & JC & LSL & STOS\\
+FADD & FNSAVE & JCXZ & MOV & STOSB\\
+FADDP & FNSTCW & JE & MOVS & STOSW\\
+FBLD & FNSTENV & JG & MOVSB & STR\\
+FBSTP & FNSTSW & JGE & MOVSW & SUB\\
+FCHS & FPATAN & JL & MUL & TEST\\
+FCLEX & FPREM & JLE & NEG & VERR\\
+FCOM & FPTAN & JMP & NIL & VERW\\
+FCOMP & FRNDINT & JNA & NOP & WAIT\\
+FCOMPP & FRSTOR & JNAE & NOT & WBINVD\\
+FDECSTP & FSAVE & JNB & OR & XADD\\
+FDISI & FSCALE & JNBE & OUT & XCHG\\
+FDIV & FSETPM & JNC & OUTS & XLAT\\
+FDIVP & FSQRT & JNE & OUTSB & XLATB\\
+FDIVR & FST & JNG & OUTSW & XOR\\
+FDIVRP & FSTCW & JNGE & POP\\
+FENI & FSTENV & JNL & POPA\\
+\end{tabular}
+\end{table}
+
+\begin{table}
+\caption{Assembler Reserved Words}
+
+\begin{tabular}{p{2.5cm} p{2.5cm} p{2.5cm} p{2.5cm} p{2.5cm}}
+\\
+ABS & DH & EXTRN & OR & SHR\\
+AH & DI & FAR & ORG & SI\\
+AL & DL & GE & PREFIX66 & SIZE\\
+ALIGN & DQ & GT & PREFIX67 & SP\\
+AND & DS & HIGH & PREFX & SS\\
+ASSUME & DT & LABEL & PROC & ST\\
+AX & DUP & LE & PROCLEN & STACKSEG\\
+BH & DW & LENGTH & PTR & STACKSTART\\
+BL & DWORD & LOW & PUBLIC & STRUC\\
+BP & DX & LT & QWORD & TBYTE\\
+BX & END & MASK & RECORD & THIS\\
+BYTE & ENDM & MOD & RELB & TR3\\
+CH & ENDP & MODRM & RELD & TR4\\
+CL & ENDS & NAME & RELW & TR5\\
+CODEMACRO & EO & NE & RO & TYPE\\
+COMMON & EQ & NEAR & RW & WARNING\\
+CS & EQU & NOSEGFIX & SEG & WC\\
+CX & ER & NOT & SEGMENT & WIDTH\\
+DB & ES & NOTHING & SHL & WORD\\
+DD & EVEN & OFFSET & SHORT & XOR\\
+\end{tabular}
+\end{table}
