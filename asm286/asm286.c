@@ -32,7 +32,7 @@ int main(int argc, const char * argv[]) {
  */
 
   dump_pattern();
-  return 0;
+
   if ( process("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE.ASM" ) ) {
     goto fail;
   }

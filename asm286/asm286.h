@@ -9,15 +9,17 @@
  *
  *  This revision:
  *
- *    2019 November 17 Paul Willmott Error codes added.
+ *    2020 March 29 Paul Willmott Token macros updated for i286.
  *
  *  Revision History:
+ *
+ *    2019 November 17 Paul Willmott Error codes added.
  *
  *    2019 November 10 Paul Willmott Production string constants added.
  *
  *    2019 November 9 Paul Willmott Baseline.
  *
- *  Copyright (c) 2019 Paul C. L. Willmott. See license at end.
+ *  Copyright (c) 2019-2020 Paul C. L. Willmott. See license at end.
  *
  *-------------------------------------------------------------------------------
  */
@@ -487,6 +489,26 @@ enum {
 #define SPD_JMPOP      "\101\044"
 #define SPD_JR         "\101\045"
 #define SPD_DB         "\101\046"
+#define SPD_SIMPLE     "\101\047"
+#define SPD_rw         "\101\050"
+#define SPD_rb         "\101\051"
+#define SPD_IND_BX     "\101\052"
+#define SPD_IND_BP     "\101\053"
+#define SPD_IND_SI     "\101\054"
+#define SPD_IND_DI     "\101\055"
+#define SPD_rm         "\101\056"
+#define SPD_eb         "\101\057"
+#define SPD_ew         "\101\060"
+#define SPD_RS         "\101\061"
+#define SPD_db         "\101\062"
+#define SPD_dw         "\101\063"
+#define SPD_ALU        "\101\064"
+#define SPD_VARIABLE   "\101\065"
+#define SPD_VAR_TYPE   "\101\066"
+#define SPD_INITLIST   "\101\067"
+#define SPD_INITITEM   "\101\070"
+#define SPD_DISP       "\101\071"
+#define SPD_WARNING    "\101\072"
 
 #define SPD_LAST       "\177\177"
 
@@ -853,7 +875,22 @@ enum {
 /*
  * Productions
  */
-  
+
+  PRD_STMT    = 8153,
+  PRD_SIMPLE  = 8166,
+  PRD_WARNING = 8185,
+  PRD_CON_NUM = 8138,
+
+//  PRD_REG16       = 8158,
+//  PRD_ADC         = 8159,
+//  PRD_REG8        = 8160,
+//  PRD_REGSEG      = 8161,
+//  PRD_ALUOP       = 8162,
+//  PRD_JMPOP       = 8163,
+//  PRD_JR          = 8164,
+//  PRD_DB          = 8165,
+
+  /*
   PRD_GRP1_OP     = 8128,
   PRD_GRP2_OP     = 8129,
   PRD_GRP3_OP     = 8130,
@@ -879,20 +916,8 @@ enum {
   PRD_NUM_EXP     = 8150,
   PRD_STRING      = 8151,
   PRD_STR_EXP     = 8152,
-  PRD_STMT        = 8153,
-  PRD_AAA         = 8154,
-  PRD_AAD         = 8155,
-  PRD_AAM         = 8156,
-  PRD_AAS         = 8157,
-  PRD_REG16       = 8158,
-  PRD_ADC         = 8159,
-  PRD_REG8        = 8160,
-  PRD_REGSEG      = 8161,
-  PRD_ALUOP       = 8162,
-  PRD_JMPOP       = 8163,
-  PRD_JR          = 8164,
-  PRD_DB          = 8165,
-
+*/
+  
   PRD_LAST        = 16128,
 
   XT_IGNORE       = 0001,
@@ -964,6 +989,7 @@ void delete_ptree( ptree_node_t *, int, int, int ) ;
 int execute ( ptree_node_t * ) ;
 unsigned int pid( const char * ) ;
 unsigned char to_byte( char ) ;
+void dep(unsigned char) ;
 
 #endif /* asm286_h */
 
@@ -971,7 +997,7 @@ unsigned char to_byte( char ) ;
  *------------------------------------------------------------------------------
  *  ASM286
  *
- *  Copyright (c) 2019 Paul C. L. Willmott
+ *  Copyright (c) 2019-2020 Paul C. L. Willmott
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to

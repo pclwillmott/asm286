@@ -128,20 +128,24 @@ char *prdlst[] = {
   SPD_NUM_EXP     PT_EXECUTE      SPD_NUM_EXP     SPD_GRP10_OP    SPD_GRP9_EXP,
   SPD_NUM_EXP     PT_DROP         SPD_GRP9_EXP,
 
-//  SPD_db          SPD_NUM_EXP,
+  SPD_db          PT_EXECUTE      SPD_NUM_EXP,
   
-//  SPD_dw          SPD_NUM_EXP,
+  SPD_dw          PT_EXECUTE      SPD_NUM_EXP,
+  
+  SPD_DISP        PT_EXECUTE      SPD_NUM_EXP,
   
 /*
  * ----------
  * Statements
  * ----------
  */
+
+  SPD_WARNING     PT_EXECUTE       STK_WARNING     SPD_NUM_EXP,
   
 /*
  * Simple operands.
  */
- /*
+ 
   SPD_SIMPLE      PT_EXECUTE      STK_AAA,
   SPD_SIMPLE      PT_EXECUTE      STK_AAD,
   SPD_SIMPLE      PT_EXECUTE      STK_AAM,
@@ -171,7 +175,8 @@ char *prdlst[] = {
   SPD_SIMPLE      PT_EXECUTE      STK_WAIT,
 
   SPD_STMT        PT_IGNORE       SPD_SIMPLE,
-  
+  SPD_STMT        PT_IGNORE       SPD_WARNING,
+
   SPD_rw          PT_IGNORE       STK_AX,
   SPD_rw          PT_IGNORE       STK_CX,
   SPD_rw          PT_IGNORE       STK_DX,
@@ -189,16 +194,17 @@ char *prdlst[] = {
   SPD_rb          PT_IGNORE       STK_CH,
   SPD_rb          PT_IGNORE       STK_DH,
   SPD_rb          PT_IGNORE       STK_BH,
-  
+
   SPD_IND_BX      PT_IGNORE       STK_OBRACE      STK_BX          STK_CBRACE,
   SPD_IND_BP      PT_IGNORE       STK_OBRACE      STK_BP          STK_CBRACE,
   SPD_IND_SI      PT_IGNORE       STK_OBRACE      STK_SI          STK_CBRACE,
   SPD_IND_DI      PT_IGNORE       STK_OBRACE      STK_DI          STK_CBRACE,
-  
+
   SPD_rm          PT_IGNORE       SPD_IND_BX      STK_PLUS        SPD_IND_SI      STK_PLUS    SPD_DISP
   SPD_rm          PT_IGNORE       SPD_IND_BX      STK_PLUS        SPD_IND_DI      STK_PLUS    SPD_DISP
   SPD_rm          PT_IGNORE       SPD_IND_BP      STK_PLUS        SPD_IND_SI      STK_PLUS    SPD_DISP
   SPD_rm          PT_IGNORE       SPD_IND_BP      STK_PLUS        SPD_IND_DI      STK_PLUS    SPD_DISP
+ 
   SPD_rm          PT_IGNORE       SPD_IND_SI      STK_PLUS        SPD_DISP
   SPD_rm          PT_IGNORE       SPD_IND_DI      STK_PLUS        SPD_DISP
   SPD_rm          PT_IGNORE       SPD_IND_BP      STK_PLUS        SPD_DISP
@@ -268,12 +274,11 @@ char *prdlst[] = {
   SPD_VARIABLE    PT_EXECUTE      STK_IDENTIFIER  SPD_VAR_TYPE    SPD_INITLIST,
   SPD_VARIABLE    PT_EXECUTE      SPD_VAR_TYPE    SPD_INITLIST,
 
-  PRD_VAR_TYPE    PT_IGNORE       STK_DB,
-  PRD_VAR_TYPE    PT_IGNORE       STK_DW,
-  PRD_VAR_TYPE    PT_IGNORE       STK_DD,
-  PRD_VAR_TYPE    PT_IGNORE       STK_DP,
-  PRD_VAR_TYPE    PT_IGNORE       STK_DQ,
-  PRD_VAR_TYPE    PT_IGNORE       STK_DT,
+  SPD_VAR_TYPE    PT_IGNORE       STK_DB,
+  SPD_VAR_TYPE    PT_IGNORE       STK_DW,
+  SPD_VAR_TYPE    PT_IGNORE       STK_DD,
+  SPD_VAR_TYPE    PT_IGNORE       STK_DQ,
+  SPD_VAR_TYPE    PT_IGNORE       STK_DT,
 
   SPD_INITLIST    PT_DROP         SPD_INITLIST    STK_COMMA       SPD_INITITEM,
   SPD_INITLIST    PT_DROP         SPD_INITITEM,
@@ -281,7 +286,7 @@ char *prdlst[] = {
   SPD_INITITEM    PT_DROP         SPD_NUM_EXP,
   SPD_INITITEM    PT_DROP         SPD_STR_EXP,
   SPD_INITITEM    PT_DROP         STK_QMARK,
-  */
+  
   SPD_LAST,
   
 } ;

@@ -390,9 +390,24 @@ const char *pattern[ NUM_PATTERN ] = {
   SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*",
 } ;
 
+void dump_productions()
+{
+  printf("  PRD_STMT   = %i,\n", pid(SPD_STMT));
+  printf("  PRD_AAA    = %i,\n", pid(SPD_AAA));
+  printf("  PRD_AAD    = %i,\n", pid(SPD_AAD));
+  printf("  PRD_AAM    = %i,\n", pid(SPD_AAM));
+  printf("  PRD_AAS    = %i,\n", pid(SPD_AAS));
+  printf("  PRD_SIMPLE = %i,\n", pid(SPD_SIMPLE));
+  printf("  PRD_WARNING = %i,\n", pid(SPD_WARNING));
+  printf("  PRD_CON_NUM = %i,\n", pid(SPD_CON_NUM));
+}
+
 void dump_pattern() 
 {
-  
+  dump_productions();
+//    printf("%i\n", 0177 * 127 + 0177 -1) ;
+
+  return;
   unsigned int idx, line ;
 /*
   for ( idx = 0; idx < NUM_PATTERN -7; idx++ ) {
@@ -486,7 +501,6 @@ void dump_pattern()
     first_print = last_print + 1;
   }
 
-//  printf("%i\n", 0177 * 127 + 0177 - 1) ;
 }
 
 int match_pattern
@@ -805,6 +819,7 @@ tlist_node_t * tokenize( const char *statement, int lineno )
 /*
  * Skip whitespace.
  */
+    
     while ( *sptr && isspace( *sptr ) ) {
       sptr++ ;
     }
@@ -825,7 +840,7 @@ tlist_node_t * tokenize( const char *statement, int lineno )
       
       unsigned long matchlen = 0 ;
       
-      if ( ! match_pattern( sptr, pattern[idx], &match, &matchlen ) ) {
+      if ( ! match_pattern( sptr, pattern[idx]+1, &match, &matchlen ) ) {
         if ( matchlen > bestlen ) {
           bestlen = matchlen ;
           bestidx = idx ;

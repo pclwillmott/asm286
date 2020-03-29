@@ -35,6 +35,7 @@ int assemble( const char *statement, int lineno ) {
  *------------------------------------------------------------------------------
  */
 
+//  printf("assemble: 1\n");
   if ( ( tlist = tokenize( statement, lineno ) ) == NULL ) {
     goto fail ;
   }
@@ -43,6 +44,7 @@ int assemble( const char *statement, int lineno ) {
  * Try and find a match.
  */
   
+//  printf("assemble: 2\n");
   tp = tlist ;
   
   if ( ( ( pt = match ( PRD_STMT, &tp, 0 ) ) == NULL ) || ( tp != NULL ) ) {
@@ -57,7 +59,8 @@ int assemble( const char *statement, int lineno ) {
   else if ( ! execute ( pt ) ) {
     goto fail ;
   }
-  
+//  printf("assemble: 3\n");
+
 /*
  * Tidy-Up
  */
