@@ -38,9 +38,10 @@ enum {
   ERR_SYNTAX_ERROR             =  4,
   ERR_STRING_TOO_LONG          =  5,
   ERR_IDENTIFIER_TOO_LONG      =  6,
+  ERR_IDENTIFIER_EXISTS        =  7,
 } ;
 
-#define NUM_ERR ( 6 )
+#define NUM_ERR ( 7 )
 
 /*
  * Token types.
@@ -509,6 +510,15 @@ enum {
 #define SPD_INITITEM   "\101\070"
 #define SPD_DISP       "\101\071"
 #define SPD_WARNING    "\101\072"
+#define SPD_DBVARIABLE "\101\073"
+#define SPD_DBLIST     "\101\074"
+#define SPD_DBITEM     "\101\075"
+#define SPD_DWITEM     "\101\076"
+#define SPD_DWVARIABLE "\101\077"
+#define SPD_DWLIST     "\101\100"
+#define SPD_DDVARIABLE "\101\101"
+#define SPD_DDLIST     "\101\102"
+#define SPD_DDITEM     "\101\103"
 
 #define SPD_LAST       "\177\177"
 
@@ -876,10 +886,32 @@ enum {
  * Productions
  */
 
-  PRD_STMT    = 8153,
-  PRD_SIMPLE  = 8166,
-  PRD_WARNING = 8185,
-  PRD_CON_NUM = 8138,
+  PRD_STMT       = 8153,
+  PRD_SIMPLE     = 8166,
+  PRD_WARNING    = 8185,
+  PRD_CON_NUM    = 8138,
+  PRD_GRP0_EXP   = 8140,
+  PRD_GRP1_EXP   = 8141,
+  PRD_GRP2_EXP   = 8142,
+  PRD_GRP3_EXP   = 8143,
+  PRD_GRP4_EXP   = 8144,
+  PRD_GRP5_EXP   = 8145,
+  PRD_GRP6_EXP   = 8146,
+  PRD_GRP7_EXP   = 8147,
+  PRD_GRP8_EXP   = 8148,
+  PRD_GRP9_EXP   = 8149,
+  PRD_VARIABLE   = 8180,
+  PRD_INITITEM   = 8183,
+  PRD_DBVARIABLE = 8186,
+  PRD_DBLIST     = 8187,
+  PRD_DBITEM     = 8188,
+  PRD_DWITEM     = 8189,
+  PRD_DWVARIABLE = 8190,
+  PRD_DWLIST     = 8191,
+  PRD_DDVARIABLE = 8192,
+  PRD_DDLIST     = 8193,
+  PRD_DDITEM     = 8194,
+
 
 //  PRD_REG16       = 8158,
 //  PRD_ADC         = 8159,
@@ -990,6 +1022,9 @@ int execute ( ptree_node_t * ) ;
 unsigned int pid( const char * ) ;
 unsigned char to_byte( char ) ;
 void dep(unsigned char) ;
+void depw(unsigned short) ;
+void depd(unsigned int) ;
+int setstr(char **, char *) ;
 
 #endif /* asm286_h */
 

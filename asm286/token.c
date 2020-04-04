@@ -392,14 +392,32 @@ const char *pattern[ NUM_PATTERN ] = {
 
 void dump_productions()
 {
-  printf("  PRD_STMT   = %i,\n", pid(SPD_STMT));
-  printf("  PRD_AAA    = %i,\n", pid(SPD_AAA));
-  printf("  PRD_AAD    = %i,\n", pid(SPD_AAD));
-  printf("  PRD_AAM    = %i,\n", pid(SPD_AAM));
-  printf("  PRD_AAS    = %i,\n", pid(SPD_AAS));
-  printf("  PRD_SIMPLE = %i,\n", pid(SPD_SIMPLE));
-  printf("  PRD_WARNING = %i,\n", pid(SPD_WARNING));
-  printf("  PRD_CON_NUM = %i,\n", pid(SPD_CON_NUM));
+  printf("  PRD_STMT       = %i,\n", pid(SPD_STMT));
+  printf("  PRD_AAA        = %i,\n", pid(SPD_AAA));
+  printf("  PRD_AAD        = %i,\n", pid(SPD_AAD));
+  printf("  PRD_AAM        = %i,\n", pid(SPD_AAM));
+  printf("  PRD_AAS        = %i,\n", pid(SPD_AAS));
+  printf("  PRD_SIMPLE     = %i,\n", pid(SPD_SIMPLE));
+  printf("  PRD_WARNING    = %i,\n", pid(SPD_WARNING));
+  printf("  PRD_CON_NUM    = %i,\n", pid(SPD_CON_NUM));
+  printf("  PRD_GRP0_EXP   = %i,\n", pid(SPD_GRP0_EXP));
+  printf("  PRD_GRP1_EXP   = %i,\n", pid(SPD_GRP1_EXP));
+  printf("  PRD_GRP2_EXP   = %i,\n", pid(SPD_GRP2_EXP));
+  printf("  PRD_GRP3_EXP   = %i,\n", pid(SPD_GRP3_EXP));
+  printf("  PRD_GRP4_EXP   = %i,\n", pid(SPD_GRP4_EXP));
+  printf("  PRD_GRP5_EXP   = %i,\n", pid(SPD_GRP5_EXP));
+  printf("  PRD_GRP6_EXP   = %i,\n", pid(SPD_GRP6_EXP));
+  printf("  PRD_GRP7_EXP   = %i,\n", pid(SPD_GRP7_EXP));
+  printf("  PRD_GRP8_EXP   = %i,\n", pid(SPD_GRP8_EXP));
+  printf("  PRD_GRP9_EXP   = %i,\n", pid(SPD_GRP9_EXP));
+  printf("  PRD_VARIABLE   = %i,\n", pid(SPD_VARIABLE));
+  printf("  PRD_INITITEM   = %i,\n", pid(SPD_INITITEM));
+  printf("  PRD_DBVARIABLE = %i,\n", pid(SPD_DBVARIABLE));
+  printf("  PRD_DBLIST     = %i,\n", pid(SPD_DBLIST));
+  printf("  PRD_DBITEM     = %i,\n", pid(SPD_DBITEM));
+  printf("  PRD_DDVARIABLE = %i,\n", pid(SPD_DDVARIABLE));
+  printf("  PRD_DDLIST     = %i,\n", pid(SPD_DDLIST));
+  printf("  PRD_DDITEM     = %i,\n", pid(SPD_DDITEM));
 }
 
 void dump_pattern() 
@@ -875,6 +893,36 @@ tlist_node_t * tokenize( const char *statement, int lineno )
     
     strncpy(node->token, best, bestlen) ;
     node->token[bestlen] = '\0' ;
+    
+    switch (node->token_id) {
+      case TOK_INTEGERBIN:
+        node->value_type = TOK_INTEGERDEC;
+        node->value.i = (int) strtol(node->token, NULL, 2) ;
+        break;
+      case TOK_INTEGERDEC:
+        node->value_type = TOK_INTEGERDEC;
+        node->value.i = (int) strtol(node->token, NULL, 10) ;
+        break;
+      case TOK_INTEGERHEX:
+        node->value_type = TOK_INTEGERDEC;
+        node->value.i = (int) strtol(node->token, NULL, 16) ;
+        break;
+      case TOK_INTEGEROCT:
+        node->value_type = TOK_INTEGERDEC;
+        node->value.i = (int) strtol(node->token, NULL, 8) ;
+        break;
+      case TOK_IDENTIFIER:
+        node->value_type = TOK_STRING;
+        setstr(&node->value.s, node->token);
+        break;
+      case TOK_DOUBLE:
+        node->value_type = TOK_DOUBLE;
+        break;
+      case TOK_STRING:
+        node->value_type = TOK_STRING;
+        setstr(&node->value.s, node->token);
+        break;
+    }
     
     node->next = NULL ;
     

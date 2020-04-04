@@ -33,6 +33,7 @@ void error( int err, int lineno )
     "Syntax error",
     "String too long",
     "Identifier too long",
+    "Identifier already exists",
   } ;
   
   char tmp_str[ 128 ] ;

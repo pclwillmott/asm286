@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "asm286.h"
 
 enum {
@@ -29,10 +30,20 @@ enum {
   FAIL = 0,
 } ;
 
+#define MAX_SYMBOLS 128
+
+char * symbol_table[MAX_SYMBOLS];
+
+int symbol_value[MAX_SYMBOLS];
+
+int symbol_count = 0;
+
 int execute( ptree_node_t *ptree )
 {
   
   unsigned int arg_index ;
+  
+  extern unsigned int current_position, dep_count;
   
 /*
  *-----------------------------------------------------------------------------
@@ -75,9 +86,9 @@ int execute( ptree_node_t *ptree )
     
     if ( ptree->value_type == TOK_STRING ) {
       ptree->value.s = NULL ;
-//      if ( ! setstr ( &ptree->value.s, ptree->args[ 0 ]->value.s ) ) {
-//        return FAIL ;
-//      }
+      if ( ! setstr ( &ptree->value.s, ptree->args[ 0 ]->value.s ) ) {
+        return FAIL ;
+      }
       
     }
     else {
@@ -92,14 +103,141 @@ int execute( ptree_node_t *ptree )
  * Jump Table
  */
 
-  printf("execute: pid = %i ", ptree->production_id);
+//  printf("execute: pid = %i ", ptree->production_id);
+  
+  int operator, result, i1, i2;
+  ptree_node_t *arg1, *arg2 ;
+  char *str ;
   
   switch ( ptree->production_id ) {
     case PRD_WARNING:
-      printf("PRD_WARNING: Result = %i\n", ptree->value.i);
+      ptree->value.i = ptree->args[1]->value.i;
+      printf("PRD_WARNING: %i\n", ptree->value.i);
+      break;
+    case PRD_DBITEM:
+      operator = ptree->args[ 0 ]->value_type ;
+      switch (operator) {
+        case TOK_INTEGERDEC:
+          dep((unsigned char)ptree->args[ 0 ]->value.i);
+          break;
+        case TOK_STRING:
+          for (str = ptree->args[ 0 ]->value.s; *str; str++) {
+            dep((unsigned char)*str);
+          }
+          break;
+        default:
+          if ( ptree->args[ 0 ]->production_id == TOK_QMARK) {
+            dep(0x00);
+          }
+          break;
+      }
+      break;
+    case PRD_DWITEM:
+      if ( ptree->args[ 0 ]->production_id == TOK_QMARK) {
+        depw(0x0000);
+      }
+      else {
+        depw((unsigned short)ptree->args[ 0 ]->value.i);
+      }
+      break;
+    case PRD_DDITEM:
+      if ( ptree->args[ 0 ]->production_id == TOK_QMARK) {
+        depd(0x00000000);
+      }
+      else {
+        depd((unsigned int)ptree->args[ 0 ]->value.i);
+      }
+      break;
+    case PRD_DBVARIABLE:
+    case PRD_DWVARIABLE:
+    case PRD_DDVARIABLE:
+      for (i1 = 0; i1 < symbol_count; i1++) {
+        if (strcmp(symbol_table[i1], ptree->args[0]->value.s) == 0) {
+          error(ERR_IDENTIFIER_EXISTS, 0);
+          return FAIL;
+        }
+      }
+      setstr(&symbol_table[symbol_count],ptree->args[0]->value.s);
+      symbol_value[symbol_count++] = current_position - dep_count;
       break;
     case PRD_CON_NUM:
-      printf("PRD_CON_NUM: Result = %i\n", ptree->args[0]->value.s);
+      ptree->value_type = ptree->args[0]->value_type;
+      ptree->value.i = ptree->args[0]->value.i;
+      break;
+    case PRD_GRP0_EXP:
+      ptree->value_type = ptree->args[1]->value_type;
+      ptree->value.i = ptree->args[1]->value.i;
+      break;
+    case PRD_GRP7_EXP:
+      ptree->value_type = ptree->args[1]->value_type;
+      ptree->value.i = ~ ptree->args[1]->value.i;
+      break;
+    case PRD_GRP4_EXP:
+    case PRD_GRP5_EXP:
+    case PRD_GRP6_EXP:
+    case PRD_GRP8_EXP:
+    case PRD_GRP9_EXP:
+      operator = ptree->args[ 1 ]->args[ 0 ]->production_id ;
+      arg1 = ptree->args[ 0 ] ;
+      arg2 = ptree->args[ 2 ] ;
+      i1 = arg1->value.i;
+      i2 = arg2->value.i;
+      switch (operator) {
+        case TOK_MULTIPLY:
+          result = i1 * i2;
+          break;
+        case TOK_DIVIDE:
+          result = i1 / i2;
+          break;
+        case TOK_MOD:
+          result = i1 % i2;
+          break;
+        case TOK_SHL:
+          result = i1 << i2;
+          break;
+        case TOK_SHR:
+          result = i1 >> i2;
+          break;
+        case TOK_PLUS:
+          result = i1 + i2;
+          break;
+        case TOK_MINUS:
+          result = i1 - i2;
+          break;
+        case TOK_AND:
+          result = i1 & i2;
+          break;
+        case TOK_OR:
+          result = i1 | i2;
+          break;
+        case TOK_XOR:
+          result = i1 ^ i2;
+          break;
+        case TOK_EQ:
+          result = (i1 == i2) ? 0 : -1;
+          break;
+        case TOK_NE:
+          result = (i1 != i2) ? 0 : -1;
+          break;
+        case TOK_LT:
+          result = (i1 < i2) ? 0 : -1;
+          break;
+        case TOK_GT:
+          result = (i1 > i2) ? 0 : -1;
+          break;
+        case TOK_LE:
+          result = (i1 <= i2) ? 0 : -1;
+          break;
+        case TOK_GE:
+          result = (i1 >= i2) ? 0 : -1;
+          break;
+        default:
+          result = 0;
+          break;
+      }
+      ptree->value_type = arg1->value_type;
+      ptree->value.i = result;
+//      printf("value %i\n", ptree->value.i);
       break;
     case PRD_SIMPLE:
       {
@@ -148,9 +286,14 @@ int execute( ptree_node_t *ptree )
   
 }
 
+unsigned int dep_count = 0;
+unsigned int current_position = 0;
+
 void dep(unsigned char db)
 {
   printf("%02x ",db);
+  dep_count++;
+  current_position++;
 }
 
 void depw(unsigned short dw)
@@ -158,6 +301,51 @@ void depw(unsigned short dw)
   dep( dw & 0xff ) ;
   dep( dw >> 8 ) ;
 }
+
+void depd(unsigned int dd)
+{
+  dep( dd & 0xff ) ;
+  dep( (dd >> 8) & 0xff ) ;
+  dep( (dd >> 16) & 0xff ) ;
+  dep( (dd >> 24) & 0xff ) ;
+}
+
+/*
+ *-----------------------------------------------------------------------------
+ * This routine sets a string value.
+ *-----------------------------------------------------------------------------
+ */
+
+int setstr
+(
+ char **str,
+ char *value
+)
+{
+  
+  /*
+   *-----------------------------------------------------------------------------
+   */
+  
+  if ( (*str) != NULL ) {
+//    free ( *str ) ;
+  }
+  
+  if ( ( (*str) = ( char * ) malloc ( strlen ( value ) + 1 ) ) == NULL ) {
+    error ( ERR_OUT_OF_MEMORY, 0 ) ;
+    return FAIL ;
+  }
+  
+  strcpy ( (*str), value ) ;
+  
+  return SUCCESS ;
+  
+  /*
+   * Finished
+   */
+  
+}
+
 
 /*
  *------------------------------------------------------------------------------

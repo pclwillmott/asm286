@@ -53,28 +53,28 @@ char *prdlst[] = {
   SPD_GRP3_OP     PT_IGNORE       STK_HIGH,
   SPD_GRP3_OP     PT_IGNORE       STK_LOW,
 
-  SPD_GRP4_OP     PT_IGNORE       STK_MULTIPLY,
-  SPD_GRP4_OP     PT_IGNORE       STK_DIVIDE,
-  SPD_GRP4_OP     PT_IGNORE       STK_MOD,
-  SPD_GRP4_OP     PT_IGNORE       STK_SHL,
-  SPD_GRP4_OP     PT_IGNORE       STK_SHR,
+  SPD_GRP4_OP     PT_IGNORE       STK_MULTIPLY, /* DONE */
+  SPD_GRP4_OP     PT_IGNORE       STK_DIVIDE,   /* DONE */
+  SPD_GRP4_OP     PT_IGNORE       STK_MOD,      /* DONE */
+  SPD_GRP4_OP     PT_IGNORE       STK_SHL,      /* DONE */
+  SPD_GRP4_OP     PT_IGNORE       STK_SHR,      /* DONE */
   
-  SPD_GRP5_OP     PT_IGNORE       STK_PLUS,
-  SPD_GRP5_OP     PT_IGNORE       STK_MINUS,
+  SPD_GRP5_OP     PT_IGNORE       STK_PLUS,     /* DONE */
+  SPD_GRP5_OP     PT_IGNORE       STK_MINUS,    /* DONE */
 
-  SPD_GRP6_OP     PT_IGNORE       STK_EQ,
-  SPD_GRP6_OP     PT_IGNORE       STK_NE,
-  SPD_GRP6_OP     PT_IGNORE       STK_LT,
-  SPD_GRP6_OP     PT_IGNORE       STK_GT,
-  SPD_GRP6_OP     PT_IGNORE       STK_LE,
-  SPD_GRP6_OP     PT_IGNORE       STK_GE,
+  SPD_GRP6_OP     PT_IGNORE       STK_EQ,       /* DONE */
+  SPD_GRP6_OP     PT_IGNORE       STK_NE,       /* DONE */
+  SPD_GRP6_OP     PT_IGNORE       STK_LT,       /* DONE */
+  SPD_GRP6_OP     PT_IGNORE       STK_GT,       /* DONE */
+  SPD_GRP6_OP     PT_IGNORE       STK_LE,       /* DONE */
+  SPD_GRP6_OP     PT_IGNORE       STK_GE,       /* DONE */
 
-  SPD_GRP7_OP     PT_IGNORE       STK_NOT,
+  SPD_GRP7_OP     PT_IGNORE       STK_NOT,      /* DONE */
 
-  SPD_GRP8_OP     PT_IGNORE       STK_AND,
+  SPD_GRP8_OP     PT_IGNORE       STK_AND,      /* DONE */
   
-  SPD_GRP9_OP     PT_IGNORE       STK_OR,
-  SPD_GRP9_OP     PT_IGNORE       STK_XOR,
+  SPD_GRP9_OP     PT_IGNORE       STK_OR,       /* DONE */
+  SPD_GRP9_OP     PT_IGNORE       STK_XOR,      /* DONE */
   
   SPD_GRP10_OP    PT_IGNORE       STK_SHORT,
 
@@ -82,14 +82,14 @@ char *prdlst[] = {
  * Variables and Constants
  */
   
-  SPD_CON_NUM     PT_DROP         STK_DOUBLE,
+  SPD_CON_NUM     PT_EXECUTE      STK_DOUBLE,
   
   SPD_CON_NUM     PT_EXECUTE      STK_INTEGERBIN,
   SPD_CON_NUM     PT_EXECUTE      STK_INTEGEROCT,
   SPD_CON_NUM     PT_EXECUTE      STK_INTEGERDEC,
   SPD_CON_NUM     PT_EXECUTE      STK_INTEGERHEX,
 
-  SPD_CON_STR     PT_DROP         STK_STRING,
+//  SPD_CON_STR     PT_EXECUTE      STK_STRING,
   
 /*
  * Numerical Expressions
@@ -140,7 +140,7 @@ char *prdlst[] = {
  * ----------
  */
 
-  SPD_WARNING     PT_EXECUTE       STK_WARNING     SPD_NUM_EXP,
+  SPD_WARNING     PT_EXECUTE      STK_WARNING     SPD_NUM_EXP,
   
 /*
  * Simple operands.
@@ -176,6 +176,9 @@ char *prdlst[] = {
 
   SPD_STMT        PT_IGNORE       SPD_SIMPLE,
   SPD_STMT        PT_IGNORE       SPD_WARNING,
+  SPD_STMT        PT_IGNORE       SPD_DDVARIABLE,
+  SPD_STMT        PT_IGNORE       SPD_DBVARIABLE,
+  SPD_STMT        PT_IGNORE       SPD_DWVARIABLE,
 
   SPD_rw          PT_IGNORE       STK_AX,
   SPD_rw          PT_IGNORE       STK_CX,
@@ -274,18 +277,42 @@ char *prdlst[] = {
   SPD_VARIABLE    PT_EXECUTE      STK_IDENTIFIER  SPD_VAR_TYPE    SPD_INITLIST,
   SPD_VARIABLE    PT_EXECUTE      SPD_VAR_TYPE    SPD_INITLIST,
 
-  SPD_VAR_TYPE    PT_IGNORE       STK_DB,
-  SPD_VAR_TYPE    PT_IGNORE       STK_DW,
-  SPD_VAR_TYPE    PT_IGNORE       STK_DD,
   SPD_VAR_TYPE    PT_IGNORE       STK_DQ,
   SPD_VAR_TYPE    PT_IGNORE       STK_DT,
 
   SPD_INITLIST    PT_DROP         SPD_INITLIST    STK_COMMA       SPD_INITITEM,
   SPD_INITLIST    PT_DROP         SPD_INITITEM,
   
-  SPD_INITITEM    PT_DROP         SPD_NUM_EXP,
-  SPD_INITITEM    PT_DROP         SPD_STR_EXP,
-  SPD_INITITEM    PT_DROP         STK_QMARK,
+  SPD_INITITEM    PT_EXECUTE      SPD_NUM_EXP,
+  SPD_INITITEM    PT_EXECUTE      STK_QMARK,
+
+  SPD_DBVARIABLE  PT_EXECUTE      STK_IDENTIFIER  STK_DB          SPD_DBLIST,
+  SPD_DBVARIABLE  PT_DROP         STK_DB          SPD_DBLIST,
+  
+  SPD_DBLIST      PT_DROP         SPD_DBLIST      STK_COMMA       SPD_DBITEM,
+  SPD_DBLIST      PT_DROP         SPD_DBITEM,
+
+  SPD_DBITEM      PT_EXECUTE      SPD_NUM_EXP,
+  SPD_DBITEM      PT_EXECUTE      STK_STRING,
+  SPD_DBITEM      PT_EXECUTE      STK_QMARK,
+  
+  SPD_DWVARIABLE  PT_EXECUTE      STK_IDENTIFIER  STK_DW          SPD_DWLIST,
+  SPD_DWVARIABLE  PT_DROP         STK_DW          SPD_DWLIST,
+  
+  SPD_DWLIST      PT_DROP         SPD_DWLIST      STK_COMMA       SPD_DWITEM,
+  SPD_DWLIST      PT_DROP         SPD_DWITEM,
+  
+  SPD_DWITEM      PT_EXECUTE      SPD_NUM_EXP,
+  SPD_DWITEM      PT_EXECUTE      STK_QMARK,
+  
+  SPD_DDVARIABLE  PT_EXECUTE      STK_IDENTIFIER  STK_DD          SPD_DDLIST,
+  SPD_DDVARIABLE  PT_DROP         STK_DD          SPD_DDLIST,
+  
+  SPD_DDLIST      PT_DROP         SPD_DDLIST      STK_COMMA       SPD_DDITEM,
+  SPD_DDLIST      PT_DROP         SPD_DDITEM,
+  
+  SPD_DDITEM      PT_EXECUTE      SPD_NUM_EXP,
+  SPD_DDITEM      PT_EXECUTE      STK_QMARK,
   
   SPD_LAST,
   

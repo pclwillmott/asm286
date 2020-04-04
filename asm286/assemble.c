@@ -31,10 +31,14 @@ int assemble( const char *statement, int lineno ) {
 
   ptree_node_t *pt ;
   
+  extern unsigned int dep_count;
+  
 /*
  *------------------------------------------------------------------------------
  */
 
+  dep_count = 0;
+  
 //  printf("assemble: 1\n");
   if ( ( tlist = tokenize( statement, lineno ) ) == NULL ) {
     goto fail ;
