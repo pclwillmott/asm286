@@ -39,9 +39,22 @@ enum {
   ERR_STRING_TOO_LONG          =  5,
   ERR_IDENTIFIER_TOO_LONG      =  6,
   ERR_IDENTIFIER_EXISTS        =  7,
+  ERR_SYMBOL_TABLE_FULL        =  8,
 } ;
 
-#define NUM_ERR ( 7 )
+#define NUM_ERR ( 8 )
+
+/*
+ * Symbol Table stuff.
+ */
+
+enum {
+  SYMBOL_LABEL    = 0,
+  SYMBOL_VARIABLE = 1,
+  SYMBOL_CONSTANT = 2,
+};
+
+#define MAX_SYMBOLS 128
 
 /*
  * Token types.
@@ -56,7 +69,7 @@ enum {
  * Token string constants.
  */
 
-#define NUM_PATTERN ( 355 )  /* Number of token patterns */
+#define NUM_PATTERN ( 356 )  /* Number of token patterns */
 
 #define STK_UNDERSCORE  "\001\001"
 #define STK_MINUS       "\001\002"
@@ -423,6 +436,7 @@ enum {
 #define STK_DOUBLE      "\003\143"
 #define STK_STRING      "\003\144"
 #define STK_IDENTIFIER  "\003\145"
+#define STK_INST_LABEL  "\003\146"
 
 /*
  * Production string constants.
@@ -504,7 +518,7 @@ enum {
 #define SPD_db         "\101\062"
 #define SPD_dw         "\101\063"
 #define SPD_ALU        "\101\064"
-#define SPD_VARIABLE   "\101\065"
+#define SPD_VARIABLE   "\101\065" // DEPRECATED
 #define SPD_VAR_TYPE   "\101\066"
 #define SPD_INITLIST   "\101\067"
 #define SPD_INITITEM   "\101\070"
@@ -519,6 +533,18 @@ enum {
 #define SPD_DDVARIABLE "\101\101"
 #define SPD_DDLIST     "\101\102"
 #define SPD_DDITEM     "\101\103"
+#define SPD_LABEL_STMT "\101\104"
+#define SPD_DATA_STMT  "\101\105"
+#define SPD_DIRECTIVE  "\101\106"
+#define SPD_INST_LABEL "\101\107"
+#define SPD_INSTRUCTION "\101\110"
+#define SPD_VAR_NAME   "\101\111"
+#define SPD_NAME       "\101\112"
+#define SPD_STACKSEG   "\101\113"
+#define SPD_SEGMENT    "\101\114"
+#define SPD_SEG_ATT    "\101\115"
+#define SPD_SEG_AITEM  "\101\116"
+#define SPD_ENDS       "\101\117"
 
 #define SPD_LAST       "\177\177"
 
@@ -881,6 +907,7 @@ enum {
   TOK_DOUBLE      = 352,
   TOK_STRING      = 353,
   TOK_IDENTIFIER  = 354,
+  TOK_INST_LABEL  = 355,
 
 /*
  * Productions
@@ -911,6 +938,18 @@ enum {
   PRD_DDVARIABLE = 8192,
   PRD_DDLIST     = 8193,
   PRD_DDITEM     = 8194,
+  PRD_LABEL_STMT = 8195,
+  PRD_DATA_STMT  = 8196,
+  PRD_DIRECTIVE  = 8197,
+  PRD_INST_LABEL = 8198,
+  PRD_INSTRUCTION = 8199,
+  PRD_VAR_NAME   = 8200,
+  PRD_NAME       = 8201,
+  PRD_STACKSEG   = 8202,
+  PRD_SEGMENT    = 8203,
+  PRD_SEG_ATT    = 8204,
+  PRD_SEG_AITEM  = 8205,
+  PRD_ENDS       = 8206,
 
 
 //  PRD_REG16       = 8158,
@@ -1025,6 +1064,10 @@ void dep(unsigned char) ;
 void depw(unsigned short) ;
 void depd(unsigned int) ;
 int setstr(char **, char *) ;
+int get_symbol_value(const char *, int *) ;
+int get_symbol_index(const char *) ;
+int add_symbol(const char *, int, int) ;
+void dump_symbol_table(void) ;
 
 #endif /* asm286_h */
 

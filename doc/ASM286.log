@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.5.28)  29 MAR 2020 21:01
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.5.28)  4 APR 2020 20:48
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -414,19 +414,35 @@ Overfull \hbox (36.56032pt too wide) in paragraph at lines 129--137
 [] 
  []
 
-[11] [12]) [13]
+[11] [12]
+Overfull \hbox (36.56032pt too wide) in paragraph at lines 165--173
+[] 
+ []
+
+[13]
+Overfull \hbox (36.56032pt too wide) in paragraph at lines 210--218
+[] 
+ []
+
+[14]
+Overfull \hbox (22.77333pt too wide) in paragraph at lines 251--251
+ []\OT1/cmtt/m/n/10.95 LAB1_ADD DD LAB1 ; LAB1_ADD contains offset and ; segmen
+t selector of LAB1[] 
+ []
+
+) [15]
 \openout2 = `Chapter6.aux'.
 
- (./Chapter6.tex [14
+ (./Chapter6.tex [16
 
 
 
 ]
 Chapter 3.
-[15] [16]) [17]
+[17] [18]) [19]
 \openout2 = `AppendixC.aux'.
 
- (./AppendixC.tex [18
+ (./AppendixC.tex [20
 
 
 
@@ -445,7 +461,7 @@ Overfull \hbox (3.23695pt too wide) in paragraph at lines 85--85
 []\OT1/cmr/m/n/10.95 CODEMACRO| 
  []
 
-) [19] [20] [21]
+) [21] [22] [23]
 No file ASM286.bbl.
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 64.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 64.
@@ -453,41 +469,33 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 64.
 (./AppendixC.aux))
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 64.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 64.
-
-
-Package rerunfilecheck Warning: File `ASM286.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `ASM286.out':
-(rerunfilecheck)             Before: 8E2B85E4B9AB04C9963ED983052AB6AE;356
-(rerunfilecheck)             After:  855C2ADC09DA36974C66E6EB9AC80405;300.
+Package rerunfilecheck Info: File `ASM286.out' has not changed.
+(rerunfilecheck)             Checksum: 855C2ADC09DA36974C66E6EB9AC80405;300.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 64.
  ) 
 Here is how much of TeX's memory you used:
- 6023 strings out of 492649
- 88849 string characters out of 6129622
- 211020 words of memory out of 5000000
- 9731 multiletter control sequences out of 15000+600000
+ 6037 strings out of 492649
+ 88951 string characters out of 6129622
+ 211023 words of memory out of 5000000
+ 9730 multiletter control sequences out of 15000+600000
  13085 words of font info for 49 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  42i,10n,30p,640b,516s stack positions out of 5000i,500n,10000p,200000b,80000s
-pdfTeX warning (dest): name{subsection.3.1.1} has been referenced but does no
-t exist, replaced by a fixed one
-
-</usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><
-/usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></
-usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></u
-sr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr
-/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/l
-ocal/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/loc
-al/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsl10.pfb></usr/loca
-l/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local
-/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on ASM286.pdf (25 pages, 156289 bytes).
+</usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
+></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
+</usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
+/usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></u
+sr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr
+/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/l
+ocal/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loca
+l/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsl10.pfb></usr/local
+/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/
+texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/te
+xlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on ASM286.pdf (27 pages, 175048 bytes).
 PDF statistics:
- 236 PDF objects out of 1000 (max. 8388607)
- 198 compressed objects within 2 object streams
- 72 named destinations out of 1000 (max. 500000)
- 49 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 266 PDF objects out of 1000 (max. 8388607)
+ 223 compressed objects within 3 object streams
+ 87 named destinations out of 1000 (max. 500000)
+ 41 words of extra memory for PDF output out of 10000 (max. 10000000)
 

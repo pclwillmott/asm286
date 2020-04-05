@@ -1,4 +1,4 @@
-AAA
+label2:AAA
 AAD
 AAM
 AAS
@@ -61,4 +61,11 @@ DB ?
 DD -2, -2
 DD 0fffefdfcH
 pggg DB 044H
+
+label1:
+
+DW pggg
+HELLO DW label2 + 3
+CODE SEGMENT COMMON RW
+CODE ENDS
 

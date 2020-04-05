@@ -40,7 +40,8 @@ Assembler data can be expressed in binary, hexadecimal, octal, decimal, or ASCII
 
 \begin{center}
 Table 4-2. Assembler Data Value Specification Rules
-\begin{tabular}{| l  l  l  p{6.5cm} |}
+
+\begin{tabular}{| l  l  l  p{6.5cm} |}
 \hline
 \textbf{Value in} & \textbf{Examples} & & \textbf{Rules of Formulation} \\ 
 \hline
@@ -56,11 +57,13 @@ ASCII & 'AB' & 'UPDATE.EXT' & Any ASCII string enclosed in single quotes.\\
 & & & \\
 Decimal & -1. & 1E-32 3.14159 & A rational number that may be preceded by a sign and followed by an optional exponent. A decimal point is required if no exponent is present but is optional otherwise. The exponent begins with the letter E followed by an optional sign and a sequence of digits in the range 0..9. \\ 
 & & & \\
-Hexadecimal & 40490FR & 0C0000R & A sequence of digits in the range 0..9 and/or letters A..F followed by the letter R. The sequence must begin with a digit, and the total number of digits and letters must be (8/16/20) or (9/17/21 with the first digit 0). \\
+Hexadecimal & 40490FR & 0C0000R & A sequence of digits in the range 0..9 and/or letters A..F followed by the letter R. The sequence must begin with a digit, and the total number of digits and letters must be (8/16/20) or (9/17/21 with the first digit 0).
+ \\
 \hline
 \end{tabular}
 \end{center}
- A real hexadecimal specification must be the exact sequence of hex digits to fill the internal floating-point coprocessor representation of the floating-point number. For this reason, such values must have exactly 8, 16, or 20 hexadecimal digits, corresponding to the single, double, and extended precision reals that the floating- point coprocessor and the floating-point instructions handle. Such values can have 9, 17, or 21 hexadecimal digits only if the initial digit must be a zero because the value begins with a letter.
+ 
+A real hexadecimal specification must be the exact sequence of hex digits to fill the internal floating-point coprocessor representation of the floating-point number. For this reason, such values must have exactly 8, 16, or 20 hexadecimal digits, corresponding to the single, double, and extended precision reals that the floating- point coprocessor and the floating-point instructions handle. Such values can have 9, 17, or 21 hexadecimal digits only if the initial digit must be a zero because the value begins with a letter.
 
 Data values can be specified in an assembler program in a variety of formats, as shown in Table 4-2. The way the processor or floating-point coprocessor represents such data internally is called its storage format.
 
@@ -129,7 +132,7 @@ Where: & \\
 & \\
 name & is the name of the variable. Within the module, it must be a unique identifier. \\
 & \\
-init & is a question mark (?), a constant expression, or a string of up to 255 ASCII characters enclosed in single quotes ('). \\
+init & is a question mark (?), a constant expression, or a string of up to 255 ASCII characters enclosed in single quotes (').\\
 \end{tabular}
 \subsection*{Discussion}
 DB reserves storage for and optionally initializes a variable of type BYTE. ? reserves storage with an undefined value.
@@ -154,5 +157,100 @@ BYTES3 DB 4,10,200
 \item This example initializes seven bytes containing the ASCII values of the characters A, B, C, ' , D, E, and F, respectively.
 \begin{verbatim}
 STRGWQUOT DB 'ABC''DEF'
+\end{verbatim}
+\end{enumerate}
+\subsection*{DW Directive} 
+\subsection*{Syntax}
+
+\begin{tabular}{p{2cm} p{12.5cm}}
+& \begin{verbatim} [name] DW init [,...] \end{verbatim} \\
+Where: & \\
+& \\
+name & is the name of the variable. Within the module, it must be a unique identifier. \\
+& \\
+init & is a question mark (?), a constant expression, or a string of up to 2 characters enclosed in single quotes (').\\
+\end{tabular}
+\subsection*{Discussion}
+DW defines storage for and optionally initializes a 16-bit variable of type WORD. ? reserves storage with an undefined value.
+
+Numeric initial values can be specified in binary, octal, decimal, or hexadecimal (see Table 4-2). The specified constant or constant expression must evaluate to a number in the range 0..65535 (processor ordinal) or -32768..32767 (processor integer).
+
+A variable or label name yields an initial value that is the offset of the variable or label. It is an error to initialize a WORD variable with the name of a variable or label that has been defined in a USE32 segment; its offset is too large (32-bits). A segment name yields an initial value that is the segment selector.
+
+A 1- or 2-character string yields an initial value that is interpreted and stored as a number. The assembler stores a 2-byte value even if the specified string has only one character:
+
+\begin{itemize}
+\item It stores the specified initial value in the least significant byte. 
+\item It zeros the remaining byte.
+\end{itemize}
+\subsection*{Examples}
+\begin{enumerate}
+\item This example tells the assembler to reserve storage for two uninitialized words.
+\begin{verbatim}
+UNINIT DW ?,?
+\end{verbatim}
+\item This example initializes WORD variables with numeric values.
+\begin{verbatim}
+CONST DW 5000 ; decimal constant 
+HEXEXP DW OFFFH -10 ; expression
+\end{verbatim}
+\item This example initializes VAR1OFF to the offset of VAR1 (both variables are within a USE16 segment) and CODESEL to the selector of a segment named CODE.
+\begin{verbatim}
+   VAR1OFF DW VAR1
+   CODESEL DW CODE
+   \end{verbatim}
+\item This example initializes NUMB to the ASCII value (interpreted as a number) of the letters AB.
+\begin{verbatim}
+NUMB DW 'AB' ; equivalent to NUMB DW 4142H
+\end{verbatim}
+\end{enumerate}
+
+\subsection*{DD Directive} 
+
+\begin{tabular}{p{2cm} p{12.5cm}}
+& \begin{verbatim} [name] DW init [,...] \end{verbatim} \\
+Where: & \\
+& \\
+name & is the name of the variable. Within the module, it must be a unique identifier. \\
+& \\
+init & is a question mark (?), a constant expression, the name of a variable or label, or a string of up to 4 characters enclosed in single quotes (').\\
+\end{tabular}
+
+\subsection*{Discussion}
+DD defines storage for and optionally initializes a 32-bit variable of type DWORD. ? reserves storage with an undefined value.
+
+Integer initial values can be specified in binary, octal, decimal, or hexadecimal (see Table 4-2). The specified constant or constant expression must evaluate to a number in the range:
+$-2^{31}$..$2^{31-1}$ (processor integer or floating-point coprocessor short integer) Or, 0..$2^{32-1}$ (processor ordinal)
+
+Real initial values can be specified in floating-point decimal or in hexadecimal (see Table 4-2). A decimal constant must evaluate to a real in the ranges:
+-3.4E38..-1.2E-38, 0.0, 1.2E-38..3.4E38 (floating-point coprocessor single precision real)
+
+A constant expressed as a hexadecimal real must be the exact sequence of hex digits to fill the internal floating-point coprocessor representation of a single precision real (8 hexadecimal digits or 9 hexadecimal digits, including an initial 0).
+
+A USE16 variable or label name yields an initial value that fills the dword. Its high-order word contains the segment selector and its low-order word contains the offset of the USE16 variable or label.
+
+A USE32 variable or label name yields an initial value that is the offset (from the segment base) of the variable or label.
+
+A string (up to four characters) yields an initial value that is interpreted and stored as a number. The assembler stores a 4-byte value even if the specified string has fewer than four characters: 
+\begin{itemize}
+\item It stores the specified initial values in the least significant bytes. 
+\item It zeros the remaining bytes.
+\end{itemize}
+
+\subsection*{Examples}
+\begin{enumerate}
+\item This example defines two variables, a floating-point coprocessor short integer and a single precision real.
+\begin{verbatim}
+   INTVAR DD 1234567
+   REALVAR DD 1.6E25
+\end{verbatim}
+\item In this example, LAB1 was defined in a USE16 segment and LAB2 was defined in a USE32 segment.
+\begin{verbatim}
+LAB1_ADD DD LAB1 ; LAB1_ADD contains offset and ; segment selector of LAB1
+LAB2_ADD DD LAB2 ; LAB2_ADD contains offset of LAB2
+\end{verbatim}
+\item This example initializes three unnamed dwords. The first contains an undefined value. The second contains the ASCII numeric value of the letter A. The third contains the integer 450 (decimal).
+\begin{verbatim}
+DD ?, 'A', 450
 \end{verbatim}
 \end{enumerate}

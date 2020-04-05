@@ -30,14 +30,6 @@ enum {
   FAIL = 0,
 } ;
 
-#define MAX_SYMBOLS 128
-
-char * symbol_table[MAX_SYMBOLS];
-
-int symbol_value[MAX_SYMBOLS];
-
-int symbol_count = 0;
-
 int execute( ptree_node_t *ptree )
 {
   
@@ -148,25 +140,34 @@ int execute( ptree_node_t *ptree )
         depd((unsigned int)ptree->args[ 0 ]->value.i);
       }
       break;
-    case PRD_DBVARIABLE:
-    case PRD_DWVARIABLE:
-    case PRD_DDVARIABLE:
-      for (i1 = 0; i1 < symbol_count; i1++) {
-        if (strcmp(symbol_table[i1], ptree->args[0]->value.s) == 0) {
-          error(ERR_IDENTIFIER_EXISTS, 0);
-          return FAIL;
-        }
+    case PRD_VAR_NAME:
+      if (add_symbol(ptree->args[0]->value.s, SYMBOL_VARIABLE, current_position)) {
+        return FAIL;
       }
-      setstr(&symbol_table[symbol_count],ptree->args[0]->value.s);
-      symbol_value[symbol_count++] = current_position - dep_count;
+      break;
+    case PRD_INST_LABEL:
+      if (add_symbol(ptree->args[0]->value.s, SYMBOL_LABEL, current_position)) {
+        return FAIL;
+      }
       break;
     case PRD_CON_NUM:
       ptree->value_type = ptree->args[0]->value_type;
       ptree->value.i = ptree->args[0]->value.i;
       break;
     case PRD_GRP0_EXP:
-      ptree->value_type = ptree->args[1]->value_type;
-      ptree->value.i = ptree->args[1]->value.i;
+      switch (ptree->variant) {
+        case 1:
+          ptree->value_type = ptree->args[1]->value_type;
+          ptree->value.i = ptree->args[1]->value.i;
+          break;
+        case 2:
+          if (get_symbol_value(ptree->args[0]->value.s, &i1)) {
+            return FAIL;
+          }
+          ptree->value.i = i1;
+          ptree->value_type = TOK_INTEGERDEC;
+          break;
+      }
       break;
     case PRD_GRP7_EXP:
       ptree->value_type = ptree->args[1]->value_type;

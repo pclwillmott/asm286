@@ -32,6 +32,53 @@
 
 char *prdlst[] = {
  
+  SPD_STMT        PT_IGNORE       SPD_LABEL_STMT,
+  SPD_STMT        PT_IGNORE       SPD_DATA_STMT,
+  SPD_STMT        PT_IGNORE       SPD_DIRECTIVE,
+  
+  SPD_INST_LABEL  PT_EXECUTE      STK_INST_LABEL,
+  
+  SPD_LABEL_STMT  PT_IGNORE       SPD_INST_LABEL  SPD_INSTRUCTION,
+  SPD_LABEL_STMT  PT_IGNORE       SPD_INST_LABEL,
+  SPD_LABEL_STMT  PT_IGNORE       SPD_INSTRUCTION,
+  
+  SPD_INSTRUCTION PT_IGNORE       SPD_SIMPLE,
+  
+  SPD_DIRECTIVE   PT_IGNORE       SPD_WARNING,
+  SPD_DIRECTIVE   PT_IGNORE       SPD_NAME,
+  SPD_DIRECTIVE   PT_IGNORE       SPD_STACKSEG,
+  SPD_DIRECTIVE   PT_IGNORE       SPD_ENDS,
+
+  SPD_VAR_NAME    PT_EXECUTE      STK_IDENTIFIER,
+  
+  SPD_DATA_STMT   PT_IGNORE       SPD_VAR_NAME    SPD_DATA_STMT,
+  SPD_DATA_STMT   PT_IGNORE       SPD_DDVARIABLE,
+  SPD_DATA_STMT   PT_IGNORE       SPD_DBVARIABLE,
+  SPD_DATA_STMT   PT_IGNORE       SPD_DWVARIABLE,
+
+/*
+ * Directives
+ */
+  
+  SPD_NAME        PT_EXECUTE      STK_NAME        STK_IDENTIFIER,
+  
+  SPD_STACKSEG    PT_EXECUTE      STK_IDENTIFIER  STK_STACKSEG    SPD_NUM_EXP,
+  
+  SPD_SEGMENT     PT_EXECUTE      STK_IDENTIFIER  STK_SEGMENT     SPD_SEG_ATT,
+  SPD_SEGMENT     PT_EXECUTE      STK_IDENTIFIER  STK_SEGMENT,
+
+  SPD_SEG_ATT     PT_DROP         SPD_SEG_ATT     SPD_SEG_AITEM,
+  SPD_SEG_ATT     PT_DROP         SPD_SEG_AITEM,
+  
+  SPD_SEG_AITEM   PT_EXECUTE      STK_RO,
+  SPD_SEG_AITEM   PT_EXECUTE      STK_EO,
+  SPD_SEG_AITEM   PT_EXECUTE      STK_ER,
+  SPD_SEG_AITEM   PT_EXECUTE      STK_RW,
+  SPD_SEG_AITEM   PT_EXECUTE      STK_PUBLIC,
+  SPD_SEG_AITEM   PT_EXECUTE      STK_COMMON,
+  
+  SPD_ENDS        PT_EXECUTE      STK_IDENTIFIER  STK_ENDS,
+
 /*
  * Numerical Operators
  */
@@ -97,6 +144,7 @@ char *prdlst[] = {
   
   SPD_GRP0_EXP    PT_DROP         SPD_CON_NUM, 
   SPD_GRP0_EXP    PT_EXECUTE      STK_OBRACE      SPD_NUM_EXP     STK_CBRACE,
+  SPD_GRP0_EXP    PT_EXECUTE      STK_IDENTIFIER,
   
   SPD_GRP1_EXP    PT_EXECUTE      SPD_GRP1_EXP    SPD_GRP1_OP     SPD_GRP0_EXP,
   SPD_GRP1_EXP    PT_DROP         SPD_GRP0_EXP,
@@ -173,12 +221,6 @@ char *prdlst[] = {
   SPD_SIMPLE      PT_EXECUTE      STK_STD,
   SPD_SIMPLE      PT_EXECUTE      STK_STI,
   SPD_SIMPLE      PT_EXECUTE      STK_WAIT,
-
-  SPD_STMT        PT_IGNORE       SPD_SIMPLE,
-  SPD_STMT        PT_IGNORE       SPD_WARNING,
-  SPD_STMT        PT_IGNORE       SPD_DDVARIABLE,
-  SPD_STMT        PT_IGNORE       SPD_DBVARIABLE,
-  SPD_STMT        PT_IGNORE       SPD_DWVARIABLE,
 
   SPD_rw          PT_IGNORE       STK_AX,
   SPD_rw          PT_IGNORE       STK_CX,
@@ -286,7 +328,6 @@ char *prdlst[] = {
   SPD_INITITEM    PT_EXECUTE      SPD_NUM_EXP,
   SPD_INITITEM    PT_EXECUTE      STK_QMARK,
 
-  SPD_DBVARIABLE  PT_EXECUTE      STK_IDENTIFIER  STK_DB          SPD_DBLIST,
   SPD_DBVARIABLE  PT_DROP         STK_DB          SPD_DBLIST,
   
   SPD_DBLIST      PT_DROP         SPD_DBLIST      STK_COMMA       SPD_DBITEM,
@@ -296,22 +337,22 @@ char *prdlst[] = {
   SPD_DBITEM      PT_EXECUTE      STK_STRING,
   SPD_DBITEM      PT_EXECUTE      STK_QMARK,
   
-  SPD_DWVARIABLE  PT_EXECUTE      STK_IDENTIFIER  STK_DW          SPD_DWLIST,
   SPD_DWVARIABLE  PT_DROP         STK_DW          SPD_DWLIST,
   
   SPD_DWLIST      PT_DROP         SPD_DWLIST      STK_COMMA       SPD_DWITEM,
   SPD_DWLIST      PT_DROP         SPD_DWITEM,
   
   SPD_DWITEM      PT_EXECUTE      SPD_NUM_EXP,
+  SPD_DWITEM      PT_EXECUTE      STK_STRING,
   SPD_DWITEM      PT_EXECUTE      STK_QMARK,
   
-  SPD_DDVARIABLE  PT_EXECUTE      STK_IDENTIFIER  STK_DD          SPD_DDLIST,
   SPD_DDVARIABLE  PT_DROP         STK_DD          SPD_DDLIST,
   
   SPD_DDLIST      PT_DROP         SPD_DDLIST      STK_COMMA       SPD_DDITEM,
   SPD_DDLIST      PT_DROP         SPD_DDITEM,
   
   SPD_DDITEM      PT_EXECUTE      SPD_NUM_EXP,
+  SPD_DDITEM      PT_EXECUTE      STK_STRING,
   SPD_DDITEM      PT_EXECUTE      STK_QMARK,
   
   SPD_LAST,
@@ -322,7 +363,7 @@ char *prdlst[] = {
  *------------------------------------------------------------------------------
  *  ASM286
  *
- *  Copyright (c) 2019 Paul C. L. Willmott
+ *  Copyright (c) 2019-2020 Paul C. L. Willmott
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to

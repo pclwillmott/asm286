@@ -5,76 +5,83 @@
  *
  *  Description:
  *
- *    error.c       Display error message
+ *    symbol_table.c   Symbol table and support routines.
  *
  *  This revision:
  *
- *    2019 November 17 Paul Willmott Baseline.
+ *    2020 April 5 Paul Willmott Baseline.
  *
  *  Revision History:
  *
- *    2019 November 17 Paul Willmott Baseline.
+ *    2020 April 5 Paul Willmott Baseline.
  *
- *  Copyright (c) 2019 Paul C. L. Willmott. See license at end.
+ *  Copyright (c) 2020 Paul C. L. Willmott. See license at end.
  *
  *------------------------------------------------------------------------------
  */
 
-#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "asm286.h"
+#include <stdio.h>
 
-void error( int err, int lineno )
-{
-  
-  const char *message[ NUM_ERR ] = {
-    "Internal error",
-    "Out of memory",
-    "Line buffer overflow",
-    "Syntax error",
-    "String too long",
-    "Identifier too long",
-    "Identifier already exists",
-    "Symbol table full",
-  } ;
-  
-  char tmp_str[ 128 ] ;
-  
-/*
- *-----------------------------------------------------------------------------
- */
-  
-/*
- * Output error message.
- */
-  
-  if ( ( err > 0 ) && ( err <= NUM_ERR ) ) {
-    sprintf ( tmp_str, "%s", message[ err - 1 ] ) ;
+static char * symbol_table[MAX_SYMBOLS];
+
+static int symbol_value[MAX_SYMBOLS];
+
+static int symbol_type[MAX_SYMBOLS];
+
+static int symbol_count = 0;
+
+int get_symbol_value(const char *symbol_name, int *value) {
+  int idx = get_symbol_index(symbol_name);
+  if (idx != -1) {
+    *value = symbol_value[idx];
+    return 0;
   }
-  else {
-    sprintf ( tmp_str, "Error %i", err ) ;
+  return 1;
+}
+
+int get_symbol_index(const char *symbol_name) {
+  for (int idx = 0; idx < symbol_count; idx++) {
+    if (strcmp(symbol_name, symbol_table[idx]) == 0) {
+      return idx ;
+    }
   }
-  
-  fprintf ( stderr, "%s", tmp_str ) ;
-  
-  if ( lineno > 0 ) {
-    fprintf ( stderr, " at line %i", lineno ) ;
+  return -1;
+}
+
+int add_symbol(const char *symbol_name, int type, int value) {
+  if (symbol_count == MAX_SYMBOLS) {
+    error(ERR_SYMBOL_TABLE_FULL, 0);
+    return 1;
   }
-    
-  fprintf( stderr, "\n" ) ;
-  
-  return ;
-  
-/*
- * Finished
- */
-  
+  if (get_symbol_index(symbol_name) != -1) {
+    error(ERR_IDENTIFIER_EXISTS, 0);
+    return 1;
+  }
+  if ( (symbol_table[symbol_count] = malloc(strlen(symbol_name) + 1)) == NULL ) {
+    error(ERR_OUT_OF_MEMORY, 0) ;
+    return 1;
+  }
+  strcpy(symbol_table[symbol_count], symbol_name) ;
+  symbol_type[symbol_count] = type;
+  symbol_value[symbol_count++] = value;
+  return 0;
+}
+
+void dump_symbol_table() {
+  printf("\n");
+  for (int idx = 0; idx < symbol_count; idx++) {
+    printf("%-32s %3i %3i\n",symbol_table[idx],symbol_type[idx], symbol_value[idx]);
+  }
 }
 
 /*
  *------------------------------------------------------------------------------
  *  ASM286
  *
- *  Copyright (c) 2019 Paul C. L. Willmott
+ *  Copyright (c) 2019-2020 Paul C. L. Willmott
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to

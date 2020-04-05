@@ -26,7 +26,7 @@
 #include "asm286.h"
 
 int main(int argc, const char * argv[]) {
-
+  
 /*
  *------------------------------------------------------------------------------
  */
@@ -67,7 +67,7 @@ int process(const char *filename) {
   char *wptr ;
   
   unsigned int line_number = 1, stmt_line = 1 ;
-  
+
 /*
  *------------------------------------------------------------------------------
  */
@@ -195,6 +195,8 @@ fail:
   if ( fp != NULL ) {
     fclose(fp) ;
   }
+  
+  dump_symbol_table();
   
 /*
  * Finished.

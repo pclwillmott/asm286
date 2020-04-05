@@ -388,6 +388,7 @@ const char *pattern[ NUM_PATTERN ] = {
   SPECIAL          "((-|+)?[0-9]+([.][0-9]*)?E(+|-)?[0-9]+)|((-|+)?[0-9]+[.][0-9]*)",
   SPECIAL          "(['][^']*['])+",
   SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*",
+  SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*:",
 } ;
 
 void dump_productions()
@@ -440,7 +441,7 @@ void dump_pattern()
   }
    */
 
-  char *keywords[500];
+  const char *keywords[500];
   int num_keywords = 0;
   for ( idx = 21; idx < NUM_PATTERN - 7; idx++ ) {
     if (*pattern[idx] == 1 || *pattern[idx] == 3) {
@@ -913,6 +914,11 @@ tlist_node_t * tokenize( const char *statement, int lineno )
         break;
       case TOK_IDENTIFIER:
         node->value_type = TOK_STRING;
+        setstr(&node->value.s, node->token);
+        break;
+      case TOK_INST_LABEL:
+        node->value_type = TOK_STRING;
+        node->token[strlen(node->token)-1] = '\0';
         setstr(&node->value.s, node->token);
         break;
       case TOK_DOUBLE:
