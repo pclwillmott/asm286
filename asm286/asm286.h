@@ -40,9 +40,13 @@ enum {
   ERR_IDENTIFIER_TOO_LONG      =  6,
   ERR_IDENTIFIER_EXISTS        =  7,
   ERR_SYMBOL_TABLE_FULL        =  8,
+  ERR_SEGMENT_STACK_OVERFLOW   =  9,
+  ERR_TOO_MANY_SEGMENTS        = 10,
+  ERR_NOT_IN_SEGMENT           = 11,
+  ERR_SEGMENT_NESTING_FAULT    = 12,
 } ;
 
-#define NUM_ERR ( 8 )
+#define NUM_ERR ( 12 )
 
 /*
  * Symbol Table stuff.
@@ -1040,6 +1044,26 @@ struct tlist_node_t {
 } ;
 
 /*
+ * Segment support.
+ */
+
+#define MAX_SEGMENT_STACK (8)  /* Size of Segment Stack            */
+#define MAX_SEGMENT (8)        /* Maximum entries in Segment table */
+
+#define ATTRIBUTE_RO  001  /* Read Only    */
+#define ATTRIBUTE_EO  002  /* Execute Only */
+#define ATTRIBUTE_COM 004  /* Common       */
+#define ATTRIBUTE_PUB 010  /* Public       */
+
+typedef struct segment_table_t segment_table_t;
+
+struct segment_table_t {
+  char *name ;
+  unsigned int attributes;
+  unsigned int position;
+};
+
+/*
  * Helper Macros.
  */
 
@@ -1049,25 +1073,32 @@ struct tlist_node_t {
  * Prototypes.
  */
 
-int process(const char *) ;
-int assemble(const char *, int ) ;
+int process(const char *, int) ;
+int assemble(const char *, int, int ) ;
 tlist_node_t * tokenize(const char *, int) ;
 void delete_tlist( tlist_node_t ** ) ;
 void dump_pattern( void ) ;
 void error( int, int ) ;
 ptree_node_t * match( int, tlist_node_t **, int ) ;
 void delete_ptree( ptree_node_t *, int, int, int ) ;
-int execute ( ptree_node_t * ) ;
+int execute ( ptree_node_t *, int, int ) ;
 unsigned int pid( const char * ) ;
 unsigned char to_byte( char ) ;
-void dep(unsigned char) ;
-void depw(unsigned short) ;
-void depd(unsigned int) ;
+int dep(unsigned char, int, int) ;
+int depw(unsigned short, int, int) ;
+int depd(unsigned int, int, int) ;
 int setstr(char **, char *) ;
 int get_symbol_value(const char *, int *) ;
 int get_symbol_index(const char *) ;
 int add_symbol(const char *, int, int) ;
 void dump_symbol_table(void) ;
+int open_segment(const char *, int);
+int open_segment_with_attributes(const char *, int, int);
+int close_segment(const char *, int);
+int get_current_position(unsigned int *, int);
+void reset_for_pass(int);
+segment_table_t *segment_stack_top(int);
+int get_segment_index(const char *);
 
 #endif /* asm286_h */
 

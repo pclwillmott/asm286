@@ -30,12 +30,12 @@ enum {
   FAIL = 0,
 } ;
 
-int execute( ptree_node_t *ptree )
+int execute( ptree_node_t *ptree, int pass, int lineno )
 {
   
   unsigned int arg_index ;
   
-  extern unsigned int current_position, dep_count;
+//  extern unsigned int current_position, dep_count;
   
 /*
  *-----------------------------------------------------------------------------
@@ -54,7 +54,7 @@ int execute( ptree_node_t *ptree )
  */
   
   for ( arg_index = 0; arg_index < ptree->num_args; arg_index++ ) {
-    if ( ! execute ( ptree->args[ arg_index ] ) ) {
+    if ( ! execute ( ptree->args[ arg_index ], pass, lineno ) ) {
       return FAIL ;
     }
   }
@@ -100,54 +100,88 @@ int execute( ptree_node_t *ptree )
   int operator, result, i1, i2;
   ptree_node_t *arg1, *arg2 ;
   char *str ;
-  
+  int pass1 = (pass == 0);
+  int pass2 = (pass == 1);
+  unsigned int pos;
+
   switch ( ptree->production_id ) {
     case PRD_WARNING:
-      ptree->value.i = ptree->args[1]->value.i;
-      printf("PRD_WARNING: %i\n", ptree->value.i);
+      if (pass2) {
+        ptree->value.i = ptree->args[1]->value.i;
+        printf("PRD_WARNING: %i\n", ptree->value.i);
+      }
       break;
     case PRD_DBITEM:
       operator = ptree->args[ 0 ]->value_type ;
       switch (operator) {
         case TOK_INTEGERDEC:
-          dep((unsigned char)ptree->args[ 0 ]->value.i);
+          if (dep((unsigned char)ptree->args[ 0 ]->value.i, pass, lineno)) {
+            return FAIL;
+          }
           break;
         case TOK_STRING:
           for (str = ptree->args[ 0 ]->value.s; *str; str++) {
-            dep((unsigned char)*str);
+            if (dep((unsigned char)*str, pass, lineno)) {
+              return FAIL;
+            }
           }
           break;
         default:
           if ( ptree->args[ 0 ]->production_id == TOK_QMARK) {
-            dep(0x00);
+            if (dep(0x00, pass, lineno)) {
+              return FAIL;
+            }
           }
           break;
       }
       break;
     case PRD_DWITEM:
       if ( ptree->args[ 0 ]->production_id == TOK_QMARK) {
-        depw(0x0000);
+        if (depw(0x0000, pass, lineno)) {
+          return FAIL;
+        }
       }
       else {
-        depw((unsigned short)ptree->args[ 0 ]->value.i);
+        if (depw((unsigned short)ptree->args[ 0 ]->value.i, pass, lineno)) {
+          return FAIL;
+        }
       }
       break;
     case PRD_DDITEM:
       if ( ptree->args[ 0 ]->production_id == TOK_QMARK) {
-        depd(0x00000000);
+        if (depd(0x00000000, pass, lineno)) {
+          return FAIL;
+        }
       }
       else {
-        depd((unsigned int)ptree->args[ 0 ]->value.i);
+        if (depd((unsigned int)ptree->args[ 0 ]->value.i, pass, lineno)) {
+          return FAIL;
+        }
       }
       break;
     case PRD_VAR_NAME:
-      if (add_symbol(ptree->args[0]->value.s, SYMBOL_VARIABLE, current_position)) {
+      if (pass1) {
+        if (get_current_position(&pos, lineno)) {
+          return FAIL;
+        }
+        if (add_symbol(ptree->args[0]->value.s, SYMBOL_VARIABLE, pos)) {
+          return FAIL;
+        }
+      }
+      break;
+    case PRD_SEGMENT:
+      if (open_segment(ptree->args[0]->value.s, lineno)) {
         return FAIL;
       }
       break;
     case PRD_INST_LABEL:
-      if (add_symbol(ptree->args[0]->value.s, SYMBOL_LABEL, current_position)) {
-        return FAIL;
+      if (pass1) {
+        if (get_current_position(&pos, lineno)) {
+          return FAIL;
+        }
+        if (add_symbol(ptree->args[0]->value.s, SYMBOL_LABEL, pos)) {
+          return FAIL;
+        }
       }
       break;
     case PRD_CON_NUM:
@@ -161,8 +195,10 @@ int execute( ptree_node_t *ptree )
           ptree->value.i = ptree->args[1]->value.i;
           break;
         case 2:
-          if (get_symbol_value(ptree->args[0]->value.s, &i1)) {
-            return FAIL;
+          if (pass2) {
+            if (get_symbol_value(ptree->args[0]->value.s, &i1)) {
+              return FAIL;
+            }
           }
           ptree->value.i = i1;
           ptree->value_type = TOK_INTEGERDEC;
@@ -272,9 +308,11 @@ int execute( ptree_node_t *ptree )
           {1, 0x9b, 0x00}, // WAIT
         };
         for (int i = 1; i < simple[ptree->variant][0] + 1; i++) {
-          dep(simple[ptree->variant][i]);
+          if (dep(simple[ptree->variant][i], pass, lineno)) {
+            return FAIL;
+          }
         }
-        printf("\n");
+ //       printf("\n");
       }
       break;
   }
@@ -285,30 +323,6 @@ int execute( ptree_node_t *ptree )
  * Finished
  */
   
-}
-
-unsigned int dep_count = 0;
-unsigned int current_position = 0;
-
-void dep(unsigned char db)
-{
-  printf("%02x ",db);
-  dep_count++;
-  current_position++;
-}
-
-void depw(unsigned short dw)
-{
-  dep( dw & 0xff ) ;
-  dep( dw >> 8 ) ;
-}
-
-void depd(unsigned int dd)
-{
-  dep( dd & 0xff ) ;
-  dep( (dd >> 8) & 0xff ) ;
-  dep( (dd >> 16) & 0xff ) ;
-  dep( (dd >> 24) & 0xff ) ;
 }
 
 /*

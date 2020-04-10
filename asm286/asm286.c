@@ -33,9 +33,14 @@ int main(int argc, const char * argv[]) {
 
   dump_pattern();
 
-  if ( process("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE.ASM" ) ) {
-    goto fail;
+  for (int pass = 0; pass < 2; pass++) {
+    reset_for_pass(pass);
+    if ( process("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE.ASM", pass ) ) {
+      goto fail;
+    }
   }
+  
+  dump_symbol_table();
 
 fail:
   
@@ -52,7 +57,7 @@ fail:
  * It returns 0 on success and -1 on failure.
  */
 
-int process(const char *filename) {
+int process(const char *filename, int pass) {
   
   int result = -1, is_continue = 0, in_string, has_string ;
   
@@ -88,7 +93,7 @@ int process(const char *filename) {
     
     if ( ! ( is_continue = ( linebuf[0] == '&' ) ) ) {
       if ( strlen(statement) > 0 ) {
-        if ( assemble(statement, stmt_line ) ) {
+        if ( assemble(statement, stmt_line, pass ) ) {
           goto fail ;
         }
         strcpy(statement, "") ;
@@ -179,7 +184,7 @@ int process(const char *filename) {
   }
 
   if ( strlen(statement) > 0 ) {
-    if ( assemble(statement, stmt_line ) ) {
+    if ( assemble(statement, stmt_line, pass ) ) {
       goto fail ;
     }
   }
@@ -195,8 +200,6 @@ fail:
   if ( fp != NULL ) {
     fclose(fp) ;
   }
-  
-  dump_symbol_table();
   
 /*
  * Finished.

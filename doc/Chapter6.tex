@@ -1,0 +1,96 @@
+% Activate the following line by filling in the right side. If for example the name of the root file is Main.tex, write
+% "...root = Main.tex" if the chapter file is in the same directory, and "...root = ../Main.tex" if the chapter is in a subdirectory.
+ 
+%!TEX root =  
+
+\chapter[Processor Instructions]{Processor Instructions}
+
+\section{Processor Instructions}
+
+\subsection*{AAA}
+ASCII Adjust after Addition
+
+\begin{tabular}{l l l l}
+Opcode & Instruction & Clocks & Description\\
+37 & AAA & 4 & ASCII adjust AL after addition\\
+\end{tabular}
+
+\subsubsection{Discussion}
+Code AAA only following an ADD instruction that leaves a byte result in the AL register. The lower nibbles of the ADD operands should be in the range 0 through 9 (BCD digits) so that AAA adjusts AL to contain the correct decimal digit result. If ADD produced a decimal carry, AAA increments the AH register and sets the carry (CF) and auxiliary carry (AF) flags to 1. If ADD produced no decimal carry, AAA clears the carry and auxiliary flags (0) and leaves AH unchanged. In either case, AL is left with its upper nibble set to 0. To convert AL to an ASCII result, follow the AAA instruction with OR AL, 30H.
+
+\subsubsection{Flags Affected}
+AF and CF as described in the Discussion section; OF, SF, ZF, and PF are undefined.
+
+\subsubsection{Exceptions by Mode}
+
+Protected
+
+None
+
+Real Address
+
+None
+
+Virtual 8086
+
+None
+
+\subsection*{AAD} 
+
+ASCII Adjust AX before Division 
+
+\begin{tabular}{l l l l}
+Opcode & Instruction & Clocks & Description\\
+D5 0A & AAD & 19 & ASCII adjust AX before division\\
+\end{tabular}
+
+\subsubsection{Discussion}
+
+AAD prepares 2 unpacked BCD digits (the least significant digit in AL, the most significant digit in AH) for a division operation that will yield an unpacked result. This is done by setting AL to AL + (10 * AH), and then setting AH to 0. AX is then equal to the binary equivalent of the original unpacked 2-digit number.
+
+\subsubsection{Flags Affected}
+SF, ZF, and PF as described in Appendix A; OF, AF, and CF are undefined
+
+\subsubsection{Exceptions by Mode}
+
+Protected
+
+None
+
+Real Address
+
+None
+
+Virtual 8086
+
+None
+
+\subsection*{AAM}
+
+ASCII adjust AX after multiply
+
+\begin{tabular}{l l l l}
+Opcode & Instruction & Clocks & Description\\
+D4 0A & AAM & 17 & ASCII adjust AX after multiply\\
+\end{tabular}
+
+\subsubsection{Discussion}
+
+Code AAM only following a MUL instruction on two unpacked BCD digits that leaves the result in the AX register. AL contains the MUL result, because it is always less than 100. AAM unpacks this result by dividing AL by 10, leaving the quotient (most significant digit) in AH and the remainder (least significant digit) in AL.
+
+\subsubsection{Flags Affected}
+F, ZF, and PF as described in Appendix A; OF, AF, and CF are undefined
+
+\subsubsection{Exceptions by Mode} 
+
+Protected
+
+None
+
+Real Address
+
+None
+
+Virtual 8086
+
+None

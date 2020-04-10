@@ -13,6 +13,7 @@
 		DA72D9CB2381833B0009CA4A /* error.c in Sources */ = {isa = PBXBuildFile; fileRef = DA72D9CA2381833B0009CA4A /* error.c */; };
 		DA72D9CD23818F590009CA4A /* match.c in Sources */ = {isa = PBXBuildFile; fileRef = DA72D9CC23818F590009CA4A /* match.c */; };
 		DA72D9CF238192840009CA4A /* execute.c in Sources */ = {isa = PBXBuildFile; fileRef = DA72D9CE238192840009CA4A /* execute.c */; };
+		DA8B7D502440D28A009B3F64 /* segment.c in Sources */ = {isa = PBXBuildFile; fileRef = DA8B7D4F2440D28A009B3F64 /* segment.c */; };
 		DA9F56E5243A3B03003164DB /* symbol_table.c in Sources */ = {isa = PBXBuildFile; fileRef = DA9F56E4243A3B03003164DB /* symbol_table.c */; };
 		DAB4041D23770C27002137DF /* asm286.c in Sources */ = {isa = PBXBuildFile; fileRef = DAB4041C23770C27002137DF /* asm286.c */; };
 /* End PBXBuildFile section */
@@ -37,6 +38,7 @@
 		DA72D9CA2381833B0009CA4A /* error.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = error.c; sourceTree = "<group>"; };
 		DA72D9CC23818F590009CA4A /* match.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = match.c; sourceTree = "<group>"; };
 		DA72D9CE238192840009CA4A /* execute.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = execute.c; sourceTree = "<group>"; };
+		DA8B7D4F2440D28A009B3F64 /* segment.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = segment.c; sourceTree = "<group>"; };
 		DA9F56E4243A3B03003164DB /* symbol_table.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = symbol_table.c; sourceTree = "<group>"; };
 		DAB4041923770C26002137DF /* asm286 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = asm286; sourceTree = BUILT_PRODUCTS_DIR; };
 		DAB4041C23770C27002137DF /* asm286.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = asm286.c; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				DA72D9CC23818F590009CA4A /* match.c */,
 				DA72D9CE238192840009CA4A /* execute.c */,
 				DA9F56E4243A3B03003164DB /* symbol_table.c */,
+				DA8B7D4F2440D28A009B3F64 /* segment.c */,
 			);
 			path = asm286;
 			sourceTree = "<group>";
@@ -142,6 +145,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DA72D9C723782DCD0009CA4A /* action.c in Sources */,
+				DA8B7D502440D28A009B3F64 /* segment.c in Sources */,
 				DAB4041D23770C27002137DF /* asm286.c in Sources */,
 				DA72D9C5237726BE0009CA4A /* token.c in Sources */,
 				DA72D9CD23818F590009CA4A /* match.c in Sources */,

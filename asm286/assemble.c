@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include "asm286.h" 
 
-int assemble( const char *statement, int lineno ) {
+int assemble( const char *statement, int lineno, int pass ) {
 
   int result = -1 ;
   
@@ -31,13 +31,13 @@ int assemble( const char *statement, int lineno ) {
 
   ptree_node_t *pt ;
   
-  extern unsigned int dep_count;
+//  extern unsigned int dep_count;
   
 /*
  *------------------------------------------------------------------------------
  */
 
-  dep_count = 0;
+//  dep_count = 0;
   
 //  printf("assemble: 1\n");
   if ( ( tlist = tokenize( statement, lineno ) ) == NULL ) {
@@ -60,7 +60,7 @@ int assemble( const char *statement, int lineno ) {
  * Execute command.
  */
   
-  else if ( ! execute ( pt ) ) {
+  else if ( ! execute ( pt, pass, lineno ) ) {
     goto fail ;
   }
 //  printf("assemble: 3\n");

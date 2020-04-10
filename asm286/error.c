@@ -9,13 +9,13 @@
  *
  *  This revision:
  *
- *    2019 November 17 Paul Willmott Baseline.
+ *    2020 April 10 Paul Willmott Segment Stack Errors added.
  *
  *  Revision History:
  *
  *    2019 November 17 Paul Willmott Baseline.
  *
- *  Copyright (c) 2019 Paul C. L. Willmott. See license at end.
+ *  Copyright (c) 2019-2020 Paul C. L. Willmott. See license at end.
  *
  *------------------------------------------------------------------------------
  */
@@ -35,6 +35,10 @@ void error( int err, int lineno )
     "Identifier too long",
     "Identifier already exists",
     "Symbol table full",
+    "Segment Stack Overflow",
+    "Too Many Segments",
+    "Not In Segment",
+    "Segment Nesting Fault",
   } ;
   
   char tmp_str[ 128 ] ;
@@ -74,7 +78,7 @@ void error( int err, int lineno )
  *------------------------------------------------------------------------------
  *  ASM286
  *
- *  Copyright (c) 2019 Paul C. L. Willmott
+ *  Copyright (c) 2019-2020 Paul C. L. Willmott
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to

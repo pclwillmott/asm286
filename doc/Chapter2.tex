@@ -1,0 +1,124 @@
+% Activate the following line by filling in the right side. If for example the name of the root file is Main.tex, write
+% "...root = Main.tex" if the chapter file is in the same directory, and "...root = ../Main.tex" if the chapter is in a subdirectory.
+ 
+%!TEX root =  
+
+\chapter[Segmentation]{Segmentation}
+
+This chapter contains three main sections:
+
+\begin{itemize}
+\item Overview of Segmentation
+
+This section briefly describes processor segmentation, together with the assembler directives that define and set up access to logical program segments.
+\item Defining Logical Segments 
+
+This section explains the SEGMENT..ENDS and STACKSEG directives. These directives define code, data, and stack segments in assembler programs.
+\item Assuming Segment Access
+
+This section explains the ASSUME directive. This directive specifies which segments in an assembler program are accessed by the processor segment registers at any given point in the program's code.
+\end{itemize}
+
+\section*{Overview of Segmentation}
+The processor addresses 16 megabytes of physical memory. Processor memory is segmented. For programmers, processor memory appears to consist of up to four accessible segments at a time:
+\begin{itemize}
+\item One code segment containing the executable instructions
+\item One stack segment containing the run-time stack
+\item Up to two data segments, each containing part of the data
+\end{itemize}
+Assembler program segments are called logical segments, because they represent logical addresses that must be mapped to processor physical addresses before program execution.
+
+The maximum size of a program segment is 64K bytes.
+
+See also: Processor memory organization, Appendix A, and operand addressing and the USE attribute, Chapters 5 and 6.
+
+At run time, the physical base address of a program segment will be accessed by an immediate value loaded into a segment register. This value is called a selector. A selector points (indirectly in processor protected mode and directly in processor real address mode) to the physical location of a segment. The processor segment registers are CS, DS, and SS, which access code, data, and stack segments, respectively, and ES, which access an additional data segment.
+
+Logical segments are created in an assembler module with the SEGMENT (code and data) and STACKSEG (stackorstack-and-data) directives. These directives specify a segment name; this name defines a logical address for the segment. A segment name can appear in several contexts throughout a program:
+
+\begin{itemize}
+\item In data initializations, because it stands for the value of the selector
+\item In segment register initializations
+\item In an ASSUME statement, which tells the assembler which segment registers contain which selectors
+\end{itemize}
+See also: ASSUME statement, in this chapter selectors, Chapter 4, data and segment register initializations, Chapter 1.
+
+After program code is assembled, the system utilities map assembler program segments to processor physical addresses. A named segment becomes a sequence of contiguous physical addresses. A logical segment becomes physically accessible when the segment name is loaded into a processor segment register during program execution.
+
+\section*{Defining Code, Data, and Stack Segments}
+The SEGMENT..ENDS directive defines an assembler program's code and data segments. The STACKSEG directive defines the stack (or mixed stack and data) segment. Both directives specify a name for each logical segment defined in a program.
+
+Because program segments are named, assembler logical segments need not be contiguous lines of source code. Within a source module, a named segment can be closed with ENDS and reopened with another SEGMENT.. that specifies the same name. Logical segments can also be coded in more than one source module.
+
+See also: Logical segments in source modules, Chapter 3
+
+\section*{SEGMENT..ENDS Directive}
+
+\subsection*{Syntax}
+\begin{verbatim}
+name SEGMENT[access][combine] 
+::
+[instructions, directives, and/or data initializations] 
+::
+name ENDS
+\end{verbatim}
+
+Where:
+
+\begin{tabular}{p{1.5cm} p{12.9cm}}
+\emph{name} & is an identifier for the segment; name must be unique within the module. name represents the logical address of the beginning of the program segment. The segment's contents (specified between SEGMENT..ENDS) represent logical addresses that are offsets from the segment name.\\
+\\
+\emph{access} & is an optional RO (read only), EO (execute only), ER (execute and read), RW (read and write).\\
+\\
+\emph{combine} & is unspecified (default), PUBLIC, or COMMON. If neither PUBLIC nor COMMON is specified for name, the segment is non-combinable: the entire segment is in this module and it will not be combined with segments of the same name from any other module. However, separate pieces of a non-combinable segment within a module will be combined.\\
+\\
+& If a SEGMENT PUBLIC or SEGMENT COMMON directive has been specified for the segment name, the combine specification for segments with the same name in other modules must be the same.\\
+\end{tabular}
+
+\subsection*{Discussion}
+The SEGMENT..ENDS directive defines all or part of a logical program segment whose name is name. The contents of the segment consist of the assembled instructions, directives, label declarations, and/or data initializations that occur between SEGMENT and ENDS. These contents will be mapped to a contiguous sequence of processor physical addresses by the system utilities. When a segment name is used as an instruction operand, it is an immediate value.
+
+Within a single source module, each occurrence of SEGMENT..ENDS that has the same name is considered part of a single program segment. All ASM386 source code must be specified within a SEGMENT..ENDS. Every named variable and label in an assembler program must also be defined within a SEGMENT..ENDS.
+
+Access, use, and combine are optional; they may be specified in any order. Specifying EO, ER, RO, or RW Access
+
+\begin{tabular}{p{1.5cm} p{12.9cm}}
+\emph{access} & is an assembler (and processor) protection feature; it specifies the kind(s) of access permitted to the segment.\\
+\end{tabular}
+
+The assembler issues a warning for the initial definition of a segment if the access specification is omitted. The assembler also assigns an access value according to the contents of the segment. For a segment that contains data only, the value is RW; for a segment that contains code only, it is EO. For mixed code and data, the value is ER.
+
+After a named segment has been defined with a SEGMENT statement, access can be omitted when the segment is reopened. However, its value may not be changed when the segment is reopened.
+
+\subsection*{Specifying PUBLIC or COMMON}
+
+\begin{tabular}{p{1.5cm} p{12.9cm}}
+\emph{combine} & specifies how the segment will be combined with segments of the same name from other modules to form a single physical segment in memory. The actual combination of modules occurs at bind time.\\
+\end{tabular}
+
+If a SEGMENT directive specifying PUBLIC or COMMON already exists for a named segment, combines pecifications in other modules must match it. The named segment's combine attribute should be specified (at least) for the initial segment definition in subsequent modules. The following explains how a logical segment in more than one module is combined:
+
+\begin{itemize}
+\item All segments of the same name that are defined as PUBLIC will be concatenated to form one physical segment. Control the order of combination with the binder.
+The length of the combined PUBLIC segment will equal approximately the sum of the lengths of the SEGMENT..ENDS pieces. For a segment declared PUBLIC, there is no guarantee that the beginning of a particular segment part within the module will have an offset of zero within the final combined segment.
+
+\item All segments of the same name that are defined as COMMON will be overlapped to form one physical segment. Each module's version of the segment begins at offset zero within the segment, so each version has the same physical address.
+The length of the combined COMMON segment will be equal to the longest individual length within any of its defining modules. A COMMON segment may not specify EO or ER access.
+
+If neither PUBLIC nor COMMON is specified, the segment is non-combinable. The entire logical segment must be contained in a single source module. It cannot be combined with segments from other program modules.
+\end{itemize}
+
+\subsection*{Multiple Definitions for a Segment}
+
+Assembler segments can be opened and closed (with the SEGMENT..ENDS directive) within a source module as many times as you wish. All separately defined parts of the segment are concatenated by the assembler and treated as if they were defined within a single SEGMENT..ENDS.
+
+Assembler procedure, codemacro, and structure definitions may not overlap segment boundaries.
+
+When a segment is reopened, it is unnecessary to respecify its access, use, and combine attributes, if any. Do not change the combine or use attribute when a segment is reopened.
+
+If a segment's access is respecified, both access specifications must form a compatible set. The following are compatible sets:
+\begin{itemize}
+\item RO and RW are a compatible set with a resulting access attribute of RW.
+\item Any combination of RO, EO, and ER form a compatible set with a resulting access attribute of ER.
+\end{itemize}
+There are no other compatible sets for access specifications.
