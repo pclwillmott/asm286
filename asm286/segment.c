@@ -82,6 +82,10 @@ int close_segment(const char *name, int lineno)
   return 0;
 }
 
+int segment_stack_count() {
+  return stack_count;
+}
+
 segment_table_t *segment_stack_top(int lineno)
 {
   if (stack_count == 0) {
@@ -92,6 +96,9 @@ segment_table_t *segment_stack_top(int lineno)
 }
 
 void reset_for_pass(int pass) {
+  for (int i = 0; i < segment_count; i++) {
+    free(segment_table[i].name);
+  }
   stack_count = 0;
   segment_count = 0;
 }
@@ -106,6 +113,16 @@ int get_current_position(unsigned int *position, int lineno)
   return 0;
 }
 
+int set_current_position(unsigned int position, int lineno)
+{
+  segment_table_t *segment;
+  if ((segment = segment_stack_top(lineno)) == NULL) {
+    return 1;
+  }
+  segment->position = position;
+  return 0;
+}
+
 int dep(unsigned char db, int pass, int lineno)
 {
   segment_table_t *segment;
@@ -113,7 +130,7 @@ int dep(unsigned char db, int pass, int lineno)
     return 1;
   }
   if (pass == 1) {
-    printf("%02x ",db);
+    printf("%s: %04x %02x\n",segment->name, segment->position, db);
   }
   segment->position++;
   return 0;

@@ -39,6 +39,7 @@ void error( int err, int lineno )
     "Too Many Segments",
     "Not In Segment",
     "Segment Nesting Fault",
+    "Segment Not Ended",
   } ;
   
   char tmp_str[ 128 ] ;

@@ -9,13 +9,13 @@
  *
  *  This revision:
  *
- *    2019 November 9 Paul Willmott Baseline.
+ *    2020 April 10 Paul Willmott Two Passes added and test for unended segment.
  *
  *  Revision History:
  *
  *    2019 November 9 Paul Willmott Baseline.
  *
- *  Copyright (c) 2019 Paul C. L. Willmott. See license at end.
+ *  Copyright (c) 2019-2020 Paul C. L. Willmott. See license at end.
  *
  *------------------------------------------------------------------------------
  */
@@ -31,11 +31,16 @@ int main(int argc, const char * argv[]) {
  *------------------------------------------------------------------------------
  */
 
-  dump_pattern();
+//  dump_pattern();
 
   for (int pass = 0; pass < 2; pass++) {
+    printf("Pass %i\n",pass+1);
     reset_for_pass(pass);
     if ( process("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE.ASM", pass ) ) {
+      goto fail;
+    }
+    if (segment_stack_count()) {
+      error(ERR_SEGMENT_NOT_ENDED,0);
       goto fail;
     }
   }
@@ -213,7 +218,7 @@ fail:
  *------------------------------------------------------------------------------
  *  ASM286
  *
- *  Copyright (c) 2019 Paul C. L. Willmott
+ *  Copyright (c) 2019-2020 Paul C. L. Willmott
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to

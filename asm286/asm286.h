@@ -44,9 +44,10 @@ enum {
   ERR_TOO_MANY_SEGMENTS        = 10,
   ERR_NOT_IN_SEGMENT           = 11,
   ERR_SEGMENT_NESTING_FAULT    = 12,
+  ERR_SEGMENT_NOT_ENDED        = 13,
 } ;
 
-#define NUM_ERR ( 12 )
+#define NUM_ERR ( 13 )
 
 /*
  * Symbol Table stuff.
@@ -549,6 +550,7 @@ enum {
 #define SPD_SEG_ATT    "\101\115"
 #define SPD_SEG_AITEM  "\101\116"
 #define SPD_ENDS       "\101\117"
+#define SPD_ORG        "\101\120"
 
 #define SPD_LAST       "\177\177"
 
@@ -954,6 +956,7 @@ enum {
   PRD_SEG_ATT    = 8204,
   PRD_SEG_AITEM  = 8205,
   PRD_ENDS       = 8206,
+  PRD_ORG        = 8207,
 
 
 //  PRD_REG16       = 8158,
@@ -1099,6 +1102,8 @@ int get_current_position(unsigned int *, int);
 void reset_for_pass(int);
 segment_table_t *segment_stack_top(int);
 int get_segment_index(const char *);
+int segment_stack_count(void);
+int set_current_position(unsigned int, int);
 
 #endif /* asm286_h */
 

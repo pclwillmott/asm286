@@ -97,7 +97,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
 
 //  printf("execute: pid = %i ", ptree->production_id);
   
-  int operator, result, i1, i2;
+  int operator, result, i1 = 0, i2 = 0;
   ptree_node_t *arg1, *arg2 ;
   char *str ;
   int pass1 = (pass == 0);
@@ -174,6 +174,16 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
         return FAIL;
       }
       break;
+    case PRD_ENDS:
+      if (close_segment(ptree->args[0]->value.s, lineno)) {
+        return FAIL;
+      }
+      break;
+    case PRD_ORG:
+      if (set_current_position(ptree->args[1]->value.i, lineno)) {
+        return FAIL;
+      }
+      break;
     case PRD_INST_LABEL:
       if (pass1) {
         if (get_current_position(&pos, lineno)) {
@@ -189,9 +199,9 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       ptree->value.i = ptree->args[0]->value.i;
       break;
     case PRD_GRP0_EXP:
+      ptree->value_type = TOK_INTEGERDEC;
       switch (ptree->variant) {
         case 1:
-          ptree->value_type = ptree->args[1]->value_type;
           ptree->value.i = ptree->args[1]->value.i;
           break;
         case 2:
@@ -201,7 +211,11 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
             }
           }
           ptree->value.i = i1;
-          ptree->value_type = TOK_INTEGERDEC;
+          break;
+        case 3:
+          if (get_current_position((unsigned int *)&ptree->value.i, lineno)) {
+            return FAIL;
+          }
           break;
       }
       break;
