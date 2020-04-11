@@ -9,13 +9,13 @@
  *
  *  This revision:
  *
- *    2019 November 17 Paul Willmott Baseline.
+ *    2020 April 10 Paul Willmott ORG and $ added.
  *
  *  Revision History:
  *
  *    2019 November 17 Paul Willmott Baseline.
  *
- *  Copyright (c) 2019 Paul C. L. Willmott. See license at end.
+ *  Copyright (c) 2019-2020 Paul C. L. Willmott. See license at end.
  *
  *------------------------------------------------------------------------------
  */
@@ -27,7 +27,7 @@
 
 enum {
   SUCCESS = 1,
-  FAIL = 0,
+  FAIL    = 0,
 } ;
 
 int execute( ptree_node_t *ptree, int pass, int lineno )
@@ -95,10 +95,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
  * Jump Table
  */
 
-//  printf("execute: pid = %i ", ptree->production_id);
-  
-  int operator, result, i1 = 0, i2 = 0;
-  ptree_node_t *arg1, *arg2 ;
+  int result, i1 = 0, i2 = 0;
   char *str ;
   int pass1 = (pass == 0);
   int pass2 = (pass == 1);
@@ -112,8 +109,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       }
       break;
     case PRD_DBITEM:
-      operator = ptree->args[ 0 ]->value_type ;
-      switch (operator) {
+      switch (ptree->args[ 0 ]->value_type) {
         case TOK_INTEGERDEC:
           if (dep((unsigned char)ptree->args[ 0 ]->value.i, pass, lineno)) {
             return FAIL;
@@ -228,12 +224,9 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
     case PRD_GRP6_EXP:
     case PRD_GRP8_EXP:
     case PRD_GRP9_EXP:
-      operator = ptree->args[ 1 ]->args[ 0 ]->production_id ;
-      arg1 = ptree->args[ 0 ] ;
-      arg2 = ptree->args[ 2 ] ;
-      i1 = arg1->value.i;
-      i2 = arg2->value.i;
-      switch (operator) {
+      i1 = ptree->args[0]->value.i;
+      i2 = ptree->args[2]->value.i;
+      switch (ptree->args[1]->args[0]->production_id) {
         case TOK_MULTIPLY:
           result = i1 * i2;
           break;
@@ -286,9 +279,8 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
           result = 0;
           break;
       }
-      ptree->value_type = arg1->value_type;
+      ptree->value_type = TOK_INTEGERDEC;
       ptree->value.i = result;
-//      printf("value %i\n", ptree->value.i);
       break;
     case PRD_SIMPLE:
       {
@@ -326,7 +318,6 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
             return FAIL;
           }
         }
- //       printf("\n");
       }
       break;
   }
@@ -355,10 +346,6 @@ int setstr
   /*
    *-----------------------------------------------------------------------------
    */
-  
-  if ( (*str) != NULL ) {
-//    free ( *str ) ;
-  }
   
   if ( ( (*str) = ( char * ) malloc ( strlen ( value ) + 1 ) ) == NULL ) {
     error ( ERR_OUT_OF_MEMORY, 0 ) ;
