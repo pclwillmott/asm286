@@ -118,7 +118,7 @@ ptree_node_t * match
  */
   
   if ( j == PRD_LAST ) {
-    error ( ERR_INTERNAL_ERROR, -1 ) ;
+    error ( ERR_PRODUCTION_NOT_FOUND, -1 ) ;
     return NULL ;
   }
   

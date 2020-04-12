@@ -45,9 +45,10 @@ enum {
   ERR_NOT_IN_SEGMENT           = 11,
   ERR_SEGMENT_NESTING_FAULT    = 12,
   ERR_SEGMENT_NOT_ENDED        = 13,
+  ERR_PRODUCTION_NOT_FOUND     = 14,
 } ;
 
-#define NUM_ERR ( 13 )
+#define NUM_ERR ( 14 )
 
 /*
  * Symbol Table stuff.
@@ -517,8 +518,8 @@ enum {
 #define SPD_IND_SI     "\101\054"
 #define SPD_IND_DI     "\101\055"
 #define SPD_rm         "\101\056"
-#define SPD_eb         "\101\057"
-#define SPD_ew         "\101\060"
+#define SPD_rm_disp    "\101\057"
+//#define SPD_ew         "\101\060"
 #define SPD_RS         "\101\061"
 #define SPD_db         "\101\062"
 #define SPD_dw         "\101\063"

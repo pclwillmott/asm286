@@ -40,6 +40,7 @@ void error( int err, int lineno )
     "Not In Segment",
     "Segment Nesting Fault",
     "Segment Not Ended",
+    "Production Not Found",
   } ;
   
   char tmp_str[ 128 ] ;

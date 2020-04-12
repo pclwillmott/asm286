@@ -106,23 +106,65 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
   switch ( ptree->production_id ) {
     case PRD_ALU:
       {
-        unsigned char op1, op2;
-        printf("PRD_ALU: %i\n", ptree->args[0]->variant);
+        unsigned char op1 = 0, op2 = 0, w = 0x01;
+        int add_disp = 0, disp_word = 0, disp = 0;
+ //       printf("PRD_ALU: %i\n", ptree->args[0]->variant);
+ //       printf("PRD_ALU: reg L %i\n", ptree->args[1]->variant);
+ //       printf("PRD_ALU: reg R %i\n", ptree->args[3]->variant);
         switch (ptree->variant) {
           case 0:
             break;
           case 1:
             break;
-          case 2:
+          case 2: // rb, rb
+            w = 0x00;
+          case 3: // rw, rw
+            op1 = (ptree->args[0]->variant << 2) | 0x02 | w;
+            op2 = 0xc0 | (ptree->args[1]->variant << 3) | ptree->args[3]->variant ;
             break;
-          case 3:
+          case 4: // rb, rm_disp
+            w = 0x00;
+          case 5: // rw, rm_disp
+            {
+              op1 = (ptree->args[0]->variant << 2) | 0x02 | w;
+              add_disp = (ptree->args[3]->variant == 0) ;
+              if (add_disp) {
+                disp = ptree->args[3]->args[2]->value.i;
+                if (disp > -128 && disp < 256) {
+                  op2 = 0x01 << 6;
+                }
+                else {
+                  op2 = 0x02 << 6;
+                  disp_word = 1;
+                }
+              }
+              op2 |= (ptree->args[1]->variant << 3) | ptree->args[3]->args[0]->variant;
+            }
             break;
-          case 4:
-            op1 = (ptree->args[0]->variant << 2) + 0;
+          case 6: // rm_disp, rb
+            w = 0x00;
+          case 7: // rm_disp, rw
             break;
-          case 5:
-            op1 = (ptree->args[0]->variant << 2) + 1;
+          case 8:
             break;
+        }
+        if (dep(op1, pass, lineno)) {
+          return FAIL;
+        }
+        if (dep(op2, pass, lineno)) {
+          return FAIL;
+        }
+        if (add_disp) {
+          if (disp_word) {
+            if (depw((unsigned short)disp, pass, lineno)) {
+              return FAIL;
+            }
+          }
+          else {
+            if (dep((unsigned char)disp, pass, lineno)) {
+              return FAIL;
+            }
+          }
         }
       }
       break;

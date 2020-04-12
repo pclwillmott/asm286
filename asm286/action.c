@@ -187,7 +187,7 @@ char *prdlst[] = {
   
   SPD_dw          PT_EXECUTE      SPD_NUM_EXP,
   
-  SPD_DISP        PT_EXECUTE      SPD_NUM_EXP,
+  SPD_DISP        PT_IGNORE       SPD_NUM_EXP,
   
 /*
  * ----------
@@ -252,21 +252,24 @@ char *prdlst[] = {
   SPD_IND_SI      PT_IGNORE       STK_OBRACE      STK_SI          STK_CBRACE,
   SPD_IND_DI      PT_IGNORE       STK_OBRACE      STK_DI          STK_CBRACE,
 
-  SPD_rm          PT_IGNORE       SPD_IND_BX      STK_PLUS        SPD_IND_SI      STK_PLUS    SPD_DISP
-  SPD_rm          PT_IGNORE       SPD_IND_BX      STK_PLUS        SPD_IND_DI      STK_PLUS    SPD_DISP
-  SPD_rm          PT_IGNORE       SPD_IND_BP      STK_PLUS        SPD_IND_SI      STK_PLUS    SPD_DISP
-  SPD_rm          PT_IGNORE       SPD_IND_BP      STK_PLUS        SPD_IND_DI      STK_PLUS    SPD_DISP
- 
-  SPD_rm          PT_IGNORE       SPD_IND_SI      STK_PLUS        SPD_DISP
-  SPD_rm          PT_IGNORE       SPD_IND_DI      STK_PLUS        SPD_DISP
-  SPD_rm          PT_IGNORE       SPD_IND_BP      STK_PLUS        SPD_DISP
-  SPD_rm          PT_IGNORE       SPD_IND_BX      STK_PLUS        SPD_DISP
+  SPD_rm          PT_IGNORE       SPD_IND_BX      STK_PLUS        SPD_IND_SI,
+  SPD_rm          PT_IGNORE       SPD_IND_BX      STK_PLUS        SPD_IND_DI,
+  SPD_rm          PT_IGNORE       SPD_IND_BP      STK_PLUS        SPD_IND_SI,
+  SPD_rm          PT_IGNORE       SPD_IND_BP      STK_PLUS        SPD_IND_DI,
+  SPD_rm          PT_IGNORE       SPD_IND_SI,
+  SPD_rm          PT_IGNORE       SPD_IND_DI,
+  SPD_rm          PT_IGNORE       SPD_IND_BP,
+  SPD_rm          PT_IGNORE       SPD_IND_BX,
   
-  SPD_eb          PT_IGNORE       SPD_rb,
-  SPD_eb          PT_IGNORE       SPD_rm,
+  SPD_rm_disp     PT_IGNORE       SPD_rm          STK_PLUS        SPD_NUM_EXP,
+  SPD_rm_disp     PT_IGNORE       SPD_rm,
 
-  SPD_ew          PT_IGNORE       SPD_rw,
-  SPD_ew          PT_IGNORE       SPD_rm,
+  
+//  SPD_eb          PT_IGNORE       SPD_rb,
+//  SPD_eb          PT_IGNORE       SPD_rm,
+
+//  SPD_ew          PT_IGNORE       SPD_rw,
+//  SPD_ew          PT_IGNORE       SPD_rm,
   
   SPD_RS          PT_IGNORE       STK_ES,
   SPD_RS          PT_IGNORE       STK_CS,
@@ -284,10 +287,13 @@ char *prdlst[] = {
   
   SPD_ALU         PT_EXECUTE      SPD_ALUOP       STK_AL          STK_COMMA       SPD_db,
   SPD_ALU         PT_EXECUTE      SPD_ALUOP       STK_AX          STK_COMMA       SPD_dw,
-  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_eb          STK_COMMA       SPD_rb,
-  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_ew          STK_COMMA       SPD_rw,
-  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rb          STK_COMMA       SPD_eb,
-  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rw          STK_COMMA       SPD_ew,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rb          STK_COMMA       SPD_rb,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rw          STK_COMMA       SPD_rw,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rb          STK_COMMA       SPD_rm_disp,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rw          STK_COMMA       SPD_rm_disp,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rm_disp     STK_COMMA       SPD_rb,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rm_disp     STK_COMMA       SPD_rw,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rm_disp     STK_COMMA       SPD_rm_disp,
 
   SPD_JMPOP       PT_IGNORE       STK_JO,   // 0x70
   SPD_JMPOP       PT_IGNORE       STK_JNO,  // 0x71
