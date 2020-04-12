@@ -419,6 +419,8 @@ void dump_productions()
   printf("  PRD_DDVARIABLE = %i,\n", pid(SPD_DDVARIABLE));
   printf("  PRD_DDLIST     = %i,\n", pid(SPD_DDLIST));
   printf("  PRD_DDITEM     = %i,\n", pid(SPD_DDITEM));
+  printf("  PRD_JR         = %i,\n", pid(SPD_JR));
+  printf("  PRD_ALU        = %i,\n", pid(SPD_ALU));
 }
 
 void dump_pattern() 

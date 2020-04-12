@@ -43,7 +43,9 @@ char *prdlst[] = {
   SPD_LABEL_STMT  PT_IGNORE       SPD_INSTRUCTION,
   
   SPD_INSTRUCTION PT_IGNORE       SPD_SIMPLE,
-  
+  SPD_INSTRUCTION PT_IGNORE       SPD_JR,
+  SPD_INSTRUCTION PT_IGNORE       SPD_ALU,
+
   SPD_DIRECTIVE   PT_IGNORE       SPD_WARNING,
   SPD_DIRECTIVE   PT_IGNORE       SPD_NAME,
   SPD_DIRECTIVE   PT_IGNORE       SPD_STACKSEG,
@@ -280,12 +282,12 @@ char *prdlst[] = {
   SPD_ALUOP       PT_IGNORE       STK_XOR,
   SPD_ALUOP       PT_IGNORE       STK_CMP,
   
-  SPD_ALU         PT_IGNORE       SPD_ALUOP       STK_AL          STK_COMMA       SPD_db,
-  SPD_ALU         PT_IGNORE       SPD_ALUOP       STK_AX          STK_COMMA       SPD_dw,
-  SPD_ALU         PT_IGNORE       SPD_ALUOP       SPD_eb          STK_COMMA       SPD_rb,
-  SPD_ALU         PT_IGNORE       SPD_ALUOP       SPD_ew          STK_COMMA       SPD_rw,
-  SPD_ALU         PT_IGNORE       SPD_ALUOP       SPD_rb          STK_COMMA       SPD_eb,
-  SPD_ALU         PT_IGNORE       SPD_ALUOP       SPD_rw          STK_COMMA       SPD_ew,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       STK_AL          STK_COMMA       SPD_db,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       STK_AX          STK_COMMA       SPD_dw,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_eb          STK_COMMA       SPD_rb,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_ew          STK_COMMA       SPD_rw,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rb          STK_COMMA       SPD_eb,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rw          STK_COMMA       SPD_ew,
 
   SPD_JMPOP       PT_IGNORE       STK_JO,   // 0x70
   SPD_JMPOP       PT_IGNORE       STK_JNO,  // 0x71

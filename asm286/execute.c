@@ -9,9 +9,11 @@
  *
  *  This revision:
  *
- *    2020 April 10 Paul Willmott ORG and $ added.
+ *    2020 April 11 Paul Willmott Relative Jumps added.
  *
  *  Revision History:
+ *
+ *    2020 April 10 Paul Willmott ORG and $ added.
  *
  *    2019 November 17 Paul Willmott Baseline.
  *
@@ -102,6 +104,28 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
   unsigned int pos;
 
   switch ( ptree->production_id ) {
+    case PRD_ALU:
+      {
+        unsigned char op1, op2;
+        printf("PRD_ALU: %i\n", ptree->args[0]->variant);
+        switch (ptree->variant) {
+          case 0:
+            break;
+          case 1:
+            break;
+          case 2:
+            break;
+          case 3:
+            break;
+          case 4:
+            op1 = (ptree->args[0]->variant << 2) + 0;
+            break;
+          case 5:
+            op1 = (ptree->args[0]->variant << 2) + 1;
+            break;
+        }
+      }
+      break;
     case PRD_WARNING:
       if (pass2) {
         ptree->value.i = ptree->args[1]->value.i;
@@ -281,6 +305,54 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       }
       ptree->value_type = TOK_INTEGERDEC;
       ptree->value.i = result;
+      break;
+    case PRD_JR:
+    {
+      const unsigned char jr[] = {
+        0x70,
+        0x71,
+        0x72,
+        0x72,
+        0x72,
+        0x73,
+        0x73,
+        0x73,
+        0x74,
+        0x74,
+        0x75,
+        0x75,
+        0x76,
+        0x76,
+        0x77,
+        0x77,
+        0x78,
+        0x79,
+        0x7a,
+        0x7a,
+        0x7b,
+        0x7b,
+        0x7c,
+        0x7c,
+        0x7d,
+        0x7d,
+        0x7e,
+        0x7e,
+        0x7f,
+        0x7f,
+        0xe3,
+      };
+      if (dep(jr[ptree->args[0]->variant], pass, lineno)) {
+        return FAIL;
+      }
+      int cp = 0;
+      if (get_current_position((unsigned int *)&cp, lineno)) {
+        return FAIL;
+      }
+      signed char disp = (signed char)(cp - ptree->args[1]->value.i - 1);
+      if (dep(disp, pass, lineno)) {
+        return FAIL;
+      }
+    }
       break;
     case PRD_SIMPLE:
       {

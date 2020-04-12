@@ -933,6 +933,8 @@ enum {
   PRD_GRP7_EXP   = 8147,
   PRD_GRP8_EXP   = 8148,
   PRD_GRP9_EXP   = 8149,
+  PRD_JR         = 8164,
+  PRD_ALU        = 8179,
   PRD_VARIABLE   = 8180,
   PRD_INITITEM   = 8183,
   PRD_DBVARIABLE = 8186,
@@ -957,7 +959,6 @@ enum {
   PRD_SEG_AITEM  = 8205,
   PRD_ENDS       = 8206,
   PRD_ORG        = 8207,
-
 
 //  PRD_REG16       = 8158,
 //  PRD_ADC         = 8159,

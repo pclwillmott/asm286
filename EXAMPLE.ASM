@@ -75,6 +75,42 @@ label1:
 
 DW pggg
 HELLO DW label2 + 3
+JO $
+JO label1
+JNO label1
+JB label1
+JNAE label1
+JC label1
+JAE label1
+JNB label1
+JNC label1
+JE label1
+JZ label1
+JNE label1
+JNZ label1
+JBE label1
+JNA label1
+JA label1
+JNBE label1
+JS label1
+JNS label1
+JP label1
+JPE label1
+JNP label1
+JPO label1
+JL label1
+JNGE label1
+JGE label1
+JNL label1
+JLE label1
+JNG label1
+JG label1
+JNLE label1
+JCXZ label1
+ADC AX, BX
+ADD AX, BX
+SUB AX, BX
+
 CODE ENDS
 DATA SEGMENT
 DB 'Hello'

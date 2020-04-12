@@ -31,7 +31,7 @@ int main(int argc, const char * argv[]) {
  *------------------------------------------------------------------------------
  */
 
-//  dump_pattern();
+  dump_pattern();
 
   for (int pass = 0; pass < 2; pass++) {
     printf("Pass %i\n",pass+1);
