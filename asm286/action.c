@@ -247,10 +247,10 @@ char *prdlst[] = {
   SPD_rb          PT_IGNORE       STK_DH,
   SPD_rb          PT_IGNORE       STK_BH,
 
-  SPD_IND_BX      PT_IGNORE       STK_OBRACE      STK_BX          STK_CBRACE,
-  SPD_IND_BP      PT_IGNORE       STK_OBRACE      STK_BP          STK_CBRACE,
-  SPD_IND_SI      PT_IGNORE       STK_OBRACE      STK_SI          STK_CBRACE,
-  SPD_IND_DI      PT_IGNORE       STK_OBRACE      STK_DI          STK_CBRACE,
+  SPD_IND_BX      PT_IGNORE       STK_OBRACKET      STK_BX          STK_CBRACKET,
+  SPD_IND_BP      PT_IGNORE       STK_OBRACKET      STK_BP          STK_CBRACKET,
+  SPD_IND_SI      PT_IGNORE       STK_OBRACKET      STK_SI          STK_CBRACKET,
+  SPD_IND_DI      PT_IGNORE       STK_OBRACKET      STK_DI          STK_CBRACKET,
 
   SPD_rm          PT_IGNORE       SPD_IND_BX      STK_PLUS        SPD_IND_SI,
   SPD_rm          PT_IGNORE       SPD_IND_BX      STK_PLUS        SPD_IND_DI,
@@ -285,15 +285,17 @@ char *prdlst[] = {
   SPD_ALUOP       PT_IGNORE       STK_XOR,
   SPD_ALUOP       PT_IGNORE       STK_CMP,
   
-  SPD_ALU         PT_EXECUTE      SPD_ALUOP       STK_AL          STK_COMMA       SPD_db,
-  SPD_ALU         PT_EXECUTE      SPD_ALUOP       STK_AX          STK_COMMA       SPD_dw,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       STK_AL          STK_COMMA       SPD_NUM_EXP,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       STK_AX          STK_COMMA       SPD_NUM_EXP,
   SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rb          STK_COMMA       SPD_rb,
   SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rw          STK_COMMA       SPD_rw,
   SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rb          STK_COMMA       SPD_rm_disp,
   SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rw          STK_COMMA       SPD_rm_disp,
   SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rm_disp     STK_COMMA       SPD_rb,
   SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rm_disp     STK_COMMA       SPD_rw,
-  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rm_disp     STK_COMMA       SPD_rm_disp,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rb          STK_COMMA       SPD_NUM_EXP,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rw          STK_COMMA       SPD_NUM_EXP,
+  SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rm_disp     STK_COMMA       SPD_NUM_EXP,
 
   SPD_JMPOP       PT_IGNORE       STK_JO,   // 0x70
   SPD_JMPOP       PT_IGNORE       STK_JNO,  // 0x71
