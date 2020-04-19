@@ -166,17 +166,95 @@ XOR BP, 1024
 XOR SI, 1024
 XOR DI, 1024
 
-xor ax, 1024
-xor cx, 1024
-xor dx, 1024
-xor bx, 1024
-xor sp, 1024
-xor bp, 1024
-xor si, 1024
-xor di, 1024
+XOR [BX] + [SI] + 2, 1024
+XOR [BX] + [DI] + 2, 1024
+XOR [BP] + [SI] + 2, 1024
+XOR [BP] + [DI] + 2, 1024
+XOR [SI] + 2, 1024
+XOR [DI] + 2, 1024
+XOR [BP] + 2, 1024
+XOR [BX] + 2, 1024
 
-DB 'hello'
-DB 0ffH
-DB 'HELLO'
-warning 0ffffh
+XOR [BX] + [SI] + 1024, 1024
+XOR [BX] + [DI] + 1024, 1024
+XOR [BP] + [SI] + 1024, 1024
+XOR [BP] + [DI] + 1024, 1024
+XOR [SI] + 1024, 1024
+XOR [DI] + 1024, 1024
+XOR [BP] + 1024, 1024
+XOR [BX] + 1024, 1024
+
+XOR [BX] + [SI] + 1024, 2
+XOR [BX] + [DI] + 1024, 2
+XOR [BP] + [SI] + 1024, 2
+XOR [BP] + [DI] + 1024, 2
+XOR [SI] + 1024, 2
+XOR [DI] + 1024, 2
+XOR [BP] + 1024, 2
+XOR [BX] + 1024, 2
+
+XOR [BX] + [SI], 2
+XOR [BX] + [DI], 2
+XOR [BP] + [SI], 2
+XOR [BP] + [DI], 2
+XOR [SI], 2
+XOR [DI], 2
+XOR [BP], 2
+XOR [BX], 2
+
+XOR [BX] + [SI], 1024
+XOR [BX] + [DI], 1024
+XOR [BP] + [SI], 1024
+XOR [BP] + [DI], 1024
+XOR [SI], 1024
+XOR [DI], 1024
+XOR [BP], 1024
+XOR [BX], 1024
+
+BOUND CX, [BX] + [SI] + 2
+BOUND CX, [BX] + [DI] + 2
+BOUND CX, [BP] + [SI] + 2
+BOUND CX, [BP] + [DI] + 2
+BOUND CX, [SI] + 2
+BOUND CX, [DI] + 2
+BOUND CX, [BP] + 2
+BOUND CX, [BX] + 2
+
+BOUND CX, [BX] + [SI] + 1024
+BOUND CX, [BX] + [DI] + 1024
+BOUND CX, [BP] + [SI] + 1024
+BOUND CX, [BP] + [DI] + 1024
+BOUND CX, [SI] + 1024
+BOUND CX, [DI] + 1024
+BOUND CX, [BP] + 1024
+BOUND CX, [BX] + 1024
+
+BOUND CX, [BX] + [SI]
+BOUND CX, [BX] + [DI]
+BOUND CX, [BP] + [SI]
+BOUND CX, [BP] + [DI]
+BOUND CX, [SI]
+BOUND CX, [DI]
+BOUND CX, [BP]
+BOUND CX, [BX]
+
+ARPL [BX] + [SI] + 2, CX
+ARPL [BX] + [DI] + 2, CX
+ARPL [BP] + [SI] + 2, CX
+ARPL [BP] + [DI] + 2, CX
+ARPL [SI] + 2, CX
+ARPL [DI] + 2, CX
+ARPL [BP] + 2, CX
+ARPL [BX] + 2, CX
+
+ARPL AX, CX
+ARPL CX, CX
+ARPL DX, CX
+ARPL BX, CX
+ARPL SP, CX
+ARPL BP, CX
+ARPL SI, CX
+ARPL DI, CX
+
+
 CODE ENDS

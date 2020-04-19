@@ -15,6 +15,20 @@ Opcode & Instruction & Clocks & Description\\
 37 & AAA & 4 & ASCII adjust AL after addition\\
 \end{tabular}
 
+\subsubsection{Operation}
+\begin{verbatim}
+IF ((AL AND 0FH) > 9) OR (AF = 1) THEN
+  AL := AL + 6;
+  AH := AH +1;
+  AF := 1;
+  CF := 1;
+ELSE
+  CF := 0;
+  AF := 0;
+ENDIF
+AL := AL AND 0FH;
+\end{verbatim}
+       
 \subsubsection{Discussion}
 Code AAA only following an ADD instruction that leaves a byte result in the AL register. The lower nibbles of the ADD operands should be in the range 0 through 9 (BCD digits) so that AAA adjusts AL to contain the correct decimal digit result. If ADD produced a decimal carry, AAA increments the AH register and sets the carry (CF) and auxiliary carry (AF) flags to 1. If ADD produced no decimal carry, AAA clears the carry and auxiliary flags (0) and leaves AH unchanged. In either case, AL is left with its upper nibble set to 0. To convert AL to an ASCII result, follow the AAA instruction with OR AL, 30H.
 
@@ -43,6 +57,12 @@ ASCII Adjust AX before Division
 Opcode & Instruction & Clocks & Description\\
 D5 0A & AAD & 19 & ASCII adjust AX before division\\
 \end{tabular}
+
+\subsubsection{Operation}
+\begin{verbatim}
+  AL := AH * 0AH + AL; 
+  AH := 0;
+\end{verbatim}
 
 \subsubsection{Discussion}
 
@@ -74,6 +94,12 @@ Opcode & Instruction & Clocks & Description\\
 D4 0A & AAM & 17 & ASCII adjust AX after multiply\\
 \end{tabular}
 
+\subsubsection{Operation}
+\begin{verbatim}
+  AH := AL / 0AH; 
+  AL := AL MOD 0AH;
+\end{verbatim}
+
 \subsubsection{Discussion}
 
 Code AAM only following a MUL instruction on two unpacked BCD digits that leaves the result in the AX register. AL contains the MUL result, because it is always less than 100. AAM unpacks this result by dividing AL by 10, leaving the quotient (most significant digit) in AH and the remainder (least significant digit) in AL.
@@ -92,5 +118,49 @@ Real Address
 None
 
 Virtual 8086
+
+None
+
+\subsection*{AAS}
+
+ASCII Adjust AL after Subtraction
+
+\begin{tabular}{l l l l}
+Opcode & Instruction & Clocks & Description\\
+3F & AAS & 4 & ASCII adjust AL after subtraction\\
+\end{tabular}
+
+\subsubsection{Operation}
+\begin{verbatim}
+IF (AL AND 0FH) > 9 OR AF = 1 THEN
+  AL := AL - 6;
+  AH := AH -1;
+  AF := 1;
+  CF := 1;
+ELSE
+  CF := 0;
+  AF := 0;
+ENDIF
+AL := AL AND 0FH;
+\end{verbatim}
+
+\subsubsection{Discussion}
+Code AAS only following a SUB instruction that leaves the byte result in the AL register. The lower nibbles of the SUB operands should be in the range 0 through 9 (BCD digits) so that AAS adjusts AL to contain the correct decimal digit result. If SUB produced a decimal carry, AAS decrements the AH register and sets the carry (CF) and auxiliary carry (AF) flags to 1. If SUB produced no decimal carry, AAS clears the carry and auxiliary carry flags (0) and leaves AH unchanged. In either case, AL is left with its upper nibble set to 0. To convert AL to an ASCII result, follow the AAS with OR AL, 30H.
+
+\subsubsection{Flags Affected}
+
+AF and CF as described in the Discussion section; OF, SF, ZF, and PF are undefined
+
+\subsubsection{Exceptions by Mode}
+
+\subsubsection{Protected}
+
+None
+
+\subsubsection{Real Address}
+
+None
+
+\subsubsection{Virtual 8086}
 
 None

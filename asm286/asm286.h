@@ -552,6 +552,9 @@ enum {
 #define SPD_SEG_AITEM  "\101\116"
 #define SPD_ENDS       "\101\117"
 #define SPD_ORG        "\101\120"
+#define SPD_BOUND      "\101\121"
+#define SPD_ARPL       "\101\122"
+#define SPD_rw_rm_disp "\101\123"
 
 #define SPD_LAST       "\177\177"
 
@@ -960,6 +963,9 @@ enum {
   PRD_SEG_AITEM  = 8205,
   PRD_ENDS       = 8206,
   PRD_ORG        = 8207,
+  PRD_BOUND      = 8208,
+  PRD_ARPL       = 8209,
+  PRD_rw_rm_disp = 8210,
 
 //  PRD_REG16       = 8158,
 //  PRD_ADC         = 8159,
@@ -1106,6 +1112,10 @@ segment_table_t *segment_stack_top(int);
 int get_segment_index(const char *);
 int segment_stack_count(void);
 int set_current_position(unsigned int, int);
+int dep_disp(unsigned char [], int, int, int, int);
+unsigned char rm_disp_mod(ptree_node_t *, int *);
+int dep_opcodes(unsigned char [], int, int, int);
+int is_word(int);
 
 #endif /* asm286_h */
 
