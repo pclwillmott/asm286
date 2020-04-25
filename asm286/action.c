@@ -47,6 +47,7 @@ char *prdlst[] = {
   SPD_INSTRUCTION PT_IGNORE       SPD_ALU,
   SPD_INSTRUCTION PT_IGNORE       SPD_BOUND,
   SPD_INSTRUCTION PT_IGNORE       SPD_ARPL,
+  SPD_INSTRUCTION PT_IGNORE       SPD_ROTATE,
 
   SPD_DIRECTIVE   PT_IGNORE       SPD_WARNING,
   SPD_DIRECTIVE   PT_IGNORE       SPD_NAME,
@@ -263,6 +264,11 @@ char *prdlst[] = {
   SPD_rm          PT_IGNORE       SPD_IND_BP,
   SPD_rm          PT_IGNORE       SPD_IND_BX,
   
+  SPD_MEMPTR      PT_IGNORE       STK_BYTE        STK_PTR,
+  SPD_MEMPTR      PT_IGNORE       STK_WORD        STK_PTR,
+
+  SPD_rm_disp     PT_IGNORE       SPD_MEMPTR      SPD_rm          STK_PLUS        SPD_NUM_EXP,
+  SPD_rm_disp     PT_IGNORE       SPD_MEMPTR      SPD_rm,
   SPD_rm_disp     PT_IGNORE       SPD_rm          STK_PLUS        SPD_NUM_EXP,
   SPD_rm_disp     PT_IGNORE       SPD_rm,
 
@@ -297,6 +303,22 @@ char *prdlst[] = {
   SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rb          STK_COMMA       SPD_NUM_EXP,
   SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rw          STK_COMMA       SPD_NUM_EXP,
   SPD_ALU         PT_EXECUTE      SPD_ALUOP       SPD_rm_disp     STK_COMMA       SPD_NUM_EXP,
+
+  SPD_ROTOP       PT_IGNORE       STK_ROL,
+  SPD_ROTOP       PT_IGNORE       STK_ROR,
+  SPD_ROTOP       PT_IGNORE       STK_RCL,
+  SPD_ROTOP       PT_IGNORE       STK_RCR,
+  SPD_ROTOP       PT_IGNORE       STK_SAL,
+  SPD_ROTOP       PT_IGNORE       STK_SHR,
+  SPD_ROTOP       PT_IGNORE       STK_SHR, // deliberate duplicate
+  SPD_ROTOP       PT_IGNORE       STK_SAR,
+  
+  SPD_ROTATE      PT_EXECUTE      SPD_ROTOP       SPD_rb          STK_COMMA       SPD_NUM_EXP,
+  SPD_ROTATE      PT_EXECUTE      SPD_ROTOP       SPD_rw          STK_COMMA       SPD_NUM_EXP,
+  SPD_ROTATE      PT_EXECUTE      SPD_ROTOP       SPD_rm_disp     STK_COMMA       SPD_NUM_EXP,
+  SPD_ROTATE      PT_EXECUTE      SPD_ROTOP       SPD_rb          STK_COMMA       STK_CL,
+  SPD_ROTATE      PT_EXECUTE      SPD_ROTOP       SPD_rw          STK_COMMA       STK_CL,
+  SPD_ROTATE      PT_EXECUTE      SPD_ROTOP       SPD_rm_disp     STK_COMMA       STK_CL,
 
   SPD_BOUND       PT_EXECUTE      STK_BOUND       SPD_rw          STK_COMMA       SPD_rm_disp,
   

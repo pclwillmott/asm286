@@ -115,11 +115,49 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
   int disp = 0;
 
   switch ( ptree->production_id ) {
+    case PRD_ROTATE:
+      {
+        int w = 1;
+        int num = ptree->args[3]->value.i;
+        switch (ptree->variant) {
+          case 0:
+            w = 0;
+          case 1:
+            opcode[opcode_count++] = ((num == 1) ? 0xd0 : 0xc0) | w;
+            opcode[opcode_count++] = 0xc0 | ptree->args[1]->variant | (ptree->args[0]->variant << 3);
+            if (num != 1) {
+              literal[literal_count] = num;
+              literal_word[literal_count++] = 0;
+            }
+            break;
+          case 2:
+            opcode[opcode_count++] = ((num == 1) ? 0xd0 : 0xc0) ;
+            opcode[opcode_count++] = rm_disp_mod(ptree->args[1], &disp, &w) | (ptree->args[0]->variant << 3);
+            opcode[opcode_count-2] |= w;
+            if (num != 1) {
+              literal[literal_count] = num;
+              literal_word[literal_count++] = 0;
+            }
+           break;
+          case 3:
+            w = 0;
+          case 4:
+            opcode[opcode_count++] = 0xd0 | w | 0x02;
+            opcode[opcode_count++] = 0xc0 | ptree->args[1]->variant | (ptree->args[0]->variant << 3);
+            break;
+          case 5:
+            break;
+          default:
+            break;
+        }
+      }
+      break;
     case PRD_ARPL:
       {
+        int w = 0;
         opcode[opcode_count++] = 0x63;
         if (ptree->variant == 0) {
-          op2 = rm_disp_mod(ptree->args[1], &disp);
+          op2 = rm_disp_mod(ptree->args[1], &disp, &w);
         }
         else {
           op2 = 0xc0 | ptree->args[1]->variant;
@@ -129,8 +167,9 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       break;
     case PRD_BOUND:
       {
+        int w = 0;
         opcode[opcode_count++] = 0x62;
-        op2 = rm_disp_mod(ptree->args[3], &disp) | (ptree->args[1]->variant << 3) ;
+        op2 = rm_disp_mod(ptree->args[3], &disp, &w) | (ptree->args[1]->variant << 3) ;
         if (op2 == 0x0e) {
           op2 = 0x4e;
           disp = 0;
@@ -172,7 +211,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
             w = 0x00;
           case 7: // rm_disp, rw
             opcode[opcode_count++] = (ptree->args[0]->variant << 3) | 0x00 | w;
-            op2 = rm_disp_mod(ptree->args[1], &disp) | (ptree->args[3]->variant << 3);
+            op2 = rm_disp_mod(ptree->args[1], &disp, &w) | (ptree->args[3]->variant << 3);
             if (op2 == 0x06) {
               op2 = 0x46;
               disp = 0;
@@ -192,8 +231,9 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
               literal[literal_count] = ptree->args[3]->value.i;
               w = is_word(literal[literal_count]);
               literal_word[literal_count++] = w;
+              int w2 = 0;
+              op2 = rm_disp_mod(ptree->args[1], &disp, &w2) | (ptree->args[0]->variant << 3);
               opcode[opcode_count++] = 0x80 | ((w) ? 0x01 : 0x03 );
-              op2 = rm_disp_mod(ptree->args[1], &disp) | (ptree->args[0]->variant << 3);
               if (op2 == 0x36) {
                 op2 = 0x76;
                 disp = 0;
@@ -540,19 +580,39 @@ int dep_disp(unsigned char opcodes[], int opcode_count, int disp, int pass, int 
   return 0;
 }
 
-unsigned char rm_disp_mod(ptree_node_t *ptree, int *disp)
+unsigned char rm_disp_mod(ptree_node_t *ptree, int *disp, int *w)
 {
   unsigned char opcode2 = 0;
-  if (ptree->variant == 0) {
-    *disp = ptree->args[2]->value.i;
-    if (is_word(*disp)) {
-      opcode2 = 0x02 << 6;
-    }
-    else {
-      opcode2 = 0x01 << 6;
-    }
+  *w = 0x01;
+  switch (ptree->variant) {
+    case 0:
+    case 1:
+      *w = ptree->args[0]->variant;
+      if (ptree->variant == 0) {
+        *disp = ptree->args[3]->value.i;
+        if (is_word(*disp)) {
+          opcode2 = 0x02 << 6;
+        }
+        else {
+          opcode2 = 0x01 << 6;
+        }
+      }
+      opcode2 |= ptree->args[1]->variant;
+      break;
+    case 2:
+    case 3:
+      if (ptree->variant == 2) {
+        *disp = ptree->args[2]->value.i;
+        if (is_word(*disp)) {
+          opcode2 = 0x02 << 6;
+        }
+        else {
+          opcode2 = 0x01 << 6;
+        }
+      }
+      opcode2 |= ptree->args[0]->variant;
+      break;
   }
-  opcode2 |= ptree->args[0]->variant;
   return opcode2;
 }
 

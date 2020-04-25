@@ -555,6 +555,9 @@ enum {
 #define SPD_BOUND      "\101\121"
 #define SPD_ARPL       "\101\122"
 #define SPD_rw_rm_disp "\101\123"
+#define SPD_ROTOP      "\101\124"
+#define SPD_ROTATE     "\101\125"
+#define SPD_MEMPTR     "\101\126"
 
 #define SPD_LAST       "\177\177"
 
@@ -966,6 +969,9 @@ enum {
   PRD_BOUND      = 8208,
   PRD_ARPL       = 8209,
   PRD_rw_rm_disp = 8210,
+  PRD_ROTOP      = 8211,
+  PRD_ROTATE     = 8212,
+  PRD_MEMPTR     = 8213,
 
 //  PRD_REG16       = 8158,
 //  PRD_ADC         = 8159,
@@ -1113,7 +1119,7 @@ int get_segment_index(const char *);
 int segment_stack_count(void);
 int set_current_position(unsigned int, int);
 int dep_disp(unsigned char [], int, int, int, int);
-unsigned char rm_disp_mod(ptree_node_t *, int *);
+unsigned char rm_disp_mod(ptree_node_t *, int *, int *);
 int dep_opcodes(unsigned char [], int, int, int);
 int is_word(int);
 
