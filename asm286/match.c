@@ -364,6 +364,227 @@ void delete_ptree
   
 }
 
+ptree_node_t * match2
+(
+ int production_id,
+ FILE *fp,
+ int start_arg
+)
+{
+  
+  extern char * prdlst[] ;
+  
+  unsigned int prd_base = 0 ;
+  int prd_index = 0 ;
+  unsigned long num_args = 0L ;
+  int arg_index ;
+  int islist ;
+  
+  ptree_node_t *ptree, *safe_ptree ;
+  
+  long int safe_tp, tp ;
+  
+  int arg ;
+  
+  unsigned int j ;
+  
+  long int toklst = ftell(fp);
+  
+  /*
+   *-----------------------------------------------------------------------------
+   */
+  
+  /*
+   * Find production code in production list.
+   */
+  
+  while ( ( ( j = pid ( prdlst [ prd_base ] ) ) != PRD_LAST ) && ( j != production_id ) ) {
+    prd_base++ ;
+  }
+  
+  /*
+   * Throw error if production not found. This should never occur
+   * outside of development.
+   */
+  
+  if ( j == PRD_LAST ) {
+    error ( ERR_PRODUCTION_NOT_FOUND, -1 ) ;
+    return NULL ;
+  }
+  
+  /*
+   * If the first production variant is a recursive list and
+   * a search from the first arg is requested then skip to the next one.
+   * Note: recursive lists are always listed first in the
+   * production list.
+   */
+  
+  islist = ( production_id == pid ( &prdlst [ prd_base ][ 3 ] ) ) ;
+  
+  if ( ( start_arg == 0 ) && ( islist ) ) {
+    prd_index++ ;
+  }
+  
+  /*
+   * Create production tree node.
+   */
+  
+  if ( ( ptree = ( ptree_node_t * ) malloc ( sizeof ( ptree_node_t ) ) ) == NULL ) {
+    error ( ERR_OUT_OF_MEMORY, -1 ) ;
+    return NULL ;
+  }
+  
+  ptree->production_id = production_id ;
+  ptree->value_type = production_id ;
+  memset ( &ptree->value, 0, sizeof ( value_t ) ) ;
+  
+  /*
+   * Try each production variant, return if found.
+   */
+  
+  while ( pid ( prdlst [ prd_base + prd_index ] ) == production_id ) {
+    
+    /*
+     * Store production variant for "execute".
+     */
+    
+    ptree->variant = prd_index ;
+    ptree->num_args = 0 ;
+    ptree->exec_type = to_byte ( prdlst [ prd_base + prd_index ][ 2 ] ) ;
+    
+    /*
+     * Find number of arguments (tokens/productions) to match.
+     */
+    
+    num_args = ( strlen ( prdlst [ prd_base + prd_index ] ) - 3 ) >> 1 ;
+    
+    /*
+     * Create argument pointers.
+     */
+    
+    if ( ( ptree->args = ( ptree_node_t ** ) malloc ( sizeof ( ptree_node_t * ) * num_args ) ) == NULL ) {
+      error ( ERR_OUT_OF_MEMORY, -1 ) ;
+      free ( ptree ) ;
+      return NULL ;
+    }
+    
+    /*
+     * Try and find each symbol in turn.
+     */
+    
+    tp = toklst ;
+    fseek(fp, tp, SEEK_SET);
+    
+    ptree->num_args = ( prd_index == 0 ) ? start_arg : 0 ;
+    arg_index = ptree->num_args ;
+    
+    while ( ( !feof(fp) ) && ( arg_index < num_args ) ) {
+      
+      /*
+       * Get target argument.
+       */
+      
+      arg = pid ( &prdlst [ prd_base + prd_index ][ arg_index * 2 + 3 ] ) ;
+      
+      /*
+       * Handle terminals.
+       */
+      
+      if ( arg < PRODUCTION_OFFSET ) {
+        
+        if ( (ptree->args[ arg_index ] = find_token(arg, fp)) != NULL ) {
+          ptree->num_args++ ;
+        }
+        else {
+          break ;
+        }
+        
+      }
+      
+      /*
+       * Handle productions.
+       */
+      
+      else {
+        
+        if ( ( ptree->args[ arg_index ] = match2 ( arg, fp, 0 ) ) != NULL ) {
+          ptree->num_args++ ;
+        }
+        else {
+          break ;
+        }
+      }
+      
+      arg_index++ ;
+      
+    }
+    
+    /*
+     * All arguments found, so return.
+     */
+    
+    if ( arg_index == num_args ) {
+      
+      /*
+       * Check for first element in recursive list.
+       */
+      
+      safe_tp = ftell(fp) ;
+      
+      if ( ( islist ) && ( prd_index != 0 ) ) {
+        
+        while ( ( !feof(fp) ) && ( ( safe_ptree = match2 ( production_id, fp, 1 ) ) != NULL ) ) {
+          
+          safe_ptree->args[ 0 ] = ptree ;
+          
+          ptree = safe_ptree ;
+          
+          toklst = ftell(fp) ;
+          
+          safe_tp = tp ;
+          
+        }
+        
+      }
+      
+      toklst = safe_tp ;
+      fseek(fp, toklst, SEEK_SET);
+      
+      return ptree ;
+      
+    }
+    
+    /*
+     * Tidy-Up.
+     */
+    
+    delete_ptree ( ptree, 0, 1, ( prd_index == 0 ) ? start_arg : 0 ) ;
+    
+    if ( start_arg ) {
+      
+      free ( ptree ) ;
+      
+      return NULL ;
+    }
+    
+    prd_index++ ;
+    
+  }
+  
+  /*
+   * Tidy-Up.
+   */
+  
+  free ( ptree ) ;
+  
+  return NULL ;
+  
+  /*
+   * Finished
+   */
+  
+}
+
 /*
  *------------------------------------------------------------------------------
  *  ASM286

@@ -199,7 +199,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
           case 5: // rw, rm_disp
             {
               opcode[opcode_count++] = (ptree->args[0]->variant << 3) | 0x02 | w;
-              op2 = rm_disp_mod(ptree->args[3], &disp) | (ptree->args[1]->variant << 3);
+       //       op2 = rm_disp_mod(ptree->args[3], &disp) | (ptree->args[1]->variant << 3);
               if (op2 == 0x06) {
                 op2 = 0x46;
                 disp = 0;
@@ -211,7 +211,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
             w = 0x00;
           case 7: // rm_disp, rw
             opcode[opcode_count++] = (ptree->args[0]->variant << 3) | 0x00 | w;
-            op2 = rm_disp_mod(ptree->args[1], &disp, &w) | (ptree->args[3]->variant << 3);
+       //     op2 = rm_disp_mod(ptree->args[1], &disp, &w) | (ptree->args[3]->variant << 3);
             if (op2 == 0x06) {
               op2 = 0x46;
               disp = 0;

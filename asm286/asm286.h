@@ -24,6 +24,8 @@
  *-------------------------------------------------------------------------------
  */
 
+#include <stdio.h>
+
 #ifndef asm286_h
 #define asm286_h
 
@@ -75,7 +77,7 @@ enum {
  * Token string constants.
  */
 
-#define NUM_PATTERN ( 356 )  /* Number of token patterns */
+#define NUM_PATTERN ( 358 )  /* Number of token patterns */
 
 #define STK_UNDERSCORE  "\001\001"
 #define STK_MINUS       "\001\002"
@@ -443,6 +445,8 @@ enum {
 #define STK_STRING      "\003\144"
 #define STK_IDENTIFIER  "\003\145"
 #define STK_INST_LABEL  "\003\146"
+#define STK_NEWLINE     "\003\147"
+#define STK_WHITESPACE  "\003\150"
 
 /*
  * Production string constants.
@@ -558,6 +562,7 @@ enum {
 #define SPD_ROTOP      "\101\124"
 #define SPD_ROTATE     "\101\125"
 #define SPD_MEMPTR     "\101\126"
+#define SPD_NEWLINE    "\101\127"
 
 #define SPD_LAST       "\177\177"
 
@@ -921,6 +926,8 @@ enum {
   TOK_STRING      = 353,
   TOK_IDENTIFIER  = 354,
   TOK_INST_LABEL  = 355,
+  TOK_NEWLINE     = 356,
+  TOK_WHITESPACE  = 357,
 
 /*
  * Productions
@@ -1122,7 +1129,10 @@ int dep_disp(unsigned char [], int, int, int, int);
 unsigned char rm_disp_mod(ptree_node_t *, int *, int *);
 int dep_opcodes(unsigned char [], int, int, int);
 int is_word(int);
-
+int process2(const char *, int);
+ptree_node_t * match2(int, FILE *, int);
+ptree_node_t *find_token(int, FILE *);
+int match_pattern2(FILE *, const char *, char **, unsigned long *);
 #endif /* asm286_h */
 
 /*

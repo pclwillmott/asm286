@@ -31,12 +31,12 @@ int main(int argc, const char * argv[]) {
  *------------------------------------------------------------------------------
  */
 
-  dump_pattern();
+//  dump_pattern();
 
   for (int pass = 0; pass < 2; pass++) {
     printf("Pass %i\n",pass+1);
     reset_for_pass(pass);
-    if ( process("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE.ASM", pass ) ) {
+    if ( process2("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE 2.ASM", pass ) ) {
       goto fail;
     }
     if (segment_stack_count()) {
@@ -212,6 +212,77 @@ fail:
   
   return result ;
   
+}
+
+/*
+ * This routine assembles a single file.
+ * It returns 0 on success and -1 on failure.
+ */
+
+int process2(const char *filename, int pass) {
+  
+  FILE *fp = NULL ;
+  
+  int result = -1;
+
+  ptree_node_t *pt ;
+
+/*
+ *------------------------------------------------------------------------------
+ */
+  
+  if ( ( fp = fopen(filename, "r")) == NULL ) {
+    goto fail;
+  }
+  
+  while (!feof(fp)) {
+    
+//    printf("process2\n");
+    if ( ( ( pt = match2 ( PRD_STMT, fp, 0 ) ) == NULL )/* || ( tp != NULL ) */ ) {
+      if (feof(fp)) {
+        break;
+      }
+      error ( ERR_SYNTAX_ERROR, 0 ) ;
+      goto fail ;
+    }
+    
+    /*
+     * Execute command.
+     */
+    
+    else if ( ! execute ( pt, pass, 0 ) ) {
+      goto fail ;
+    }
+    
+    /*
+     * Tidy-Up
+     */
+    
+    if ( pt != NULL ) {
+      delete_ptree ( pt, 1, 1, 0 ) ;
+    }
+
+  }
+  
+  /*
+   * Tidy-Up.
+   */
+  
+  result = 0 ;
+  
+fail:
+  
+  if ( fp != NULL ) {
+    fclose(fp) ;
+  }
+  
+  /*
+   * Finished.
+   */
+  
+  return result ;
+  
+
 }
 
 /*
