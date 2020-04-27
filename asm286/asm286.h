@@ -77,7 +77,7 @@ enum {
  * Token string constants.
  */
 
-#define NUM_PATTERN ( 358 )  /* Number of token patterns */
+#define NUM_PATTERN ( 359 )  /* Number of token patterns */
 
 #define STK_UNDERSCORE  "\001\001"
 #define STK_MINUS       "\001\002"
@@ -447,6 +447,7 @@ enum {
 #define STK_INST_LABEL  "\003\146"
 #define STK_NEWLINE     "\003\147"
 #define STK_WHITESPACE  "\003\150"
+#define STK_TEXT        "\003\151"
 
 /*
  * Production string constants.
@@ -563,6 +564,7 @@ enum {
 #define SPD_ROTATE     "\101\125"
 #define SPD_MEMPTR     "\101\126"
 #define SPD_NEWLINE    "\101\127"
+#define SPD_COMMENT    "\101\130"
 
 #define SPD_LAST       "\177\177"
 

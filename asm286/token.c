@@ -390,7 +390,8 @@ const char *pattern[ NUM_PATTERN ] = {
   SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*",
   SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*:",
   RESERVED         "\n",
-  RESERVED         "[(\010|\011|\013|\014|\015|\032|\040)]+",
+  RESERVED         "[(\010|\011|\013|\014|\015|\032|\040)|\n&]+",
+  SPECIAL          "[^\n]*",
 } ;
 
 void dump_productions()
