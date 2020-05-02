@@ -113,7 +113,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
   int literal_count = 0;
   
   int disp = 0;
-
+/*
   switch ( ptree->production_id ) {
     case PRD_ROTATE:
       {
@@ -504,7 +504,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       }
       break;
   }
-
+*/
   // Do the code deposits
   
   if (dep_disp(opcode, opcode_count, disp, pass, lineno)) {

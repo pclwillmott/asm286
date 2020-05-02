@@ -389,8 +389,8 @@ const char *pattern[ NUM_PATTERN ] = {
   SPECIAL          "(['][^']*['])+",
   SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*",
   SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*:",
-  RESERVED         "\n",
-  RESERVED         "[(\010|\011|\013|\014|\015|\032|\040)|\n&]+",
+  SPECIAL          "\n",
+  SPECIAL          "[(\010|\011|\013|\014|\015|\032|\040|([\\][^\n]*[\n]))]+",
   SPECIAL          "[^\n]*",
 } ;
 
@@ -424,6 +424,23 @@ void dump_productions()
   printf("  PRD_DDITEM     = %i,\n", pid(SPD_DDITEM));
   printf("  PRD_JR         = %i,\n", pid(SPD_JR));
   printf("  PRD_ALU        = %i,\n", pid(SPD_ALU));
+  printf("  PRD_DIRECTIVE_LIST = %i,\n", pid(SPD_DIRECTIVE_LIST));
+  printf("  PRD_DIRECTIVE = %i,\n", pid(SPD_DIRECTIVE));
+  printf("  PRD_SEGMENT_DEF = %i,\n", pid(SPD_SEGMENT_DEF));
+  printf("  PRD_SEGMENT_DIR = %i,\n", pid(SPD_SEGMENT_DIR));
+  printf("  PRD_SEG_ID = %i,\n", pid(SPD_SEG_ID));
+  printf("  PRD_TOP = %i,\n", pid(SPD_TOP));
+  printf("  PRD_NEWLINE = %i,\n", pid(SPD_NEWLINE));
+  printf("  PRD_IN_SEG_DIR_LIST = %i,\n", pid(SPD_IN_SEG_DIR_LIST));
+  printf("  PRD_IN_SEG_DIR = %i,\n", pid(SPD_IN_SEG_DIR));
+  printf("  PRD_IN_SEGMENT_DIR = %i,\n", pid(SPD_IN_SEGMENT_DIR));
+  printf("  PRD_INSTRUCTION = %i,\n", pid(SPD_INSTRUCTION));
+  printf("  PRD_INST_PREFIX = %i,\n", pid(SPD_INST_PREFIX));
+  printf("  PRD_XINST_PREFIX = %i,\n", pid(SPD_XINST_PREFIX));
+  printf("  PRD_ASM_INSTRUCTION = %i,\n", pid(SPD_ASM_INSTRUCTION));
+  printf("  PRD_MNEMONIC = %i,\n", pid(SPD_MNEMONIC));
+  printf("  PRD_XMNEMONIC = %i,\n", pid(SPD_XMNEMONIC));
+  printf("  PRD_ENDS_DIR = %i,\n", pid(SPD_ENDS_DIR));
 }
 
 void dump_pattern() 
@@ -433,13 +450,13 @@ void dump_pattern()
 
   return;
   unsigned int idx, line ;
-/*
+
   for ( idx = 0; idx < NUM_PATTERN -7; idx++ ) {
     unsigned int B = idx % 127 + 1 ;
     unsigned int A = idx / 127 + 1 ;
     printf("#define STK_%-11s \"\\%03o\\%03o\"\n", pattern[idx]+1, A, B ) ;
   }
- */
+ 
   /*
   for ( idx = 0; idx < NUM_PATTERN - 7; idx++ ) {
     printf("  TOK_%-11s = %3i,\n", pattern[idx]+1, idx ) ;
@@ -982,10 +999,12 @@ ptree_node_t *find_token(int id, FILE *fp)
   long pos = ftell(fp);
  
   if ( ! match_pattern2( fp, pattern[id]+1, &match, &matchlen ) ) {
+    
     if ((ptree = (ptree_node_t *) malloc(sizeof(ptree_node_t))) == NULL) {
       error(ERR_OUT_OF_MEMORY, -1);
       return NULL;
     }
+    
     ptree->production_id = id ;
     
     switch (id) {
@@ -1021,13 +1040,19 @@ ptree_node_t *find_token(int id, FILE *fp)
         ptree->value.s = match;
         break;
     }
-    printf("%i %s |%s|\n", id, pattern[id]+1, match);
+    printf("found -> %s\n", match);
+    
+
+    //    printf("%i %s |%s|\n", id, pattern[id]+1, match);
     if (ptree->value_type != TOK_STRING) {
       free(match);
     }
     
     fseek(fp, pos + matchlen, SEEK_SET);
     
+  }
+  if (ptree == NULL) {
+    printf("not found %s\n", pattern[id]+1);
   }
   return ptree;
 }
@@ -1072,7 +1097,7 @@ int match_pattern2
     char start = *pattern, stop = '\0' ;
     
     long int save = sptr ;
- //   fseek(fp, sptr, SEEK_SET);
+    fseek(fp, sptr, SEEK_SET);
     
     switch ( *pattern ) {
       case '(':

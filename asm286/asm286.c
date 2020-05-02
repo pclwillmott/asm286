@@ -31,7 +31,7 @@ int main(int argc, const char * argv[]) {
  *------------------------------------------------------------------------------
  */
 
-//  dump_pattern();
+  dump_pattern();
 
   for (int pass = 0; pass < 2; pass++) {
     printf("Pass %i\n",pass+1);
@@ -238,7 +238,7 @@ int process2(const char *filename, int pass) {
   while (!feof(fp)) {
     
 //    printf("process2\n");
-    if ( ( ( pt = match2 ( PRD_STMT, fp, 0 ) ) == NULL )/* || ( tp != NULL ) */ ) {
+    if ( ( ( pt = match2 ( PRD_TOP, fp, 0 ) ) == NULL )/* || ( tp != NULL ) */ ) {
       if (feof(fp)) {
         break;
       }

@@ -565,6 +565,22 @@ enum {
 #define SPD_MEMPTR     "\101\126"
 #define SPD_NEWLINE    "\101\127"
 #define SPD_COMMENT    "\101\130"
+#define SPD_DIRECTIVE_LIST  "\101\131"
+#define SPD_SEGMENT_DEF     "\101\132"
+#define SPD_SEGMENT_DIR     "\101\133"
+#define SPD_IN_SEG_DIR_LIST "\101\134"
+#define SPD_ENDS_DIR        "\101\135"
+#define SPD_SEG_ID          "\101\136"
+#define SPD_IN_SEG_DIR      "\101\137"
+#define SPD_LABEL_DEF       "\101\140"
+#define SPD_IN_SEGMENT_DIR  "\101\141"
+#define SPD_XLABEL_DEF      "\101\142"
+#define SPD_INST_PREFIX     "\101\143"
+#define SPD_XINST_PREFIX    "\101\144"
+#define SPD_ASM_INSTRUCTION "\101\145"
+#define SPD_MNEMONIC        "\101\146"
+#define SPD_XMNEMONIC       "\101\147"
+#define SPD_TOP             "\101\150"
 
 #define SPD_LAST       "\177\177"
 
@@ -936,6 +952,10 @@ enum {
  */
 
   PRD_STMT       = 8153,
+  PRD_AAA        = 8154,
+  PRD_AAD        = 8155,
+  PRD_AAM        = 8156,
+  PRD_AAS        = 8157,
   PRD_SIMPLE     = 8166,
   PRD_WARNING    = 8185,
   PRD_CON_NUM    = 8138,
@@ -949,38 +969,33 @@ enum {
   PRD_GRP7_EXP   = 8147,
   PRD_GRP8_EXP   = 8148,
   PRD_GRP9_EXP   = 8149,
-  PRD_JR         = 8164,
-  PRD_ALU        = 8179,
   PRD_VARIABLE   = 8180,
   PRD_INITITEM   = 8183,
   PRD_DBVARIABLE = 8186,
   PRD_DBLIST     = 8187,
   PRD_DBITEM     = 8188,
-  PRD_DWITEM     = 8189,
-  PRD_DWVARIABLE = 8190,
-  PRD_DWLIST     = 8191,
   PRD_DDVARIABLE = 8192,
   PRD_DDLIST     = 8193,
   PRD_DDITEM     = 8194,
-  PRD_LABEL_STMT = 8195,
-  PRD_DATA_STMT  = 8196,
-  PRD_DIRECTIVE  = 8197,
-  PRD_INST_LABEL = 8198,
+  PRD_JR         = 8164,
+  PRD_ALU        = 8179,
+  PRD_DIRECTIVE_LIST = 8216,
+  PRD_DIRECTIVE = 8197,
+  PRD_SEGMENT_DEF = 8217,
+  PRD_SEGMENT_DIR = 8218,
+  PRD_SEG_ID = 8221,
+  PRD_TOP = 8231,
+  PRD_NEWLINE = 8214,
+  PRD_IN_SEG_DIR_LIST = 8219,
+  PRD_IN_SEG_DIR = 8222,
+  PRD_IN_SEGMENT_DIR = 8224,
   PRD_INSTRUCTION = 8199,
-  PRD_VAR_NAME   = 8200,
-  PRD_NAME       = 8201,
-  PRD_STACKSEG   = 8202,
-  PRD_SEGMENT    = 8203,
-  PRD_SEG_ATT    = 8204,
-  PRD_SEG_AITEM  = 8205,
-  PRD_ENDS       = 8206,
-  PRD_ORG        = 8207,
-  PRD_BOUND      = 8208,
-  PRD_ARPL       = 8209,
-  PRD_rw_rm_disp = 8210,
-  PRD_ROTOP      = 8211,
-  PRD_ROTATE     = 8212,
-  PRD_MEMPTR     = 8213,
+  PRD_INST_PREFIX = 8226,
+  PRD_XINST_PREFIX = 8227,
+  PRD_ASM_INSTRUCTION = 8228,
+  PRD_MNEMONIC = 8229,
+  PRD_XMNEMONIC = 8230,
+  PRD_ENDS_DIR = 8220,
 
 //  PRD_REG16       = 8158,
 //  PRD_ADC         = 8159,
