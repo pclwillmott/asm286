@@ -391,6 +391,8 @@ ptree_node_t * match2
   unsigned int j ;
   
   long int toklst = ftell(fp);
+  fseek(fp, 0L, SEEK_END);
+  long int end_of_file = ftell(fp);
   
   /*
    *-----------------------------------------------------------------------------
@@ -596,7 +598,7 @@ ptree_node_t * match2
       
       if ( ( islist ) && ( prd_index != 0 ) ) {
         
-        while ( ( !feof(fp) ) && ( ( safe_ptree = match2 ( production_id, fp, 1 ) ) != NULL ) ) {
+        while ( ( safe_tp < end_of_file ) && ( ( safe_ptree = match2 ( production_id, fp, 1 ) ) != NULL ) ) {
           
           safe_ptree->args[ 0 ] = ptree ;
           
@@ -604,7 +606,7 @@ ptree_node_t * match2
           
           toklst = ftell(fp) ;
           
-          safe_tp = tp ;
+          safe_tp = toklst;
           
         }
         
@@ -627,6 +629,7 @@ ptree_node_t * match2
       
       free ( ptree ) ;
       indent--;
+      fseek(fp, toklst, SEEK_SET);
       return NULL ;
     }
     
@@ -642,6 +645,7 @@ ptree_node_t * match2
   
   indent--;
   
+  fseek(fp, toklst, SEEK_SET);
   return NULL ;
   
   /*

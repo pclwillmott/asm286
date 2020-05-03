@@ -235,11 +235,15 @@ int process2(const char *filename, int pass) {
     goto fail;
   }
   
-  while (!feof(fp)) {
+  fseek(fp, 0L, SEEK_END);
+  long int end_of_file = ftell(fp);
+  fseek(fp, 0L, SEEK_SET);
+  
+  while (ftell(fp)<end_of_file) {
     
 //    printf("process2\n");
     if ( ( ( pt = match2 ( PRD_TOP, fp, 0 ) ) == NULL )/* || ( tp != NULL ) */ ) {
-      if (feof(fp)) {
+      if (ftell(fp)==end_of_file) {
         break;
       }
       error ( ERR_SYNTAX_ERROR, 0 ) ;

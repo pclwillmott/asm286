@@ -1,5 +1,5 @@
 code SEGMENT
 NOP
 NOP
-NOP
-code ENDS
+code ENDS \ discard
+

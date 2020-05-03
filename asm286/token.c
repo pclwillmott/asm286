@@ -389,8 +389,8 @@ const char *pattern[ NUM_PATTERN ] = {
   SPECIAL          "(['][^']*['])+",
   SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*",
   SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*:",
-  SPECIAL          "\n",
-  SPECIAL          "[(\010|\011|\013|\014|\015|\032|\040|([\\][^\n]*[\n]))]+",
+  SPECIAL          "(\n|(;[^\n]*\n))+",
+  SPECIAL          "(\010|\011|\013|\014|\015|\032|\040|(\\[^\n]*\n))*",
   SPECIAL          "[^\n]*",
 } ;
 
@@ -997,11 +997,22 @@ ptree_node_t *find_token(int id, FILE *fp)
   unsigned long matchlen;
   ptree_node_t *ptree = NULL;
   long pos = ftell(fp);
- 
-  if ( ! match_pattern2( fp, pattern[id]+1, &match, &matchlen ) ) {
+  
+  char *pat;
+  
+  if ((pat = (char *) malloc (strlen(pattern[id]+1) + strlen(pattern[TOK_WHITESPACE]+1) + 1)) == NULL ) {
+    error(ERR_OUT_OF_MEMORY, -1);
+    return NULL;
+  }
+  
+  strcpy(pat, pattern[TOK_WHITESPACE]+1);
+  strcat(pat, pattern[id]+1);
+  
+  if ( ! match_pattern2( fp, pat, &match, &matchlen ) ) {
     
     if ((ptree = (ptree_node_t *) malloc(sizeof(ptree_node_t))) == NULL) {
       error(ERR_OUT_OF_MEMORY, -1);
+      free(pat);
       return NULL;
     }
     
@@ -1049,11 +1060,19 @@ ptree_node_t *find_token(int id, FILE *fp)
     }
     
     fseek(fp, pos + matchlen, SEEK_SET);
+    printf("success: %lu\n",ftell(fp));
     
+  }
+  else {
+    fseek(fp, pos, SEEK_SET);
+    printf("failure: %lu\n",pos);
   }
   if (ptree == NULL) {
     printf("not found %s\n", pattern[id]+1);
   }
+  
+  free(pat);
+  
   return ptree;
 }
 
@@ -1066,6 +1085,7 @@ int match_pattern2
 )
 {
   
+  long int tp, end_of_file;
   int result = -1 ;
   
   long int sptr = ftell(fp) ;
@@ -1079,6 +1099,11 @@ int match_pattern2
     goto fail;
   }
   **match = '\0';
+  
+  tp = ftell(fp);
+  fseek(fp, 0L, SEEK_END);
+  end_of_file = ftell(fp);
+  fseek(fp, tp, SEEK_SET);
   
   /*
    *------------------------------------------------------------------------------
@@ -1295,7 +1320,7 @@ int match_pattern2
           break;
       }
       
-    } while ( more_to_find && !feof(fp) ) ;
+    } while ( more_to_find && sptr < end_of_file ) ;
     
     /*
      * Handle Or.
@@ -1305,7 +1330,7 @@ int match_pattern2
       skip_next = is_success ;
       if ( ! skip_next ) {
         sptr = save ;
-   //     fseek(fp, sptr, SEEK_SET);
+     //   fseek(fp, sptr, SEEK_SET);
       }
       pattern++;
     }
