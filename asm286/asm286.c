@@ -27,13 +27,16 @@
 
 int main(int argc, const char * argv[]) {
   
+  extern long int maxPos;
+  
 /*
  *------------------------------------------------------------------------------
  */
 
-  dump_pattern();
+//  dump_pattern();
 
   for (int pass = 0; pass < 2; pass++) {
+    maxPos = 0;
     printf("Pass %i\n",pass+1);
     reset_for_pass(pass);
     if ( process2("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE 2.ASM", pass ) ) {
@@ -219,6 +222,8 @@ fail:
  * It returns 0 on success and -1 on failure.
  */
 
+long int maxPos = 0L;
+
 int process2(const char *filename, int pass) {
   
   FILE *fp = NULL ;
@@ -275,6 +280,18 @@ int process2(const char *filename, int pass) {
   result = 0 ;
   
 fail:
+  
+  if (result) {
+    char buffer[256];
+    long int x = maxPos - 10;
+    if (x <0L) {
+      x = 0L;
+    }
+    fseek(fp, x, SEEK_SET);
+    unsigned long n = fread(&buffer, 1, 20, fp);
+    buffer[n] = '\0';
+    printf(">%s<\n", buffer);
+  }
   
   if ( fp != NULL ) {
     fclose(fp) ;

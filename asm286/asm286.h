@@ -29,6 +29,8 @@
 #ifndef asm286_h
 #define asm286_h
 
+//#define DEBUG2 1
+
 /*
  * Error codes.
  */
@@ -581,6 +583,8 @@ enum {
 #define SPD_MNEMONIC        "\101\146"
 #define SPD_XMNEMONIC       "\101\147"
 #define SPD_TOP             "\101\150"
+#define SPD_EXPR_LIST       "\101\151"
+#define SPD_EXPR            "\101\152"
 
 #define SPD_LAST       "\177\177"
 

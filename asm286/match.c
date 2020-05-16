@@ -394,10 +394,12 @@ ptree_node_t * match2
   fseek(fp, 0L, SEEK_END);
   long int end_of_file = ftell(fp);
   
+  extern long int maxPos;
+  
   /*
    *-----------------------------------------------------------------------------
    */
-#ifndef FRED
+#ifdef DEBUG2
   for (int i=0; i<indent; i++) {
     printf(" ");
   }
@@ -561,6 +563,10 @@ ptree_node_t * match2
           ptree->num_args++ ;
         }
         else {
+          long int x = ftell(fp);
+          if (x>maxPos) {
+            maxPos = x;
+          }
           break ;
         }
         

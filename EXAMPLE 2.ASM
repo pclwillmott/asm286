@@ -1,5 +1,6 @@
 code SEGMENT
 NOP
+STI
 NOP
-code ENDS \ discard
+code ENDS ; comment
 
