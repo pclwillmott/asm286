@@ -33,7 +33,7 @@ int main(int argc, const char * argv[]) {
  *------------------------------------------------------------------------------
  */
 
-//  dump_pattern();
+  dump_pattern();
 
   for (int pass = 0; pass < 2; pass++) {
     maxPos = 0;
@@ -64,6 +64,8 @@ fail:
  * This routine assembles a single file.
  * It returns 0 on success and -1 on failure.
  */
+
+#ifdef ROCKY
 
 int process(const char *filename, int pass) {
   
@@ -217,6 +219,8 @@ fail:
   
 }
 
+#endif
+
 /*
  * This routine assembles a single file.
  * It returns 0 on success and -1 on failure.
@@ -247,7 +251,7 @@ int process2(const char *filename, int pass) {
   while (ftell(fp)<end_of_file) {
     
 //    printf("process2\n");
-    if ( ( ( pt = match2 ( PRD_TOP, fp, 0 ) ) == NULL )/* || ( tp != NULL ) */ ) {
+    if ( ( ( pt = match2 ( PRD_module, fp, 0 ) ) == NULL )/* || ( tp != NULL ) */ ) {
       if (ftell(fp)==end_of_file) {
         break;
       }

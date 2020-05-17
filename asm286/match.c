@@ -476,6 +476,7 @@ ptree_node_t * match2
   
   if ( j == PRD_LAST ) {
     error ( ERR_PRODUCTION_NOT_FOUND, -1 ) ;
+    printProdName(production_id);
     return NULL ;
   }
   

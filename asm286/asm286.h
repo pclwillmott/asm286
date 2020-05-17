@@ -71,6 +71,11 @@ enum {
  */
 
 #define KEYWORD          "\001"
+#define KEYWORD_186      "\011"
+#define KEYWORD_286      "\021"
+#define KEYWORD_286P     "\031"
+#define KEYWORD_8087     "\101"
+#define KEYWORD_287      "\201"
 #define RESERVED         "\002"
 #define KEYWORD_RESERVED "\003"
 #define SPECIAL          "\004"
@@ -79,7 +84,7 @@ enum {
  * Token string constants.
  */
 
-#define NUM_PATTERN ( 359 )  /* Number of token patterns */
+#define NUM_PATTERN ( 374 )  /* Number of token patterns */
 
 #define STK_UNDERSCORE  "\001\001"
 #define STK_MINUS       "\001\002"
@@ -102,338 +107,353 @@ enum {
 #define STK_GREATER     "\001\023"
 #define STK_DOLLAR      "\001\024"
 #define STK_COMMA       "\001\025"
+#define STK_EQUAL       "\001\026"
 
 /*
  * BEGIN AUTONUMBER SECTION
  */
 
-#define STK_AAA         "\001\026"
-#define STK_AAD         "\001\027"
-#define STK_AAM         "\001\030"
-#define STK_AAS         "\001\031"
-#define STK_ABS         "\001\032"
-#define STK_ADC         "\001\033"
-#define STK_ADD         "\001\034"
-#define STK_AH          "\001\035"
-#define STK_AL          "\001\036"
-#define STK_ALIGN       "\001\037"
-#define STK_AND         "\001\040"
-#define STK_ARPL        "\001\041"
-#define STK_ASSUME      "\001\042"
-#define STK_AX          "\001\043"
-#define STK_BH          "\001\044"
-#define STK_BL          "\001\045"
-#define STK_BOUND       "\001\046"
-#define STK_BP          "\001\047"
-#define STK_BSWAP       "\001\050"
-#define STK_BX          "\001\051"
-#define STK_BYTE        "\001\052"
-#define STK_CALL        "\001\053"
-#define STK_CBW         "\001\054"
-#define STK_CH          "\001\055"
-#define STK_CL          "\001\056"
-#define STK_CLC         "\001\057"
-#define STK_CLD         "\001\060"
-#define STK_CLI         "\001\061"
-#define STK_CLTS        "\001\062"
-#define STK_CMC         "\001\063"
-#define STK_CMP         "\001\064"
-#define STK_CMPS        "\001\065"
-#define STK_CMPSB       "\001\066"
-#define STK_CMPSW       "\001\067"
-#define STK_CMPXCHG     "\001\070"
-#define STK_CODEMACRO   "\001\071"
-#define STK_COMMON      "\001\072"
-#define STK_CS          "\001\073"
-#define STK_CWD         "\001\074"
-#define STK_CX          "\001\075"
-#define STK_DAA         "\001\076"
-#define STK_DAS         "\001\077"
-#define STK_DB          "\001\100"
-#define STK_DD          "\001\101"
-#define STK_DEC         "\001\102"
-#define STK_DH          "\001\103"
-#define STK_DI          "\001\104"
-#define STK_DIV         "\001\105"
-#define STK_DL          "\001\106"
-#define STK_DQ          "\001\107"
-#define STK_DS          "\001\110"
-#define STK_DT          "\001\111"
-#define STK_DUP         "\001\112"
-#define STK_DW          "\001\113"
-#define STK_DWORD       "\001\114"
-#define STK_DX          "\001\115"
-#define STK_END         "\001\116"
-#define STK_ENDM        "\001\117"
-#define STK_ENDP        "\001\120"
-#define STK_ENDS        "\001\121"
-#define STK_ENTER       "\001\122"
-#define STK_EO          "\001\123"
-#define STK_EQ          "\001\124"
-#define STK_EQU         "\001\125"
-#define STK_ER          "\001\126"
-#define STK_ES          "\001\127"
-#define STK_ESC         "\001\130"
-#define STK_EVEN        "\001\131"
-#define STK_EXTRN       "\001\132"
-#define STK_F2XM1       "\001\133"
-#define STK_FABS        "\001\134"
-#define STK_FADD        "\001\135"
-#define STK_FADDP       "\001\136"
-#define STK_FAR         "\001\137"
-#define STK_FBLD        "\001\140"
-#define STK_FBSTP       "\001\141"
-#define STK_FCHS        "\001\142"
-#define STK_FCLEX       "\001\143"
-#define STK_FCOM        "\001\144"
-#define STK_FCOMP       "\001\145"
-#define STK_FCOMPP      "\001\146"
-#define STK_FDECSTP     "\001\147"
-#define STK_FDISI       "\001\150"
-#define STK_FDIV        "\001\151"
-#define STK_FDIVP       "\001\152"
-#define STK_FDIVR       "\001\153"
-#define STK_FDIVRP      "\001\154"
-#define STK_FENI        "\001\155"
-#define STK_FFREE       "\001\156"
-#define STK_FIADD       "\001\157"
-#define STK_FICOM       "\001\160"
-#define STK_FICOMP      "\001\161"
-#define STK_FIDIV       "\001\162"
-#define STK_FIDIVR      "\001\163"
-#define STK_FILD        "\001\164"
-#define STK_FIMUL       "\001\165"
-#define STK_FINCSTP     "\001\166"
-#define STK_FINIT       "\001\167"
-#define STK_FIST        "\001\170"
-#define STK_FISTP       "\001\171"
-#define STK_FISUB       "\001\172"
-#define STK_FISUBR      "\001\173"
-#define STK_FLD         "\001\174"
-#define STK_FLD1        "\001\175"
-#define STK_FLDCW       "\001\176"
-#define STK_FLDENV      "\001\177"
-#define STK_FLDL2E      "\002\001"
-#define STK_FLDL2T      "\002\002"
-#define STK_FLDLG2      "\002\003"
-#define STK_FLDLN2      "\002\004"
-#define STK_FLDPI       "\002\005"
-#define STK_FLDZ        "\002\006"
-#define STK_FMUL        "\002\007"
-#define STK_FMULP       "\002\010"
-#define STK_FNCLEX      "\002\011"
-#define STK_FNDISI      "\002\012"
-#define STK_FNENI       "\002\013"
-#define STK_FNINIT      "\002\014"
-#define STK_FNOP        "\002\015"
-#define STK_FNSAVE      "\002\016"
-#define STK_FNSTCW      "\002\017"
-#define STK_FNSTENV     "\002\020"
-#define STK_FNSTSW      "\002\021"
-#define STK_FPATAN      "\002\022"
-#define STK_FPREM       "\002\023"
-#define STK_FPTAN       "\002\024"
-#define STK_FRNDINT     "\002\025"
-#define STK_FRSTOR      "\002\026"
-#define STK_FSAVE       "\002\027"
-#define STK_FSCALE      "\002\030"
-#define STK_FSETPM      "\002\031"
-#define STK_FSQRT       "\002\032"
-#define STK_FST         "\002\033"
-#define STK_FSTCW       "\002\034"
-#define STK_FSTENV      "\002\035"
-#define STK_FSTP        "\002\036"
-#define STK_FSTSW       "\002\037"
-#define STK_FSUB        "\002\040"
-#define STK_FSUBP       "\002\041"
-#define STK_FSUBR       "\002\042"
-#define STK_FSUBRP      "\002\043"
-#define STK_FTST        "\002\044"
-#define STK_FWAIT       "\002\045"
-#define STK_FXAM        "\002\046"
-#define STK_FXCH        "\002\047"
-#define STK_FXTRACT     "\002\050"
-#define STK_FYL2X       "\002\051"
-#define STK_FYL2XP1     "\002\052"
-#define STK_GE          "\002\053"
-#define STK_GT          "\002\054"
-#define STK_HIGH        "\002\055"
-#define STK_HLT         "\002\056"
-#define STK_IDIV        "\002\057"
-#define STK_IMUL        "\002\060"
-#define STK_IN          "\002\061"
-#define STK_INC         "\002\062"
-#define STK_INS         "\002\063"
-#define STK_INSB        "\002\064"
-#define STK_INSW        "\002\065"
-#define STK_INT         "\002\066"
-#define STK_INTO        "\002\067"
-#define STK_INVD        "\002\070"
-#define STK_INVLPG      "\002\071"
-#define STK_IRET        "\002\072"
-#define STK_JA          "\002\073"
-#define STK_JAE         "\002\074"
-#define STK_JB          "\002\075"
-#define STK_JBE         "\002\076"
-#define STK_JC          "\002\077"
-#define STK_JCXZ        "\002\100"
-#define STK_JE          "\002\101"
-#define STK_JG          "\002\102"
-#define STK_JGE         "\002\103"
-#define STK_JL          "\002\104"
-#define STK_JLE         "\002\105"
-#define STK_JMP         "\002\106"
-#define STK_JNA         "\002\107"
-#define STK_JNAE        "\002\110"
-#define STK_JNB         "\002\111"
-#define STK_JNBE        "\002\112"
-#define STK_JNC         "\002\113"
-#define STK_JNE         "\002\114"
-#define STK_JNG         "\002\115"
-#define STK_JNGE        "\002\116"
-#define STK_JNL         "\002\117"
-#define STK_JNLE        "\002\120"
-#define STK_JNO         "\002\121"
-#define STK_JNP         "\002\122"
-#define STK_JNS         "\002\123"
-#define STK_JNZ         "\002\124"
-#define STK_JO          "\002\125"
-#define STK_JP          "\002\126"
-#define STK_JPE         "\002\127"
-#define STK_JPO         "\002\130"
-#define STK_JS          "\002\131"
-#define STK_JZ          "\002\132"
-#define STK_LABEL       "\002\133"
-#define STK_LAHF        "\002\134"
-#define STK_LAR         "\002\135"
-#define STK_LDS         "\002\136"
-#define STK_LE          "\002\137"
-#define STK_LEA         "\002\140"
-#define STK_LEAVE       "\002\141"
-#define STK_LENGTH      "\002\142"
-#define STK_LES         "\002\143"
-#define STK_LGDT        "\002\144"
-#define STK_LIDT        "\002\145"
-#define STK_LLDT        "\002\146"
-#define STK_LMSW        "\002\147"
-#define STK_LOCK        "\002\150"
-#define STK_LODS        "\002\151"
-#define STK_LODSB       "\002\152"
-#define STK_LODSW       "\002\153"
-#define STK_LOOP        "\002\154"
-#define STK_LOOPE       "\002\155"
-#define STK_LOOPNE      "\002\156"
-#define STK_LOOPNZ      "\002\157"
-#define STK_LOOPZ       "\002\160"
-#define STK_LOW         "\002\161"
-#define STK_LSL         "\002\162"
-#define STK_LT          "\002\163"
-#define STK_MASK        "\002\164"
-#define STK_MOD         "\002\165"
-#define STK_MODRM       "\002\166"
-#define STK_MOV         "\002\167"
-#define STK_MOVS        "\002\170"
-#define STK_MOVSB       "\002\171"
-#define STK_MOVSW       "\002\172"
-#define STK_MUL         "\002\173"
-#define STK_NAME        "\002\174"
-#define STK_NE          "\002\175"
-#define STK_NEAR        "\002\176"
-#define STK_NEG         "\002\177"
-#define STK_NIL         "\003\001"
-#define STK_NOP         "\003\002"
-#define STK_NOSEGFIX    "\003\003"
-#define STK_NOT         "\003\004"
-#define STK_NOTHING     "\003\005"
-#define STK_OFFSET      "\003\006"
-#define STK_OR          "\003\007"
-#define STK_ORG         "\003\010"
-#define STK_OUT         "\003\011"
-#define STK_OUTS        "\003\012"
-#define STK_OUTSB       "\003\013"
-#define STK_OUTSW       "\003\014"
-#define STK_PREFIX66    "\003\015"
-#define STK_PREFIX67    "\003\016"
-#define STK_PREFX       "\003\017"
-#define STK_POP         "\003\020"
-#define STK_POPA        "\003\021"
-#define STK_POPF        "\003\022"
-#define STK_PROC        "\003\023"
-#define STK_PROCLEN     "\003\024"
-#define STK_PTR         "\003\025"
-#define STK_PUBLIC      "\003\026"
-#define STK_PUSH        "\003\027"
-#define STK_PUSHA       "\003\030"
-#define STK_PUSHF       "\003\031"
-#define STK_QWORD       "\003\032"
-#define STK_RCL         "\003\033"
-#define STK_RCR         "\003\034"
-#define STK_RECORD      "\003\035"
-#define STK_RELB        "\003\036"
-#define STK_RELD        "\003\037"
-#define STK_RELW        "\003\040"
-#define STK_REP         "\003\041"
-#define STK_REPE        "\003\042"
-#define STK_REPNE       "\003\043"
-#define STK_REPNZ       "\003\044"
-#define STK_RET         "\003\045"
-#define STK_RO          "\003\046"
-#define STK_ROL         "\003\047"
-#define STK_ROR         "\003\050"
-#define STK_RW          "\003\051"
-#define STK_SAHF        "\003\052"
-#define STK_SAL         "\003\053"
-#define STK_SAR         "\003\054"
-#define STK_SBB         "\003\055"
-#define STK_SCAS        "\003\056"
-#define STK_SCASB       "\003\057"
-#define STK_SCASW       "\003\060"
-#define STK_SEG         "\003\061"
-#define STK_SEGMENT     "\003\062"
-#define STK_SETBE       "\003\063"
-#define STK_SGDT        "\003\064"
-#define STK_SHL         "\003\065"
-#define STK_SHORT       "\003\066"
-#define STK_SHR         "\003\067"
-#define STK_SI          "\003\070"
-#define STK_SIDT        "\003\071"
-#define STK_SIZE        "\003\072"
-#define STK_SLDT        "\003\073"
-#define STK_SMSW        "\003\074"
-#define STK_SP          "\003\075"
-#define STK_SS          "\003\076"
-#define STK_ST          "\003\077"
-#define STK_STACKSEG    "\003\100"
-#define STK_STACKSTART  "\003\101"
-#define STK_STC         "\003\102"
-#define STK_STD         "\003\103"
-#define STK_STI         "\003\104"
-#define STK_STOS        "\003\105"
-#define STK_STOSB       "\003\106"
-#define STK_STOSW       "\003\107"
-#define STK_STR         "\003\110"
-#define STK_STRUC       "\003\111"
-#define STK_SUB         "\003\112"
-#define STK_TBYTE       "\003\113"
-#define STK_TEST        "\003\114"
-#define STK_THIS        "\003\115"
-#define STK_TR3         "\003\116"
-#define STK_TR4         "\003\117"
-#define STK_TR5         "\003\120"
-#define STK_TYPE        "\003\121"
-#define STK_VERR        "\003\122"
-#define STK_VERW        "\003\123"
-#define STK_WAIT        "\003\124"
-#define STK_WARNING     "\003\125"
-#define STK_WBINVD      "\003\126"
-#define STK_WC          "\003\127"
-#define STK_WIDTH       "\003\130"
-#define STK_WORD        "\003\131"
-#define STK_XADD        "\003\132"
-#define STK_XCHG        "\003\133"
-#define STK_XLAT        "\003\134"
-#define STK_XLATB       "\003\135"
-#define STK_XOR         "\003\136"
+#define STK_8086        "\001\027"
+#define STK_8087        "\001\030"
+#define STK_186         "\001\031"
+#define STK_286         "\001\032"
+#define STK_286P        "\001\033"
+#define STK_287         "\001\034"
+#define STK_CODE        "\001\035"
+#define STK_CONST       "\001\036"
+#define STK_DATA        "\001\037"
+#define STK_DATAQ       "\001\040"
+#define STK_FARDATA     "\001\041"
+#define STK_FARDATAQ    "\001\042"
+#define STK_LIST        "\001\043"
+#define STK_MODEL       "\001\044"
+#define STK_NO87        "\001\045"
+#define STK_NOLIST      "\001\046"
+#define STK_DOTSTACK    "\001\047"
+#define STK_AAA         "\001\050"
+#define STK_AAD         "\001\051"
+#define STK_AAM         "\001\052"
+#define STK_AAS         "\001\053"
+#define STK_ABS         "\001\054"
+#define STK_ADC         "\001\055"
+#define STK_ADD         "\001\056"
+#define STK_AH          "\001\057"
+#define STK_AL          "\001\060"
+#define STK_ALIGN       "\001\061"
+#define STK_AND         "\001\062"
+#define STK_ARPL        "\001\063"
+#define STK_ASSUME      "\001\064"
+#define STK_AT          "\001\065"
+#define STK_AX          "\001\066"
+#define STK_BH          "\001\067"
+#define STK_BL          "\001\070"
+#define STK_BOUND       "\001\071"
+#define STK_BP          "\001\072"
+#define STK_BX          "\001\073"
+#define STK_BYTE        "\001\074"
+#define STK_C           "\001\075"
+#define STK_CALL        "\001\076"
+#define STK_CBW         "\001\077"
+#define STK_CH          "\001\100"
+#define STK_CL          "\001\101"
+#define STK_CLC         "\001\102"
+#define STK_CLD         "\001\103"
+#define STK_CLI         "\001\104"
+#define STK_CLTS        "\001\105"
+#define STK_CMC         "\001\106"
+#define STK_CMP         "\001\107"
+#define STK_CMPS        "\001\110"
+#define STK_CMPSB       "\001\111"
+#define STK_CMPSW       "\001\112"
+#define STK_COMMON      "\001\113"
+#define STK_COMPACT     "\001\114"
+#define STK_CS          "\001\115"
+#define STK_CWD         "\001\116"
+#define STK_CX          "\001\117"
+#define STK_DAA         "\001\120"
+#define STK_DAS         "\001\121"
+#define STK_DB          "\001\122"
+#define STK_DD          "\001\123"
+#define STK_DEC         "\001\124"
+#define STK_DF          "\001\125"
+#define STK_DGROUP      "\001\126"
+#define STK_DH          "\001\127"
+#define STK_DI          "\001\130"
+#define STK_DIV         "\001\131"
+#define STK_DL          "\001\132"
+#define STK_DQ          "\001\133"
+#define STK_DS          "\001\134"
+#define STK_DT          "\001\135"
+#define STK_DUP         "\001\136"
+#define STK_DW          "\001\137"
+#define STK_DWORD       "\001\140"
+#define STK_DX          "\001\141"
+#define STK_ECHO        "\001\142"
+#define STK_END         "\001\143"
+#define STK_ENDS        "\001\144"
+#define STK_ENTER       "\001\145"
+#define STK_EQ          "\001\146"
+#define STK_EQU         "\001\147"
+#define STK_ERROR       "\001\150"
+#define STK_ES          "\001\151"
+#define STK_ESC         "\001\152"
+#define STK_EVEN        "\001\153"
+#define STK_EXTERN      "\001\154"
+#define STK_F2XM1       "\001\155"
+#define STK_FABS        "\001\156"
+#define STK_FADD        "\001\157"
+#define STK_FADDP       "\001\160"
+#define STK_FAR         "\001\161"
+#define STK_FARSTACK    "\001\162"
+#define STK_FBLD        "\001\163"
+#define STK_FBSTP       "\001\164"
+#define STK_FCHS        "\001\165"
+#define STK_FCLEX       "\001\166"
+#define STK_FCOM        "\001\167"
+#define STK_FCOMP       "\001\170"
+#define STK_FCOMPP      "\001\171"
+#define STK_FDECSTP     "\001\172"
+#define STK_FDISI       "\001\173"
+#define STK_FDIV        "\001\174"
+#define STK_FDIVP       "\001\175"
+#define STK_FDIVR       "\001\176"
+#define STK_FDIVRP      "\001\177"
+#define STK_FENI        "\002\001"
+#define STK_FFREE       "\002\002"
+#define STK_FIADD       "\002\003"
+#define STK_FICOM       "\002\004"
+#define STK_FICOMP      "\002\005"
+#define STK_FIDIV       "\002\006"
+#define STK_FIDIVR      "\002\007"
+#define STK_FILD        "\002\010"
+#define STK_FIMUL       "\002\011"
+#define STK_FINCSTP     "\002\012"
+#define STK_FINIT       "\002\013"
+#define STK_FIST        "\002\014"
+#define STK_FISTP       "\002\015"
+#define STK_FISUB       "\002\016"
+#define STK_FISUBR      "\002\017"
+#define STK_FLD         "\002\020"
+#define STK_FLD1        "\002\021"
+#define STK_FLDCW       "\002\022"
+#define STK_FLDENV      "\002\023"
+#define STK_FLDL2E      "\002\024"
+#define STK_FLDL2T      "\002\025"
+#define STK_FLDLG2      "\002\026"
+#define STK_FLDLN2      "\002\027"
+#define STK_FLDPI       "\002\030"
+#define STK_FLDZ        "\002\031"
+#define STK_FMUL        "\002\032"
+#define STK_FMULP       "\002\033"
+#define STK_FNCLEX      "\002\034"
+#define STK_FNDISI      "\002\035"
+#define STK_FNENI       "\002\036"
+#define STK_FNINIT      "\002\037"
+#define STK_FNOP        "\002\040"
+#define STK_FNSAVE      "\002\041"
+#define STK_FNSTCW      "\002\042"
+#define STK_FNSTENV     "\002\043"
+#define STK_FNSTSW      "\002\044"
+#define STK_FPATAN      "\002\045"
+#define STK_FPREM       "\002\046"
+#define STK_FPTAN       "\002\047"
+#define STK_FRNDINT     "\002\050"
+#define STK_FRSTOR      "\002\051"
+#define STK_FSAVE       "\002\052"
+#define STK_FSCALE      "\002\053"
+#define STK_FSETPM      "\002\054"
+#define STK_FSQRT       "\002\055"
+#define STK_FST         "\002\056"
+#define STK_FSTCW       "\002\057"
+#define STK_FSTENV      "\002\060"
+#define STK_FSTP        "\002\061"
+#define STK_FSTSW       "\002\062"
+#define STK_FSUB        "\002\063"
+#define STK_FSUBP       "\002\064"
+#define STK_FSUBR       "\002\065"
+#define STK_FSUBRP      "\002\066"
+#define STK_FTST        "\002\067"
+#define STK_FWAIT       "\002\070"
+#define STK_FWORD       "\002\071"
+#define STK_FXAM        "\002\072"
+#define STK_FXCH        "\002\073"
+#define STK_FXTRACT     "\002\074"
+#define STK_FYL2X       "\002\075"
+#define STK_FYL2XP1     "\002\076"
+#define STK_GE          "\002\077"
+#define STK_GROUP       "\002\100"
+#define STK_GT          "\002\101"
+#define STK_HIGH        "\002\102"
+#define STK_HUGE        "\002\103"
+#define STK_HLT         "\002\104"
+#define STK_IDIV        "\002\105"
+#define STK_IMUL        "\002\106"
+#define STK_IN          "\002\107"
+#define STK_INC         "\002\110"
+#define STK_INS         "\002\111"
+#define STK_INSB        "\002\112"
+#define STK_INSW        "\002\113"
+#define STK_INT         "\002\114"
+#define STK_INTO        "\002\115"
+#define STK_IRET        "\002\116"
+#define STK_JA          "\002\117"
+#define STK_JAE         "\002\120"
+#define STK_JB          "\002\121"
+#define STK_JBE         "\002\122"
+#define STK_JC          "\002\123"
+#define STK_JCXZ        "\002\124"
+#define STK_JE          "\002\125"
+#define STK_JG          "\002\126"
+#define STK_JGE         "\002\127"
+#define STK_JL          "\002\130"
+#define STK_JLE         "\002\131"
+#define STK_JMP         "\002\132"
+#define STK_JNA         "\002\133"
+#define STK_JNAE        "\002\134"
+#define STK_JNB         "\002\135"
+#define STK_JNBE        "\002\136"
+#define STK_JNC         "\002\137"
+#define STK_JNE         "\002\140"
+#define STK_JNG         "\002\141"
+#define STK_JNGE        "\002\142"
+#define STK_JNL         "\002\143"
+#define STK_JNLE        "\002\144"
+#define STK_JNO         "\002\145"
+#define STK_JNP         "\002\146"
+#define STK_JNS         "\002\147"
+#define STK_JNZ         "\002\150"
+#define STK_JO          "\002\151"
+#define STK_JP          "\002\152"
+#define STK_JPE         "\002\153"
+#define STK_JPO         "\002\154"
+#define STK_JS          "\002\155"
+#define STK_JZ          "\002\156"
+#define STK_LABEL       "\002\157"
+#define STK_LAHF        "\002\160"
+#define STK_LAR         "\002\161"
+#define STK_LARGE       "\002\162"
+#define STK_LDS         "\002\163"
+#define STK_LE          "\002\164"
+#define STK_LEA         "\002\165"
+#define STK_LEAVE       "\002\166"
+#define STK_LENGTH      "\002\167"
+#define STK_LENGTHOF    "\002\170"
+#define STK_LES         "\002\171"
+#define STK_LGDT        "\002\172"
+#define STK_LIDT        "\002\173"
+#define STK_LLDT        "\002\174"
+#define STK_LMSW        "\002\175"
+#define STK_LOCK        "\002\176"
+#define STK_LODS        "\002\177"
+#define STK_LODSB       "\003\001"
+#define STK_LODSW       "\003\002"
+#define STK_LOOP        "\003\003"
+#define STK_LOOPE       "\003\004"
+#define STK_LOOPNE      "\003\005"
+#define STK_LOOPNZ      "\003\006"
+#define STK_LOOPZ       "\003\007"
+#define STK_LOW         "\003\010"
+#define STK_LSL         "\003\011"
+#define STK_LT          "\003\012"
+#define STK_MASK        "\003\013"
+#define STK_MEDIUM      "\003\014"
+#define STK_MEMORY      "\003\015"
+#define STK_MOD         "\003\016"
+#define STK_MOV         "\003\017"
+#define STK_MOVS        "\003\020"
+#define STK_MOVSB       "\003\021"
+#define STK_MOVSW       "\003\022"
+#define STK_MUL         "\003\023"
+#define STK_NAME        "\003\024"
+#define STK_NE          "\003\025"
+#define STK_NEAR        "\003\026"
+#define STK_NEARSTACK   "\003\027"
+#define STK_NEG         "\003\030"
+#define STK_NOP         "\003\031"
+#define STK_NOT         "\003\032"
+#define STK_NOTHING     "\003\033"
+#define STK_OFFSET      "\003\034"
+#define STK_OR          "\003\035"
+#define STK_ORG         "\003\036"
+#define STK_OUT         "\003\037"
+#define STK_OUTS        "\003\040"
+#define STK_OUTSB       "\003\041"
+#define STK_OUTSW       "\003\042"
+#define STK_PARA        "\003\043"
+#define STK_PAGE        "\003\044"
+#define STK_POP         "\003\045"
+#define STK_POPA        "\003\046"
+#define STK_POPF        "\003\047"
+#define STK_PRIVATE     "\003\050"
+#define STK_PTR         "\003\051"
+#define STK_PUBLIC      "\003\052"
+#define STK_PUSH        "\003\053"
+#define STK_PUSHA       "\003\054"
+#define STK_PUSHF       "\003\055"
+#define STK_QWORD       "\003\056"
+#define STK_RCL         "\003\057"
+#define STK_RCR         "\003\060"
+#define STK_REAL4       "\003\061"
+#define STK_REAL8       "\003\062"
+#define STK_REAL10      "\003\063"
+#define STK_REP         "\003\064"
+#define STK_REPE        "\003\065"
+#define STK_REPNE       "\003\066"
+#define STK_REPNZ       "\003\067"
+#define STK_REPZ        "\003\070"
+#define STK_RET         "\003\071"
+#define STK_ROL         "\003\072"
+#define STK_ROR         "\003\073"
+#define STK_SAHF        "\003\074"
+#define STK_SAL         "\003\075"
+#define STK_SAR         "\003\076"
+#define STK_SBB         "\003\077"
+#define STK_SBYTE       "\003\100"
+#define STK_SCAS        "\003\101"
+#define STK_SCASB       "\003\102"
+#define STK_SCASW       "\003\103"
+#define STK_SDWORD      "\003\104"
+#define STK_SEG         "\003\105"
+#define STK_SEGMENT     "\003\106"
+#define STK_SGDT        "\003\107"
+#define STK_SHL         "\003\110"
+#define STK_SHORT       "\003\111"
+#define STK_SHR         "\003\112"
+#define STK_SI          "\003\113"
+#define STK_SIDT        "\003\114"
+#define STK_SIZE        "\003\115"
+#define STK_SIZEOF      "\003\116"
+#define STK_SLDT        "\003\117"
+#define STK_SMALL       "\003\120"
+#define STK_SMSW        "\003\121"
+#define STK_SP          "\003\122"
+#define STK_SS          "\003\123"
+#define STK_ST          "\003\124"
+#define STK_STACK       "\003\125"
+#define STK_STC         "\003\126"
+#define STK_STD         "\003\127"
+#define STK_STI         "\003\130"
+#define STK_STOS        "\003\131"
+#define STK_STOSB       "\003\132"
+#define STK_STOSW       "\003\133"
+#define STK_SUB         "\003\134"
+#define STK_SUBTITLE    "\003\135"
+#define STK_SWORD       "\003\136"
+#define STK_TBYTE       "\003\137"
+#define STK_TEST        "\003\140"
+#define STK_THIS        "\003\141"
+#define STK_TINY        "\003\142"
+#define STK_TITLE       "\003\143"
+#define STK_TYPE        "\003\144"
+#define STK_VERR        "\003\145"
+#define STK_VERW        "\003\146"
+#define STK_WAIT        "\003\147"
+#define STK_WIDTH       "\003\150"
+#define STK_WORD        "\003\151"
+#define STK_XCHG        "\003\152"
+#define STK_XLAT        "\003\153"
+#define STK_XLATB       "\003\154"
+#define STK_XOR         "\003\155"
 
 /*
  * END OF AUTONUBER SECTION
@@ -455,138 +475,121 @@ enum {
  * Production string constants.
  */
 
-/*
- * Number Operators
- */
+#define SPD_addOp           "\101\001"
+#define SPD_altId           "\101\002"
+#define SPD_andOp           "\101\003"
+#define SPD_arbitaryText    "\101\004"
+#define SPD_asmInstruction  "\101\005"
+#define SPD_assumeDir       "\101\006"
+#define SPD_assumeList      "\101\007"
+#define SPD_assumeReg       "\101\010"
+#define SPD_assumeRegister  "\101\011"
+#define SPD_assumeSegReg    "\101\012"
+#define SPD_assumeSegVal    "\101\013"
+#define SPD_assumeVal       "\101\014"
+#define SPD_byteRegister    "\101\015"
+#define SPD_className       "\101\016"
+#define SPD_commaOptNewline "\101\017"
+#define SPD_constant        "\101\020"
+#define SPD_constExpr       "\101\021"
+#define SPD_coprocessor     "\101\022"
+#define SPD_dataDecl        "\101\023"
+#define SPD_dataDir         "\101\024"
+#define SPD_dataItem        "\101\025"
+#define SPD_dataType        "\101\026"
+#define SPD_directive       "\101\027"
+#define SPD_directiveList   "\101\030"
+#define SPD_e01             "\101\031"
+#define SPD_e02             "\101\032"
+#define SPD_e03             "\101\033"
+#define SPD_e04             "\101\034"
+#define SPD_e05             "\101\035"
+#define SPD_e06             "\101\036"
+#define SPD_e07             "\101\037"
+#define SPD_e07Op           "\101\040"
+#define SPD_e08             "\101\041"
+#define SPD_e09             "\101\042"
+#define SPD_e10             "\101\043"
+#define SPD_echoDir         "\101\044"
+#define SPD_endDir          "\101\045"
+#define SPD_endsDir         "\101\046"
+#define SPD_equalDir        "\101\047"
+#define SPD_equDir          "\101\050"
+#define SPD_equType         "\101\051"
+#define SPD_expr            "\101\052"
+#define SPD_externDef       "\101\053"
+#define SPD_externDir       "\101\054"
+#define SPD_externList      "\101\055"
+#define SPD_externType      "\101\056"
+#define SPD_fpInstruction   "\101\057"
+#define SPD_fpMnemonicOne   "\101\060"
+#define SPD_fpMnemonicTwo   "\101\061"
+#define SPD_fpMnemonicZero  "\101\062"
+#define SPD_frameExpr       "\101\063"
+#define SPD_generalDir      "\101\064"
+#define SPD_gpRegister      "\101\065"
+#define SPD_groupDir        "\101\066"
+#define SPD_groupId         "\101\067"
+#define SPD_immExpr         "\101\070"
+#define SPD_initValue       "\101\071"
+#define SPD_inSegDir        "\101\072"
+#define SPD_inSegDirList    "\101\073"
+#define SPD_inSegmentDir    "\101\074"
+#define SPD_instPrefix      "\101\075"
+#define SPD_instruction     "\101\076"
+#define SPD_labelDef        "\101\077"
+#define SPD_labelDir        "\101\100"
+#define SPD_langType        "\101\101"
+#define SPD_listDir         "\101\102"
+#define SPD_listOption      "\101\103"
+#define SPD_memOption       "\101\104"
+#define SPD_mnemonicOne     "\101\105"
+#define SPD_mnemonicTwo     "\101\106"
+#define SPD_mnemonicZero    "\101\107"
+#define SPD_modelDir        "\101\110"
+#define SPD_modelOpt        "\101\111"
+#define SPD_modelOptList    "\101\112"
+#define SPD_module          "\101\113"
+#define SPD_mulOp           "\101\114"
+#define SPD_nameDir         "\101\115"
+#define SPD_nearfar         "\101\116"
+#define SPD_offsetDir       "\101\117"
+#define SPD_offsetDirType   "\101\120"
+#define SPD_operand         "\101\121"
+#define SPD_orOp            "\101\122"
+#define SPD_pageDir         "\101\123"
+#define SPD_pageExpr        "\101\124"
+#define SPD_pageLength      "\101\125"
+#define SPD_pageWidth       "\101\126"
+#define SPD_processor       "\101\127"
+#define SPD_processorDir    "\101\130"
+#define SPD_pubDef          "\101\131"
+#define SPD_publicDir       "\101\132"
+#define SPD_pubList         "\101\133"
+#define SPD_qualifiedType   "\101\134"
+#define SPD_register        "\101\135"
+#define SPD_relOp           "\101\136"
+#define SPD_scalarInstList  "\101\137"
+#define SPD_segAlign        "\101\140"
+#define SPD_segAttrib       "\101\141"
+#define SPD_segDir          "\101\142"
+#define SPD_segId           "\101\143"
+#define SPD_segIdList       "\101\144"
+#define SPD_segmentDef      "\101\145"
+#define SPD_segmentDir      "\101\146"
+#define SPD_segmentRegister "\101\147"
+#define SPD_segOption       "\101\150"
+#define SPD_segOptionList   "\101\151"
+#define SPD_simpleSegDir    "\101\152"
+#define SPD_sizeArg         "\101\153"
+#define SPD_stackOption     "\101\154"
+#define SPD_textLiteral     "\101\155"
+#define SPD_textMacroId     "\101\156"
+#define SPD_titleDir        "\101\157"
+#define SPD_titleType       "\101\160"
+#define SPD_type            "\101\161"
 
-#define SPD_GRP1_OP    "\101\001"
-#define SPD_GRP2_OP    "\101\002"
-#define SPD_GRP3_OP    "\101\003"
-#define SPD_GRP4_OP    "\101\004"
-#define SPD_GRP5_OP    "\101\005"
-#define SPD_GRP6_OP    "\101\006"
-#define SPD_GRP7_OP    "\101\007"
-#define SPD_GRP8_OP    "\101\010"
-#define SPD_GRP9_OP    "\101\011"
-#define SPD_GRP10_OP   "\101\012"
-
-/*
- * Variables and Constants
- */
-
-#define SPD_CON_NUM    "\101\013"
-#define SPD_CON_STR    "\101\014"
-
-/*
- * Number Expressions
- */
-
-#define SPD_GRP0_EXP   "\101\015"  /* EXECUTE */
-#define SPD_GRP1_EXP   "\101\016"  /* EXECUTE */
-#define SPD_GRP2_EXP   "\101\017"  /* EXECUTE */
-#define SPD_GRP3_EXP   "\101\020"  /* EXECUTE */
-#define SPD_GRP4_EXP   "\101\021"  /* EXECUTE */
-#define SPD_GRP5_EXP   "\101\022"  /* EXECUTE */
-#define SPD_GRP6_EXP   "\101\023"  /* EXECUTE */
-#define SPD_GRP7_EXP   "\101\024"  /* EXECUTE */
-#define SPD_GRP8_EXP   "\101\025"  /* EXECUTE */
-#define SPD_GRP9_EXP   "\101\026"  /* EXECUTE */
-#define SPD_NUM_EXP    "\101\027"  /* EXECUTE */
-
-/*
- * String Expressions
- */
-
-#define SPD_STRING     "\101\030"
-#define SPD_STR_EXP    "\101\031"  /* EXECUTE */
-
-/*
- * Statements
- */
-
-#define SPD_STMT       "\101\032"   
-#define SPD_AAA        "\101\033"
-#define SPD_AAD        "\101\034"
-#define SPD_AAM        "\101\035"
-#define SPD_AAS        "\101\036"
-#define SPD_REG16      "\101\037"
-#define SPD_ADC        "\101\040"
-#define SPD_REG8       "\101\041"
-#define SPD_REGSEG     "\101\042"
-#define SPD_ALUOP      "\101\043"
-#define SPD_JMPOP      "\101\044"
-#define SPD_JR         "\101\045"
-#define SPD_DB         "\101\046"
-#define SPD_SIMPLE     "\101\047"
-#define SPD_rw         "\101\050"
-#define SPD_rb         "\101\051"
-#define SPD_IND_BX     "\101\052"
-#define SPD_IND_BP     "\101\053"
-#define SPD_IND_SI     "\101\054"
-#define SPD_IND_DI     "\101\055"
-#define SPD_rm         "\101\056"
-#define SPD_rm_disp    "\101\057"
-//#define SPD_ew         "\101\060"
-#define SPD_RS         "\101\061"
-#define SPD_db         "\101\062"
-#define SPD_dw         "\101\063"
-#define SPD_ALU        "\101\064"
-#define SPD_VARIABLE   "\101\065" // DEPRECATED
-#define SPD_VAR_TYPE   "\101\066"
-#define SPD_INITLIST   "\101\067"
-#define SPD_INITITEM   "\101\070"
-#define SPD_DISP       "\101\071"
-#define SPD_WARNING    "\101\072"
-#define SPD_DBVARIABLE "\101\073"
-#define SPD_DBLIST     "\101\074"
-#define SPD_DBITEM     "\101\075"
-#define SPD_DWITEM     "\101\076"
-#define SPD_DWVARIABLE "\101\077"
-#define SPD_DWLIST     "\101\100"
-#define SPD_DDVARIABLE "\101\101"
-#define SPD_DDLIST     "\101\102"
-#define SPD_DDITEM     "\101\103"
-#define SPD_LABEL_STMT "\101\104"
-#define SPD_DATA_STMT  "\101\105"
-#define SPD_DIRECTIVE  "\101\106"
-#define SPD_INST_LABEL "\101\107"
-#define SPD_INSTRUCTION "\101\110"
-#define SPD_VAR_NAME   "\101\111"
-#define SPD_NAME       "\101\112"
-#define SPD_STACKSEG   "\101\113"
-#define SPD_SEGMENT    "\101\114"
-#define SPD_SEG_ATT    "\101\115"
-#define SPD_SEG_AITEM  "\101\116"
-#define SPD_ENDS       "\101\117"
-#define SPD_ORG        "\101\120"
-#define SPD_BOUND      "\101\121"
-#define SPD_ARPL       "\101\122"
-#define SPD_rw_rm_disp "\101\123"
-#define SPD_ROTOP      "\101\124"
-#define SPD_ROTATE     "\101\125"
-#define SPD_MEMPTR     "\101\126"
-#define SPD_NEWLINE    "\101\127"
-#define SPD_COMMENT    "\101\130"
-#define SPD_DIRECTIVE_LIST  "\101\131"
-#define SPD_SEGMENT_DEF     "\101\132"
-#define SPD_SEGMENT_DIR     "\101\133"
-#define SPD_IN_SEG_DIR_LIST "\101\134"
-#define SPD_ENDS_DIR        "\101\135"
-#define SPD_SEG_ID          "\101\136"
-#define SPD_IN_SEG_DIR      "\101\137"
-#define SPD_LABEL_DEF       "\101\140"
-#define SPD_IN_SEGMENT_DIR  "\101\141"
-#define SPD_XLABEL_DEF      "\101\142"
-#define SPD_INST_PREFIX     "\101\143"
-#define SPD_XINST_PREFIX    "\101\144"
-#define SPD_ASM_INSTRUCTION "\101\145"
-#define SPD_MNEMONIC        "\101\146"
-#define SPD_XMNEMONIC       "\101\147"
-#define SPD_TOP             "\101\150"
-#define SPD_EXPR_LIST       "\101\151"
-#define SPD_EXPR            "\101\152"
-
-#define SPD_LAST       "\177\177"
+#define SPD_LAST            "\177\177"
 
 enum {
   
@@ -611,434 +614,481 @@ enum {
   TOK_GREATER     =  18,
   TOK_DOLLAR      =  19,
   TOK_COMMA       =  20,
+  TOK_EQUAL       =  21,
+  
+  TOK_8086        =  22,
+  TOK_8087        =  23,
+  TOK_186         =  24,
+  TOK_286         =  25,
+  TOK_286P        =  26,
+  TOK_287         =  27,
+  TOK_CODE        =  28,
+  TOK_CONST       =  29,
+  TOK_DATA        =  30,
+  TOK_DATAQ       =  31,
+  TOK_FARDATA     =  32,
+  TOK_FARDATAQ    =  33,
+  TOK_LIST        =  34,
+  TOK_MODEL       =  35,
+  TOK_NO87        =  36,
+  TOK_NOLIST      =  37,
+  TOK_DOTSTACK    =  38,
+  TOK_AAA         =  39,
+  TOK_AAD         =  40,
+  TOK_AAM         =  41,
+  TOK_AAS         =  42,
+  TOK_ABS         =  43,
+  TOK_ADC         =  44,
+  TOK_ADD         =  45,
+  TOK_AH          =  46,
+  TOK_AL          =  47,
+  TOK_ALIGN       =  48,
+  TOK_AND         =  49,
+  TOK_ARPL        =  50,
+  TOK_ASSUME      =  51,
+  TOK_AT          =  52,
+  TOK_AX          =  53,
+  TOK_BH          =  54,
+  TOK_BL          =  55,
+  TOK_BOUND       =  56,
+  TOK_BP          =  57,
+  TOK_BX          =  58,
+  TOK_BYTE        =  59,
+  TOK_C           =  60,
+  TOK_CALL        =  61,
+  TOK_CBW         =  62,
+  TOK_CH          =  63,
+  TOK_CL          =  64,
+  TOK_CLC         =  65,
+  TOK_CLD         =  66,
+  TOK_CLI         =  67,
+  TOK_CLTS        =  68,
+  TOK_CMC         =  69,
+  TOK_CMP         =  70,
+  TOK_CMPS        =  71,
+  TOK_CMPSB       =  72,
+  TOK_CMPSW       =  73,
+  TOK_COMMON      =  74,
+  TOK_COMPACT     =  75,
+  TOK_CS          =  76,
+  TOK_CWD         =  77,
+  TOK_CX          =  78,
+  TOK_DAA         =  79,
+  TOK_DAS         =  80,
+  TOK_DB          =  81,
+  TOK_DD          =  82,
+  TOK_DEC         =  83,
+  TOK_DF          =  84,
+  TOK_DGROUP      =  85,
+  TOK_DH          =  86,
+  TOK_DI          =  87,
+  TOK_DIV         =  88,
+  TOK_DL          =  89,
+  TOK_DQ          =  90,
+  TOK_DS          =  91,
+  TOK_DT          =  92,
+  TOK_DUP         =  93,
+  TOK_DW          =  94,
+  TOK_DWORD       =  95,
+  TOK_DX          =  96,
+  TOK_ECHO        =  97,
+  TOK_END         =  98,
+  TOK_ENDS        =  99,
+  TOK_ENTER       = 100,
+  TOK_EQ          = 101,
+  TOK_EQU         = 102,
+  TOK_ERROR       = 103,
+  TOK_ES          = 104,
+  TOK_ESC         = 105,
+  TOK_EVEN        = 106,
+  TOK_EXTERN      = 107,
+  TOK_F2XM1       = 108,
+  TOK_FABS        = 109,
+  TOK_FADD        = 110,
+  TOK_FADDP       = 111,
+  TOK_FAR         = 112,
+  TOK_FARSTACK    = 113,
+  TOK_FBLD        = 114,
+  TOK_FBSTP       = 115,
+  TOK_FCHS        = 116,
+  TOK_FCLEX       = 117,
+  TOK_FCOM        = 118,
+  TOK_FCOMP       = 119,
+  TOK_FCOMPP      = 120,
+  TOK_FDECSTP     = 121,
+  TOK_FDISI       = 122,
+  TOK_FDIV        = 123,
+  TOK_FDIVP       = 124,
+  TOK_FDIVR       = 125,
+  TOK_FDIVRP      = 126,
+  TOK_FENI        = 127,
+  TOK_FFREE       = 128,
+  TOK_FIADD       = 129,
+  TOK_FICOM       = 130,
+  TOK_FICOMP      = 131,
+  TOK_FIDIV       = 132,
+  TOK_FIDIVR      = 133,
+  TOK_FILD        = 134,
+  TOK_FIMUL       = 135,
+  TOK_FINCSTP     = 136,
+  TOK_FINIT       = 137,
+  TOK_FIST        = 138,
+  TOK_FISTP       = 139,
+  TOK_FISUB       = 140,
+  TOK_FISUBR      = 141,
+  TOK_FLD         = 142,
+  TOK_FLD1        = 143,
+  TOK_FLDCW       = 144,
+  TOK_FLDENV      = 145,
+  TOK_FLDL2E      = 146,
+  TOK_FLDL2T      = 147,
+  TOK_FLDLG2      = 148,
+  TOK_FLDLN2      = 149,
+  TOK_FLDPI       = 150,
+  TOK_FLDZ        = 151,
+  TOK_FMUL        = 152,
+  TOK_FMULP       = 153,
+  TOK_FNCLEX      = 154,
+  TOK_FNDISI      = 155,
+  TOK_FNENI       = 156,
+  TOK_FNINIT      = 157,
+  TOK_FNOP        = 158,
+  TOK_FNSAVE      = 159,
+  TOK_FNSTCW      = 160,
+  TOK_FNSTENV     = 161,
+  TOK_FNSTSW      = 162,
+  TOK_FPATAN      = 163,
+  TOK_FPREM       = 164,
+  TOK_FPTAN       = 165,
+  TOK_FRNDINT     = 166,
+  TOK_FRSTOR      = 167,
+  TOK_FSAVE       = 168,
+  TOK_FSCALE      = 169,
+  TOK_FSETPM      = 170,
+  TOK_FSQRT       = 171,
+  TOK_FST         = 172,
+  TOK_FSTCW       = 173,
+  TOK_FSTENV      = 174,
+  TOK_FSTP        = 175,
+  TOK_FSTSW       = 176,
+  TOK_FSUB        = 177,
+  TOK_FSUBP       = 178,
+  TOK_FSUBR       = 179,
+  TOK_FSUBRP      = 180,
+  TOK_FTST        = 181,
+  TOK_FWAIT       = 182,
+  TOK_FWORD       = 183,
+  TOK_FXAM        = 184,
+  TOK_FXCH        = 185,
+  TOK_FXTRACT     = 186,
+  TOK_FYL2X       = 187,
+  TOK_FYL2XP1     = 188,
+  TOK_GE          = 189,
+  TOK_GROUP       = 190,
+  TOK_GT          = 191,
+  TOK_HIGH        = 192,
+  TOK_HUGE        = 193,
+  TOK_HLT         = 194,
+  TOK_IDIV        = 195,
+  TOK_IMUL        = 196,
+  TOK_IN          = 197,
+  TOK_INC         = 198,
+  TOK_INS         = 199,
+  TOK_INSB        = 200,
+  TOK_INSW        = 201,
+  TOK_INT         = 202,
+  TOK_INTO        = 203,
+  TOK_IRET        = 204,
+  TOK_JA          = 205,
+  TOK_JAE         = 206,
+  TOK_JB          = 207,
+  TOK_JBE         = 208,
+  TOK_JC          = 209,
+  TOK_JCXZ        = 210,
+  TOK_JE          = 211,
+  TOK_JG          = 212,
+  TOK_JGE         = 213,
+  TOK_JL          = 214,
+  TOK_JLE         = 215,
+  TOK_JMP         = 216,
+  TOK_JNA         = 217,
+  TOK_JNAE        = 218,
+  TOK_JNB         = 219,
+  TOK_JNBE        = 220,
+  TOK_JNC         = 221,
+  TOK_JNE         = 222,
+  TOK_JNG         = 223,
+  TOK_JNGE        = 224,
+  TOK_JNL         = 225,
+  TOK_JNLE        = 226,
+  TOK_JNO         = 227,
+  TOK_JNP         = 228,
+  TOK_JNS         = 229,
+  TOK_JNZ         = 230,
+  TOK_JO          = 231,
+  TOK_JP          = 232,
+  TOK_JPE         = 233,
+  TOK_JPO         = 234,
+  TOK_JS          = 235,
+  TOK_JZ          = 236,
+  TOK_LABEL       = 237,
+  TOK_LAHF        = 238,
+  TOK_LAR         = 239,
+  TOK_LARGE       = 240,
+  TOK_LDS         = 241,
+  TOK_LE          = 242,
+  TOK_LEA         = 243,
+  TOK_LEAVE       = 244,
+  TOK_LENGTH      = 245,
+  TOK_LENGTHOF    = 246,
+  TOK_LES         = 247,
+  TOK_LGDT        = 248,
+  TOK_LIDT        = 249,
+  TOK_LLDT        = 250,
+  TOK_LMSW        = 251,
+  TOK_LOCK        = 252,
+  TOK_LODS        = 253,
+  TOK_LODSB       = 254,
+  TOK_LODSW       = 255,
+  TOK_LOOP        = 256,
+  TOK_LOOPE       = 257,
+  TOK_LOOPNE      = 258,
+  TOK_LOOPNZ      = 259,
+  TOK_LOOPZ       = 260,
+  TOK_LOW         = 261,
+  TOK_LSL         = 262,
+  TOK_LT          = 263,
+  TOK_MASK        = 264,
+  TOK_MEDIUM      = 265,
+  TOK_MEMORY      = 266,
+  TOK_MOD         = 267,
+  TOK_MOV         = 268,
+  TOK_MOVS        = 269,
+  TOK_MOVSB       = 270,
+  TOK_MOVSW       = 271,
+  TOK_MUL         = 272,
+  TOK_NAME        = 273,
+  TOK_NE          = 274,
+  TOK_NEAR        = 275,
+  TOK_NEARSTACK   = 276,
+  TOK_NEG         = 277,
+  TOK_NOP         = 278,
+  TOK_NOT         = 279,
+  TOK_NOTHING     = 280,
+  TOK_OFFSET      = 281,
+  TOK_OR          = 282,
+  TOK_ORG         = 283,
+  TOK_OUT         = 284,
+  TOK_OUTS        = 285,
+  TOK_OUTSB       = 286,
+  TOK_OUTSW       = 287,
+  TOK_PARA        = 288,
+  TOK_PAGE        = 289,
+  TOK_POP         = 290,
+  TOK_POPA        = 291,
+  TOK_POPF        = 292,
+  TOK_PRIVATE     = 293,
+  TOK_PTR         = 294,
+  TOK_PUBLIC      = 295,
+  TOK_PUSH        = 296,
+  TOK_PUSHA       = 297,
+  TOK_PUSHF       = 298,
+  TOK_QWORD       = 299,
+  TOK_RCL         = 300,
+  TOK_RCR         = 301,
+  TOK_REAL4       = 302,
+  TOK_REAL8       = 303,
+  TOK_REAL10      = 304,
+  TOK_REP         = 305,
+  TOK_REPE        = 306,
+  TOK_REPNE       = 307,
+  TOK_REPNZ       = 308,
+  TOK_REPZ        = 309,
+  TOK_RET         = 310,
+  TOK_ROL         = 311,
+  TOK_ROR         = 312,
+  TOK_SAHF        = 313,
+  TOK_SAL         = 314,
+  TOK_SAR         = 315,
+  TOK_SBB         = 316,
+  TOK_SBYTE       = 317,
+  TOK_SCAS        = 318,
+  TOK_SCASB       = 319,
+  TOK_SCASW       = 320,
+  TOK_SDWORD      = 321,
+  TOK_SEG         = 322,
+  TOK_SEGMENT     = 323,
+  TOK_SGDT        = 324,
+  TOK_SHL         = 325,
+  TOK_SHORT       = 326,
+  TOK_SHR         = 327,
+  TOK_SI          = 328,
+  TOK_SIDT        = 329,
+  TOK_SIZE        = 330,
+  TOK_SIZEOF      = 331,
+  TOK_SLDT        = 332,
+  TOK_SMALL       = 333,
+  TOK_SMSW        = 334,
+  TOK_SP          = 335,
+  TOK_SS          = 336,
+  TOK_ST          = 337,
+  TOK_STACK       = 338,
+  TOK_STC         = 339,
+  TOK_STD         = 340,
+  TOK_STI         = 341,
+  TOK_STOS        = 342,
+  TOK_STOSB       = 343,
+  TOK_STOSW       = 344,
+  TOK_SUB         = 345,
+  TOK_SUBTITLE    = 346,
+  TOK_SWORD       = 347,
+  TOK_TBYTE       = 348,
+  TOK_TEST        = 349,
+  TOK_THIS        = 350,
+  TOK_TINY        = 351,
+  TOK_TITLE       = 352,
+  TOK_TYPE        = 353,
+  TOK_VERR        = 354,
+  TOK_VERW        = 355,
+  TOK_WAIT        = 356,
+  TOK_WIDTH       = 357,
+  TOK_WORD        = 358,
+  TOK_XCHG        = 359,
+  TOK_XLAT        = 360,
+  TOK_XLATB       = 361,
+  TOK_XOR         = 362,
 
-  TOK_AAA         =  21,
-  TOK_AAD         =  22,
-  TOK_AAM         =  23,
-  TOK_AAS         =  24,
-  TOK_ABS         =  25,
-  TOK_ADC         =  26,
-  TOK_ADD         =  27,
-  TOK_AH          =  28,
-  TOK_AL          =  29,
-  TOK_ALIGN       =  30,
-  TOK_AND         =  31,
-  TOK_ARPL        =  32,
-  TOK_ASSUME      =  33,
-  TOK_AX          =  34,
-  TOK_BH          =  35,
-  TOK_BL          =  36,
-  TOK_BOUND       =  37,
-  TOK_BP          =  38,
-  TOK_BSWAP       =  39,
-  TOK_BX          =  40,
-  TOK_BYTE        =  41,
-  TOK_CALL        =  42,
-  TOK_CBW         =  43,
-  TOK_CH          =  44,
-  TOK_CL          =  45,
-  TOK_CLC         =  46,
-  TOK_CLD         =  47,
-  TOK_CLI         =  48,
-  TOK_CLTS        =  49,
-  TOK_CMC         =  50,
-  TOK_CMP         =  51,
-  TOK_CMPS        =  52,
-  TOK_CMPSB       =  53,
-  TOK_CMPSW       =  54,
-  TOK_CMPXCHG     =  55,
-  TOK_CODEMACRO   =  56,
-  TOK_COMMON      =  57,
-  TOK_CS          =  58,
-  TOK_CWD         =  59,
-  TOK_CX          =  60,
-  TOK_DAA         =  61,
-  TOK_DAS         =  62,
-  TOK_DB          =  63,
-  TOK_DD          =  64,
-  TOK_DEC         =  65,
-  TOK_DH          =  66,
-  TOK_DI          =  67,
-  TOK_DIV         =  68,
-  TOK_DL          =  69,
-  TOK_DQ          =  70,
-  TOK_DS          =  71,
-  TOK_DT          =  72,
-  TOK_DUP         =  73,
-  TOK_DW          =  74,
-  TOK_DWORD       =  75,
-  TOK_DX          =  76,
-  TOK_END         =  77,
-  TOK_ENDM        =  78,
-  TOK_ENDP        =  79,
-  TOK_ENDS        =  80,
-  TOK_ENTER       =  81,
-  TOK_EO          =  82,
-  TOK_EQ          =  83,
-  TOK_EQU         =  84,
-  TOK_ER          =  85,
-  TOK_ES          =  86,
-  TOK_ESC         =  87,
-  TOK_EVEN        =  88,
-  TOK_EXTRN       =  89,
-  TOK_F2XM1       =  90,
-  TOK_FABS        =  91,
-  TOK_FADD        =  92,
-  TOK_FADDP       =  93,
-  TOK_FAR         =  94,
-  TOK_FBLD        =  95,
-  TOK_FBSTP       =  96,
-  TOK_FCHS        =  97,
-  TOK_FCLEX       =  98,
-  TOK_FCOM        =  99,
-  TOK_FCOMP       = 100,
-  TOK_FCOMPP      = 101,
-  TOK_FDECSTP     = 102,
-  TOK_FDISI       = 103,
-  TOK_FDIV        = 104,
-  TOK_FDIVP       = 105,
-  TOK_FDIVR       = 106,
-  TOK_FDIVRP      = 107,
-  TOK_FENI        = 108,
-  TOK_FFREE       = 109,
-  TOK_FIADD       = 110,
-  TOK_FICOM       = 111,
-  TOK_FICOMP      = 112,
-  TOK_FIDIV       = 113,
-  TOK_FIDIVR      = 114,
-  TOK_FILD        = 115,
-  TOK_FIMUL       = 116,
-  TOK_FINCSTP     = 117,
-  TOK_FINIT       = 118,
-  TOK_FIST        = 119,
-  TOK_FISTP       = 120,
-  TOK_FISUB       = 121,
-  TOK_FISUBR      = 122,
-  TOK_FLD         = 123,
-  TOK_FLD1        = 124,
-  TOK_FLDCW       = 125,
-  TOK_FLDENV      = 126,
-  TOK_FLDL2E      = 127,
-  TOK_FLDL2T      = 128,
-  TOK_FLDLG2      = 129,
-  TOK_FLDLN2      = 130,
-  TOK_FLDPI       = 131,
-  TOK_FLDZ        = 132,
-  TOK_FMUL        = 133,
-  TOK_FMULP       = 134,
-  TOK_FNCLEX      = 135,
-  TOK_FNDISI      = 136,
-  TOK_FNENI       = 137,
-  TOK_FNINIT      = 138,
-  TOK_FNOP        = 139,
-  TOK_FNSAVE      = 140,
-  TOK_FNSTCW      = 141,
-  TOK_FNSTENV     = 142,
-  TOK_FNSTSW      = 143,
-  TOK_FPATAN      = 144,
-  TOK_FPREM       = 145,
-  TOK_FPTAN       = 146,
-  TOK_FRNDINT     = 147,
-  TOK_FRSTOR      = 148,
-  TOK_FSAVE       = 149,
-  TOK_FSCALE      = 150,
-  TOK_FSETPM      = 151,
-  TOK_FSQRT       = 152,
-  TOK_FST         = 153,
-  TOK_FSTCW       = 154,
-  TOK_FSTENV      = 155,
-  TOK_FSTP        = 156,
-  TOK_FSTSW       = 157,
-  TOK_FSUB        = 158,
-  TOK_FSUBP       = 159,
-  TOK_FSUBR       = 160,
-  TOK_FSUBRP      = 161,
-  TOK_FTST        = 162,
-  TOK_FWAIT       = 163,
-  TOK_FXAM        = 164,
-  TOK_FXCH        = 165,
-  TOK_FXTRACT     = 166,
-  TOK_FYL2X       = 167,
-  TOK_FYL2XP1     = 168,
-  TOK_GE          = 169,
-  TOK_GT          = 170,
-  TOK_HIGH        = 171,
-  TOK_HLT         = 172,
-  TOK_IDIV        = 173,
-  TOK_IMUL        = 174,
-  TOK_IN          = 175,
-  TOK_INC         = 176,
-  TOK_INS         = 177,
-  TOK_INSB        = 178,
-  TOK_INSW        = 179,
-  TOK_INT         = 180,
-  TOK_INTO        = 181,
-  TOK_INVD        = 182,
-  TOK_INVLPG      = 183,
-  TOK_IRET        = 184,
-  TOK_JA          = 185,
-  TOK_JAE         = 186,
-  TOK_JB          = 187,
-  TOK_JBE         = 188,
-  TOK_JC          = 189,
-  TOK_JCXZ        = 190,
-  TOK_JE          = 191,
-  TOK_JG          = 192,
-  TOK_JGE         = 193,
-  TOK_JL          = 194,
-  TOK_JLE         = 195,
-  TOK_JMP         = 196,
-  TOK_JNA         = 197,
-  TOK_JNAE        = 198,
-  TOK_JNB         = 199,
-  TOK_JNBE        = 200,
-  TOK_JNC         = 201,
-  TOK_JNE         = 202,
-  TOK_JNG         = 203,
-  TOK_JNGE        = 204,
-  TOK_JNL         = 205,
-  TOK_JNLE        = 206,
-  TOK_JNO         = 207,
-  TOK_JNP         = 208,
-  TOK_JNS         = 209,
-  TOK_JNZ         = 210,
-  TOK_JO          = 211,
-  TOK_JP          = 212,
-  TOK_JPE         = 213,
-  TOK_JPO         = 214,
-  TOK_JS          = 215,
-  TOK_JZ          = 216,
-  TOK_LABEL       = 217,
-  TOK_LAHF        = 218,
-  TOK_LAR         = 219,
-  TOK_LDS         = 220,
-  TOK_LE          = 221,
-  TOK_LEA         = 222,
-  TOK_LEAVE       = 223,
-  TOK_LENGTH      = 224,
-  TOK_LES         = 225,
-  TOK_LGDT        = 226,
-  TOK_LIDT        = 227,
-  TOK_LLDT        = 228,
-  TOK_LMSW        = 229,
-  TOK_LOCK        = 230,
-  TOK_LODS        = 231,
-  TOK_LODSB       = 232,
-  TOK_LODSW       = 233,
-  TOK_LOOP        = 234,
-  TOK_LOOPE       = 235,
-  TOK_LOOPNE      = 236,
-  TOK_LOOPNZ      = 237,
-  TOK_LOOPZ       = 238,
-  TOK_LOW         = 239,
-  TOK_LSL         = 240,
-  TOK_LT          = 241,
-  TOK_MASK        = 242,
-  TOK_MOD         = 243,
-  TOK_MODRM       = 244,
-  TOK_MOV         = 245,
-  TOK_MOVS        = 246,
-  TOK_MOVSB       = 247,
-  TOK_MOVSW       = 248,
-  TOK_MUL         = 249,
-  TOK_NAME        = 250,
-  TOK_NE          = 251,
-  TOK_NEAR        = 252,
-  TOK_NEG         = 253,
-  TOK_NIL         = 254,
-  TOK_NOP         = 255,
-  TOK_NOSEGFIX    = 256,
-  TOK_NOT         = 257,
-  TOK_NOTHING     = 258,
-  TOK_OFFSET      = 259,
-  TOK_OR          = 260,
-  TOK_ORG         = 261,
-  TOK_OUT         = 262,
-  TOK_OUTS        = 263,
-  TOK_OUTSB       = 264,
-  TOK_OUTSW       = 265,
-  TOK_PREFIX66    = 266,
-  TOK_PREFIX67    = 267,
-  TOK_PREFX       = 268,
-  TOK_POP         = 269,
-  TOK_POPA        = 270,
-  TOK_POPF        = 271,
-  TOK_PROC        = 272,
-  TOK_PROCLEN     = 273,
-  TOK_PTR         = 274,
-  TOK_PUBLIC      = 275,
-  TOK_PUSH        = 276,
-  TOK_PUSHA       = 277,
-  TOK_PUSHF       = 278,
-  TOK_QWORD       = 279,
-  TOK_RCL         = 280,
-  TOK_RCR         = 281,
-  TOK_RECORD      = 282,
-  TOK_RELB        = 283,
-  TOK_RELD        = 284,
-  TOK_RELW        = 285,
-  TOK_REP         = 286,
-  TOK_REPE        = 287,
-  TOK_REPNE       = 288,
-  TOK_REPNZ       = 289,
-  TOK_RET         = 290,
-  TOK_RO          = 291,
-  TOK_ROL         = 292,
-  TOK_ROR         = 293,
-  TOK_RW          = 294,
-  TOK_SAHF        = 295,
-  TOK_SAL         = 296,
-  TOK_SAR         = 297,
-  TOK_SBB         = 298,
-  TOK_SCAS        = 299,
-  TOK_SCASB       = 300,
-  TOK_SCASW       = 301,
-  TOK_SEG         = 302,
-  TOK_SEGMENT     = 303,
-  TOK_SETBE       = 304,
-  TOK_SGDT        = 305,
-  TOK_SHL         = 306,
-  TOK_SHORT       = 307,
-  TOK_SHR         = 308,
-  TOK_SI          = 309,
-  TOK_SIDT        = 310,
-  TOK_SIZE        = 311,
-  TOK_SLDT        = 312,
-  TOK_SMSW        = 313,
-  TOK_SP          = 314,
-  TOK_SS          = 315,
-  TOK_ST          = 316,
-  TOK_STACKSEG    = 317,
-  TOK_STACKSTART  = 318,
-  TOK_STC         = 319,
-  TOK_STD         = 320,
-  TOK_STI         = 321,
-  TOK_STOS        = 322,
-  TOK_STOSB       = 323,
-  TOK_STOSW       = 324,
-  TOK_STR         = 325,
-  TOK_STRUC       = 326,
-  TOK_SUB         = 327,
-  TOK_TBYTE       = 328,
-  TOK_TEST        = 329,
-  TOK_THIS        = 330,
-  TOK_TR3         = 331,
-  TOK_TR4         = 332,
-  TOK_TR5         = 333,
-  TOK_TYPE        = 334,
-  TOK_VERR        = 335,
-  TOK_VERW        = 336,
-  TOK_WAIT        = 337,
-  TOK_WARNING     = 338,
-  TOK_WBINVD      = 339,
-  TOK_WC          = 340,
-  TOK_WIDTH       = 341,
-  TOK_WORD        = 342,
-  TOK_XADD        = 343,
-  TOK_XCHG        = 344,
-  TOK_XLAT        = 345,
-  TOK_XLATB       = 346,
-  TOK_XOR         = 347,
-
-  TOK_INTEGERBIN  = 348,
-  TOK_INTEGEROCT  = 349,
-  TOK_INTEGERDEC  = 350,
-  TOK_INTEGERHEX  = 351,
-  TOK_DOUBLE      = 352,
-  TOK_STRING      = 353,
-  TOK_IDENTIFIER  = 354,
-  TOK_INST_LABEL  = 355,
-  TOK_NEWLINE     = 356,
-  TOK_WHITESPACE  = 357,
-
+  TOK_INTEGERBIN  = 363,
+  TOK_INTEGEROCT  = 364,
+  TOK_INTEGERDEC  = 365,
+  TOK_INTEGERHEX  = 366,
+  TOK_DOUBLE      = 367,
+  TOK_STRING      = 368,
+  TOK_IDENTIFIER  = 369,
+  TOK_INST_LABEL  = 370,
+  TOK_NEWLINE     = 371,
+  TOK_WHITESPACE  = 372,
+  TOK_TEXT        = 373,
+  
 /*
  * Productions
  */
 
-  PRD_STMT       = 8153,
-  PRD_AAA        = 8154,
-  PRD_AAD        = 8155,
-  PRD_AAM        = 8156,
-  PRD_AAS        = 8157,
-  PRD_SIMPLE     = 8166,
-  PRD_WARNING    = 8185,
-  PRD_CON_NUM    = 8138,
-  PRD_GRP0_EXP   = 8140,
-  PRD_GRP1_EXP   = 8141,
-  PRD_GRP2_EXP   = 8142,
-  PRD_GRP3_EXP   = 8143,
-  PRD_GRP4_EXP   = 8144,
-  PRD_GRP5_EXP   = 8145,
-  PRD_GRP6_EXP   = 8146,
-  PRD_GRP7_EXP   = 8147,
-  PRD_GRP8_EXP   = 8148,
-  PRD_GRP9_EXP   = 8149,
-  PRD_VARIABLE   = 8180,
-  PRD_INITITEM   = 8183,
-  PRD_DBVARIABLE = 8186,
-  PRD_DBLIST     = 8187,
-  PRD_DBITEM     = 8188,
-  PRD_DDVARIABLE = 8192,
-  PRD_DDLIST     = 8193,
-  PRD_DDITEM     = 8194,
-  PRD_JR         = 8164,
-  PRD_ALU        = 8179,
-  PRD_DIRECTIVE_LIST = 8216,
-  PRD_DIRECTIVE = 8197,
-  PRD_SEGMENT_DEF = 8217,
-  PRD_SEGMENT_DIR = 8218,
-  PRD_SEG_ID = 8221,
-  PRD_TOP = 8231,
-  PRD_NEWLINE = 8214,
-  PRD_IN_SEG_DIR_LIST = 8219,
-  PRD_IN_SEG_DIR = 8222,
-  PRD_IN_SEGMENT_DIR = 8224,
-  PRD_INSTRUCTION = 8199,
-  PRD_INST_PREFIX = 8226,
-  PRD_XINST_PREFIX = 8227,
-  PRD_ASM_INSTRUCTION = 8228,
-  PRD_MNEMONIC = 8229,
-  PRD_XMNEMONIC = 8230,
-  PRD_ENDS_DIR = 8220,
+  PRD_addOp           = 8128,
+  PRD_altId           = 8129,
+  PRD_andOp           = 8130,
+  PRD_arbitaryText    = 8131,
+  PRD_asmInstruction  = 8132,
+  PRD_assumeDir       = 8133,
+  PRD_assumeList      = 8134,
+  PRD_assumeReg       = 8135,
+  PRD_assumeRegister  = 8136,
+  PRD_assumeSegReg    = 8137,
+  PRD_assumeSegVal    = 8138,
+  PRD_assumeVal       = 8139,
+  PRD_byteRegister    = 8140,
+  PRD_className       = 8141,
+  PRD_commaOptNewline = 8142,
+  PRD_constant        = 8143,
+  PRD_constExpr       = 8144,
+  PRD_coprocessor     = 8145,
+  PRD_dataDecl        = 8146,
+  PRD_dataDir         = 8147,
+  PRD_dataItem        = 8148,
+  PRD_dataType        = 8149,
+  PRD_directive       = 8150,
+  PRD_directiveList   = 8151,
+  PRD_e01             = 8152,
+  PRD_e02             = 8153,
+  PRD_e03             = 8154,
+  PRD_e04             = 8155,
+  PRD_e05             = 8156,
+  PRD_e06             = 8157,
+  PRD_e07             = 8158,
+  PRD_e07Op           = 8159,
+  PRD_e08             = 8160,
+  PRD_e09             = 8161,
+  PRD_e10             = 8162,
+  PRD_echoDir         = 8163,
+  PRD_endDir          = 8164,
+  PRD_endsDir         = 8165,
+  PRD_equalDir        = 8166,
+  PRD_equDir          = 8167,
+  PRD_equType         = 8168,
+  PRD_expr            = 8169,
+  PRD_externDef       = 8170,
+  PRD_externDir       = 8171,
+  PRD_externList      = 8172,
+  PRD_externType      = 8173,
+  PRD_fpInstruction   = 8174,
+  PRD_fpMnemonicOne   = 8175,
+  PRD_fpMnemonicTwo   = 8176,
+  PRD_fpMnemonicZero  = 8177,
+  PRD_frameExpr       = 8178,
+  PRD_generalDir      = 8179,
+  PRD_gpRegister      = 8180,
+  PRD_groupDir        = 8181,
+  PRD_groupId         = 8182,
+  PRD_immExpr         = 8183,
+  PRD_initValue       = 8184,
+  PRD_inSegDir        = 8185,
+  PRD_inSegDirList    = 8186,
+  PRD_inSegmentDir    = 8187,
+  PRD_instPrefix      = 8188,
+  PRD_instruction     = 8189,
+  PRD_labelDef        = 8190,
+  PRD_labelDir        = 8191,
+  PRD_langType        = 8192,
+  PRD_listDir         = 8193,
+  PRD_listOption      = 8194,
+  PRD_memOption       = 8195,
+  PRD_mnemonicOne     = 8196,
+  PRD_mnemonicTwo     = 8197,
+  PRD_mnemonicZero    = 8198,
+  PRD_modelDir        = 8199,
+  PRD_modelOpt        = 8200,
+  PRD_modelOptList    = 8201,
+  PRD_module          = 8202,
+  PRD_mulOp           = 8203,
+  PRD_nameDir         = 8204,
+  PRD_nearfar         = 8205,
+  PRD_offsetDir       = 8206,
+  PRD_offsetDirType   = 8207,
+  PRD_operand         = 8208,
+  PRD_orOp            = 8209,
+  PRD_pageDir         = 8210,
+  PRD_pageExpr        = 8211,
+  PRD_pageLength      = 8212,
+  PRD_pageWidth       = 8213,
+  PRD_processor       = 8214,
+  PRD_processorDir    = 8215,
+  PRD_pubDef          = 8216,
+  PRD_publicDir       = 8217,
+  PRD_pubList         = 8218,
+  PRD_qualifiedType   = 8219,
+  PRD_register        = 8220,
+  PRD_relOp           = 8221,
+  PRD_scalarInstList  = 8222,
+  PRD_segAlign        = 8223,
+  PRD_segAttrib       = 8224,
+  PRD_segDir          = 8225,
+  PRD_segId           = 8226,
+  PRD_segIdList       = 8227,
+  PRD_segmentDef      = 8228,
+  PRD_segmentDir      = 8229,
+  PRD_segmentRegister = 8230,
+  PRD_segOption       = 8231,
+  PRD_segOptionList   = 8232,
+  PRD_simpleSegDir    = 8233,
+  PRD_sizeArg         = 8234,
+  PRD_stackOption     = 8235,
+  PRD_textLiteral     = 8236,
+  PRD_textMacroId     = 8237,
+  PRD_titleDir        = 8238,
+  PRD_titleType       = 8239,
+  PRD_type            = 8240,
 
-//  PRD_REG16       = 8158,
-//  PRD_ADC         = 8159,
-//  PRD_REG8        = 8160,
-//  PRD_REGSEG      = 8161,
-//  PRD_ALUOP       = 8162,
-//  PRD_JMPOP       = 8163,
-//  PRD_JR          = 8164,
-//  PRD_DB          = 8165,
-
-  /*
-  PRD_GRP1_OP     = 8128,
-  PRD_GRP2_OP     = 8129,
-  PRD_GRP3_OP     = 8130,
-  PRD_GRP4_OP     = 8131,
-  PRD_GRP5_OP     = 8132,
-  PRD_GRP6_OP     = 8133,
-  PRD_GRP7_OP     = 8134,
-  PRD_GRP8_OP     = 8135,
-  PRD_GRP9_OP     = 8136,
-  PRD_GRP10_OP    = 8137,
-  PRD_CON_NUM     = 8138,
-  PRD_CON_STR     = 8139,
-  PRD_GRP0_EXP    = 8140,
-  PRD_GRP1_EXP    = 8141,
-  PRD_GRP2_EXP    = 8142,
-  PRD_GRP3_EXP    = 8143,
-  PRD_GRP4_EXP    = 8144,
-  PRD_GRP5_EXP    = 8145,
-  PRD_GRP6_EXP    = 8146,
-  PRD_GRP7_EXP    = 8147,
-  PRD_GRP8_EXP    = 8148,
-  PRD_GRP9_EXP    = 8149,
-  PRD_NUM_EXP     = 8150,
-  PRD_STRING      = 8151,
-  PRD_STR_EXP     = 8152,
-*/
-  
-  PRD_LAST        = 16128,
+  PRD_LAST            = 16128,
 
   XT_IGNORE       = 0001,
   XT_DROP         = 0002,
@@ -1154,6 +1204,7 @@ int process2(const char *, int);
 ptree_node_t * match2(int, FILE *, int);
 ptree_node_t *find_token(int, FILE *);
 int match_pattern2(FILE *, const char *, char **, unsigned long *);
+void printProdName(int) ;
 #endif /* asm286_h */
 
 /*

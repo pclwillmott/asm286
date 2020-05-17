@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include "asm286.h" 
 
+#ifdef ROCKY
 int assemble( const char *statement, int lineno, int pass ) {
 
   int result = -1 ;
@@ -92,6 +93,8 @@ fail:
   return result ;
   
 }
+
+#endif
 
 /*
  *------------------------------------------------------------------------------

@@ -9,7 +9,7 @@
  *
  *  This revision:
  *
- *    2019 November 9 Paul Willmott Baseline.
+ *    2020 May 17 Paul Willmott Processor type tags added.
  *
  *  Revision History:
  *
@@ -53,15 +53,24 @@ const char *pattern[ NUM_PATTERN ] = {
   RESERVED         ">",
   RESERVED         "$",
   RESERVED         ",",
+  RESERVED         "=",
   RESERVED         ".8086",
   RESERVED         ".8087",
   RESERVED         ".186",
   RESERVED         ".286",
   RESERVED         ".286P",
   RESERVED         ".287",
+  RESERVED         ".CODE",
+  RESERVED         ".CONST",
+  RESERVED         ".DATA",
+  RESERVED         ".DATA?",
+  RESERVED         ".FARDATA",
+  RESERVED         ".FARDATA?",
   RESERVED         ".LIST",
   RESERVED         ".MODEL",
+  RESERVED         ".NO87",
   RESERVED         ".NOLIST",
+  RESERVED         ".STACK",
   KEYWORD          "AAA",
   KEYWORD          "AAD",
   KEYWORD          "AAM",
@@ -73,7 +82,7 @@ const char *pattern[ NUM_PATTERN ] = {
   RESERVED         "AL",
   RESERVED         "ALIGN",
   KEYWORD_RESERVED "AND",
-  KEYWORD          "ARPL",  // 286
+  KEYWORD_286      "ARPL",
   RESERVED         "ASSUME",
   RESERVED         "AT",
   RESERVED         "AX",
@@ -91,7 +100,7 @@ const char *pattern[ NUM_PATTERN ] = {
   KEYWORD          "CLC",
   KEYWORD          "CLD",
   KEYWORD          "CLI",
-  KEYWORD          "CLTS", // 286 Priv
+  KEYWORD_286P     "CLTS",
   KEYWORD          "CMC",
   KEYWORD          "CMP",
   KEYWORD          "CMPS",
@@ -131,87 +140,87 @@ const char *pattern[ NUM_PATTERN ] = {
   KEYWORD          "ESC",
   RESERVED         "EVEN",
   RESERVED         "EXTERN",
-  KEYWORD          "F2XM1",
-  KEYWORD          "FABS",
-  KEYWORD          "FADD",
-  KEYWORD          "FADDP",
+  KEYWORD_8087     "F2XM1",
+  KEYWORD_8087     "FABS",
+  KEYWORD_8087     "FADD",
+  KEYWORD_8087     "FADDP",
   RESERVED         "FAR",
   RESERVED         "FARSTACK",
-  KEYWORD          "FBLD",
-  KEYWORD          "FBSTP",
-  KEYWORD          "FCHS",
-  KEYWORD          "FCLEX",
-  KEYWORD          "FCOM",
-  KEYWORD          "FCOMP",
-  KEYWORD          "FCOMPP",
-  KEYWORD          "FDECSTP",
-  KEYWORD          "FDISI",
-  KEYWORD          "FDIV",
-  KEYWORD          "FDIVP",
-  KEYWORD          "FDIVR",
-  KEYWORD          "FDIVRP",
-  KEYWORD          "FENI",
-  KEYWORD          "FFREE",
-  KEYWORD          "FIADD",
-  KEYWORD          "FICOM",
-  KEYWORD          "FICOMP",
-  KEYWORD          "FIDIV",
-  KEYWORD          "FIDIVR",
-  KEYWORD          "FILD",
-  KEYWORD          "FIMUL",
-  KEYWORD          "FINCSTP",
-  KEYWORD          "FINIT",
-  KEYWORD          "FIST",
-  KEYWORD          "FISTP",
-  KEYWORD          "FISUB",
-  KEYWORD          "FISUBR",
-  KEYWORD          "FLD",
-  KEYWORD          "FLD1",
-  KEYWORD          "FLDCW",
-  KEYWORD          "FLDENV",
-  KEYWORD          "FLDL2E",
-  KEYWORD          "FLDL2T",
-  KEYWORD          "FLDLG2",
-  KEYWORD          "FLDLN2",
-  KEYWORD          "FLDPI",
-  KEYWORD          "FLDZ",
-  KEYWORD          "FMUL",
-  KEYWORD          "FMULP",
-  KEYWORD          "FNCLEX",
-  KEYWORD          "FNDISI",
-  KEYWORD          "FNENI",
-  KEYWORD          "FNINIT",
-  KEYWORD          "FNOP",
-  KEYWORD          "FNSAVE",
-  KEYWORD          "FNSTCW",
-  KEYWORD          "FNSTENV",
-  KEYWORD          "FNSTSW",
-  KEYWORD          "FPATAN",
-  KEYWORD          "FPREM",
-  KEYWORD          "FPTAN",
-  KEYWORD          "FRNDINT",
-  KEYWORD          "FRSTOR",
-  KEYWORD          "FSAVE",
-  KEYWORD          "FSCALE",
-  KEYWORD          "FSETPM", // 286P
-  KEYWORD          "FSQRT",
-  KEYWORD          "FST",
-  KEYWORD          "FSTCW",
-  KEYWORD          "FSTENV",
-  KEYWORD          "FSTP",
-  KEYWORD          "FSTSW",
-  KEYWORD          "FSUB",
-  KEYWORD          "FSUBP",
-  KEYWORD          "FSUBR",
-  KEYWORD          "FSUBRP",
-  KEYWORD          "FTST",
-  KEYWORD          "FWAIT",
+  KEYWORD_8087     "FBLD",
+  KEYWORD_8087     "FBSTP",
+  KEYWORD_8087     "FCHS",
+  KEYWORD_8087     "FCLEX",
+  KEYWORD_8087     "FCOM",
+  KEYWORD_8087     "FCOMP",
+  KEYWORD_8087     "FCOMPP",
+  KEYWORD_8087     "FDECSTP",
+  KEYWORD_8087     "FDISI",
+  KEYWORD_8087     "FDIV",
+  KEYWORD_8087     "FDIVP",
+  KEYWORD_8087     "FDIVR",
+  KEYWORD_8087     "FDIVRP",
+  KEYWORD_8087     "FENI",
+  KEYWORD_8087     "FFREE",
+  KEYWORD_8087     "FIADD",
+  KEYWORD_8087     "FICOM",
+  KEYWORD_8087     "FICOMP",
+  KEYWORD_8087     "FIDIV",
+  KEYWORD_8087     "FIDIVR",
+  KEYWORD_8087     "FILD",
+  KEYWORD_8087     "FIMUL",
+  KEYWORD_8087     "FINCSTP",
+  KEYWORD_8087     "FINIT",
+  KEYWORD_8087     "FIST",
+  KEYWORD_8087     "FISTP",
+  KEYWORD_8087     "FISUB",
+  KEYWORD_8087     "FISUBR",
+  KEYWORD_8087     "FLD",
+  KEYWORD_8087     "FLD1",
+  KEYWORD_8087     "FLDCW",
+  KEYWORD_8087     "FLDENV",
+  KEYWORD_8087     "FLDL2E",
+  KEYWORD_8087     "FLDL2T",
+  KEYWORD_8087     "FLDLG2",
+  KEYWORD_8087     "FLDLN2",
+  KEYWORD_8087     "FLDPI",
+  KEYWORD_8087     "FLDZ",
+  KEYWORD_8087     "FMUL",
+  KEYWORD_8087     "FMULP",
+  KEYWORD_8087     "FNCLEX",
+  KEYWORD_8087     "FNDISI",
+  KEYWORD_8087     "FNENI",
+  KEYWORD_8087     "FNINIT",
+  KEYWORD_8087     "FNOP",
+  KEYWORD_8087     "FNSAVE",
+  KEYWORD_8087     "FNSTCW",
+  KEYWORD_8087     "FNSTENV",
+  KEYWORD_8087     "FNSTSW",
+  KEYWORD_8087     "FPATAN",
+  KEYWORD_8087     "FPREM",
+  KEYWORD_8087     "FPTAN",
+  KEYWORD_8087     "FRNDINT",
+  KEYWORD_8087     "FRSTOR",
+  KEYWORD_8087     "FSAVE",
+  KEYWORD_8087     "FSCALE",
+  KEYWORD_287      "FSETPM",
+  KEYWORD_8087     "FSQRT",
+  KEYWORD_8087     "FST",
+  KEYWORD_8087     "FSTCW",
+  KEYWORD_8087     "FSTENV",
+  KEYWORD_8087     "FSTP",
+  KEYWORD_8087     "FSTSW",
+  KEYWORD_8087     "FSUB",
+  KEYWORD_8087     "FSUBP",
+  KEYWORD_8087     "FSUBR",
+  KEYWORD_8087     "FSUBRP",
+  KEYWORD_8087     "FTST",
+  KEYWORD_8087     "FWAIT",
   RESERVED         "FWORD",
-  KEYWORD          "FXAM",
-  KEYWORD          "FXCH",
-  KEYWORD          "FXTRACT",
-  KEYWORD          "FYL2X",
-  KEYWORD          "FYL2XP1",
+  KEYWORD_8087     "FXAM",
+  KEYWORD_8087     "FXCH",
+  KEYWORD_8087     "FXTRACT",
+  KEYWORD_8087     "FYL2X",
+  KEYWORD_8087     "FYL2XP1",
   RESERVED         "GE",
   RESERVED         "GROUP",
   RESERVED         "GT",
@@ -262,19 +271,19 @@ const char *pattern[ NUM_PATTERN ] = {
   KEYWORD          "JZ",
   RESERVED         "LABEL",
   KEYWORD          "LAHF",
-  KEYWORD          "LAR", // 286
+  KEYWORD_286      "LAR",
   RESERVED         "LARGE",
   KEYWORD          "LDS",
   RESERVED         "LE",
   KEYWORD          "LEA",
-  KEYWORD          "LEAVE", // 186
+  KEYWORD_186      "LEAVE",
   RESERVED         "LENGTH",
   RESERVED         "LENGTHOF",
   KEYWORD          "LES",
-  KEYWORD          "LGDT", // 286p
-  KEYWORD          "LIDT", // 286p
-  KEYWORD          "LLDT", // 286p
-  KEYWORD          "LMSW", // 286p
+  KEYWORD_286P     "LGDT",
+  KEYWORD_286P     "LIDT",
+  KEYWORD_286P     "LLDT",
+  KEYWORD_286P     "LMSW",
   KEYWORD          "LOCK",
   KEYWORD          "LODS",
   KEYWORD          "LODSB",
@@ -285,7 +294,7 @@ const char *pattern[ NUM_PATTERN ] = {
   KEYWORD          "LOOPNZ",
   KEYWORD          "LOOPZ",
   RESERVED         "LOW",
-  KEYWORD          "LSL", // 286
+  KEYWORD_286      "LSL",
   RESERVED         "LT",
   RESERVED         "MASK",
   RESERVED         "MEDIUM",
@@ -347,17 +356,17 @@ const char *pattern[ NUM_PATTERN ] = {
   RESERVED         "SDWORD",
   RESERVED         "SEG",
   RESERVED         "SEGMENT",
-  KEYWORD          "SGDT", // 286
+  KEYWORD_286      "SGDT",
   KEYWORD_RESERVED "SHL",
   RESERVED         "SHORT",
   KEYWORD_RESERVED "SHR",
   RESERVED         "SI",
-  KEYWORD          "SIDT", // 286
+  KEYWORD_286      "SIDT",
   RESERVED         "SIZE",
   RESERVED         "SIZEOF",
-  KEYWORD          "SLDT", // 286
+  KEYWORD_286      "SLDT",
   RESERVED         "SMALL",
-  KEYWORD          "SMSW", // 286
+  KEYWORD_286      "SMSW",
   RESERVED         "SP",
   RESERVED         "SS",
   RESERVED         "ST",
@@ -377,8 +386,8 @@ const char *pattern[ NUM_PATTERN ] = {
   RESERVED         "TINY",
   RESERVED         "TITLE",
   RESERVED         "TYPE",
-  KEYWORD          "VERR", // 286
-  KEYWORD          "VERW", // 286
+  KEYWORD_286      "VERR",
+  KEYWORD_286      "VERW",
   KEYWORD          "WAIT",
   RESERVED         "WIDTH",
   RESERVED         "WORD",
@@ -393,59 +402,149 @@ const char *pattern[ NUM_PATTERN ] = {
   SPECIAL          "((-|+)?[0-9]+([.][0-9]*)?E(+|-)?[0-9]+)|((-|+)?[0-9]+[.][0-9]*)",
   SPECIAL          "([']([^']|(''))*['])+",
   SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*",
-  SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*:",
+  SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*::?",
   SPECIAL          "(\n|(;[^\n]*\n))+",
   SPECIAL          "(\010|\011|\013|\014|\015|\032|\040|(\\[^\n]*\n))*",
   SPECIAL          "[^\n]*",
 } ;
 
+char * prod_list[] = {
+  "addOp",
+  "altId",
+  "andOp",
+  "arbitaryText",
+  "asmInstruction",
+  "assumeDir",
+  "assumeList",
+  "assumeReg",
+  "assumeRegister",
+  "assumeSegReg",
+  "assumeSegVal",
+  "assumeVal",
+  "byteRegister",
+  "className",
+  "commaOptNewline",
+  "constant",
+  "constExpr",
+  "coprocessor",
+  "dataDecl",
+  "dataDir",
+  "dataItem",
+  "dataType",
+  "directive",
+  "directiveList",
+  "e01",
+  "e02",
+  "e03",
+  "e04",
+  "e05",
+  "e06",
+  "e07",
+  "e07Op",
+  "e08",
+  "e09",
+  "e10",
+  "echoDir",
+  "endDir",
+  "endsDir",
+  "equalDir",
+  "equDir",
+  "equType",
+  "expr",
+  "externDef",
+  "externDir",
+  "externList",
+  "externType",
+  "fpInstruction",
+  "fpMnemonicOne",
+  "fpMnemonicTwo",
+  "fpMnemonicZero",
+  "frameExpr",
+  "generalDir",
+  "gpRegister",
+  "groupDir",
+  "groupId",
+  "immExpr",
+  "initValue",
+  "inSegDir",
+  "inSegDirList",
+  "inSegmentDir",
+  "instPrefix",
+  "instruction",
+  "labelDef",
+  "labelDir",
+  "langType",
+  "listDir",
+  "listOption",
+  "memOption",
+  "mnemonicOne",
+  "mnemonicTwo",
+  "mnemonicZero",
+  "modelDir",
+  "modelOpt",
+  "modelOptList",
+  "module",
+  "mulOp",
+  "nameDir",
+  "nearfar",
+  "offsetDir",
+  "offsetDirType",
+  "operand",
+  "orOp",
+  "pageDir",
+  "pageExpr",
+  "pageLength",
+  "pageWidth",
+  "processor",
+  "processorDir",
+  "pubDef",
+  "publicDir",
+  "pubList",
+  "qualifiedType",
+  "register",
+  "relOp",
+  "scalarInstList",
+  "segAlign",
+  "segAttrib",
+  "segDir",
+  "segId",
+  "segIdList",
+  "segmentDef",
+  "segmentDir",
+  "segmentRegister",
+  "segOption",
+  "segOptionList",
+  "simpleSegDir",
+  "sizeArg",
+  "stackOption",
+  "textLiteral",
+  "textMacroId",
+  "titleDir",
+  "titleType",
+  "type",    "",
+} ;
+
+void printProdName(int prodId) {
+  printf("SPD_%s", prod_list[prodId-8128]);
+}
+
 void dump_productions()
 {
-  printf("  PRD_STMT       = %i,\n", pid(SPD_STMT));
-  printf("  PRD_AAA        = %i,\n", pid(SPD_AAA));
-  printf("  PRD_AAD        = %i,\n", pid(SPD_AAD));
-  printf("  PRD_AAM        = %i,\n", pid(SPD_AAM));
-  printf("  PRD_AAS        = %i,\n", pid(SPD_AAS));
-  printf("  PRD_SIMPLE     = %i,\n", pid(SPD_SIMPLE));
-  printf("  PRD_WARNING    = %i,\n", pid(SPD_WARNING));
-  printf("  PRD_CON_NUM    = %i,\n", pid(SPD_CON_NUM));
-  printf("  PRD_GRP0_EXP   = %i,\n", pid(SPD_GRP0_EXP));
-  printf("  PRD_GRP1_EXP   = %i,\n", pid(SPD_GRP1_EXP));
-  printf("  PRD_GRP2_EXP   = %i,\n", pid(SPD_GRP2_EXP));
-  printf("  PRD_GRP3_EXP   = %i,\n", pid(SPD_GRP3_EXP));
-  printf("  PRD_GRP4_EXP   = %i,\n", pid(SPD_GRP4_EXP));
-  printf("  PRD_GRP5_EXP   = %i,\n", pid(SPD_GRP5_EXP));
-  printf("  PRD_GRP6_EXP   = %i,\n", pid(SPD_GRP6_EXP));
-  printf("  PRD_GRP7_EXP   = %i,\n", pid(SPD_GRP7_EXP));
-  printf("  PRD_GRP8_EXP   = %i,\n", pid(SPD_GRP8_EXP));
-  printf("  PRD_GRP9_EXP   = %i,\n", pid(SPD_GRP9_EXP));
-  printf("  PRD_VARIABLE   = %i,\n", pid(SPD_VARIABLE));
-  printf("  PRD_INITITEM   = %i,\n", pid(SPD_INITITEM));
-  printf("  PRD_DBVARIABLE = %i,\n", pid(SPD_DBVARIABLE));
-  printf("  PRD_DBLIST     = %i,\n", pid(SPD_DBLIST));
-  printf("  PRD_DBITEM     = %i,\n", pid(SPD_DBITEM));
-  printf("  PRD_DDVARIABLE = %i,\n", pid(SPD_DDVARIABLE));
-  printf("  PRD_DDLIST     = %i,\n", pid(SPD_DDLIST));
-  printf("  PRD_DDITEM     = %i,\n", pid(SPD_DDITEM));
-  printf("  PRD_JR         = %i,\n", pid(SPD_JR));
-  printf("  PRD_ALU        = %i,\n", pid(SPD_ALU));
-  printf("  PRD_DIRECTIVE_LIST = %i,\n", pid(SPD_DIRECTIVE_LIST));
-  printf("  PRD_DIRECTIVE = %i,\n", pid(SPD_DIRECTIVE));
-  printf("  PRD_SEGMENT_DEF = %i,\n", pid(SPD_SEGMENT_DEF));
-  printf("  PRD_SEGMENT_DIR = %i,\n", pid(SPD_SEGMENT_DIR));
-  printf("  PRD_SEG_ID = %i,\n", pid(SPD_SEG_ID));
-  printf("  PRD_TOP = %i,\n", pid(SPD_TOP));
-  printf("  PRD_NEWLINE = %i,\n", pid(SPD_NEWLINE));
-  printf("  PRD_IN_SEG_DIR_LIST = %i,\n", pid(SPD_IN_SEG_DIR_LIST));
-  printf("  PRD_IN_SEG_DIR = %i,\n", pid(SPD_IN_SEG_DIR));
-  printf("  PRD_IN_SEGMENT_DIR = %i,\n", pid(SPD_IN_SEGMENT_DIR));
-  printf("  PRD_INSTRUCTION = %i,\n", pid(SPD_INSTRUCTION));
-  printf("  PRD_INST_PREFIX = %i,\n", pid(SPD_INST_PREFIX));
-  printf("  PRD_XINST_PREFIX = %i,\n", pid(SPD_XINST_PREFIX));
-  printf("  PRD_ASM_INSTRUCTION = %i,\n", pid(SPD_ASM_INSTRUCTION));
-  printf("  PRD_MNEMONIC = %i,\n", pid(SPD_MNEMONIC));
-  printf("  PRD_XMNEMONIC = %i,\n", pid(SPD_XMNEMONIC));
-  printf("  PRD_ENDS_DIR = %i,\n", pid(SPD_ENDS_DIR));
+  
+
+  unsigned int offset = 8128;
+
+  for (unsigned int idx = 0; strlen(prod_list[idx]) > 0; idx++ ) {
+    unsigned int B = (idx+offset) % 127 + 1 ;
+    unsigned int A = (idx+offset) / 127 + 1 ;
+    printf("#define SPD_%-15s \"\\%03o\\%03o\"\n", prod_list[idx], A, B ) ;
+  }
+
+  for ( unsigned int idx = 0; strlen(prod_list[idx]) > 0; idx++  ) {
+    printf("  PRD_%-15s = %3i,\n", prod_list[idx], idx + offset) ;
+  }
+
+//  printf("  PRD_STMT       = %i,\n", pid(SPD_STMT));
 }
 
 void dump_pattern() 
@@ -453,21 +552,21 @@ void dump_pattern()
   dump_productions();
 //    printf("%i\n", 0177 * 127 + 0177 -1) ;
 
-  return;
+  
   unsigned int idx, line ;
 
-  for ( idx = 0; idx < NUM_PATTERN -7; idx++ ) {
+  for ( idx = 0; idx < NUM_PATTERN -11; idx++ ) {
     unsigned int B = idx % 127 + 1 ;
     unsigned int A = idx / 127 + 1 ;
     printf("#define STK_%-11s \"\\%03o\\%03o\"\n", pattern[idx]+1, A, B ) ;
   }
+
  
-  /*
-  for ( idx = 0; idx < NUM_PATTERN - 7; idx++ ) {
+  for ( idx = 0; idx < NUM_PATTERN ; idx++ ) {
     printf("  TOK_%-11s = %3i,\n", pattern[idx]+1, idx ) ;
   }
-   */
-
+  
+  return;
   const char *keywords[500];
   int num_keywords = 0;
   for ( idx = 21; idx < NUM_PATTERN - 7; idx++ ) {
