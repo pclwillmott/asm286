@@ -296,6 +296,7 @@ const char *pattern[ NUM_PATTERN ] = {
   RESERVED         "LOW",
   KEYWORD_286      "LSL",
   RESERVED         "LT",
+  KEYWORD_286P     "LTR",
   RESERVED         "MASK",
   RESERVED         "MEDIUM",
   RESERVED         "MEMORY",
@@ -377,6 +378,7 @@ const char *pattern[ NUM_PATTERN ] = {
   KEYWORD          "STOS",
   KEYWORD          "STOSB",
   KEYWORD          "STOSW",
+  KEYWORD_286      "STR",
   KEYWORD          "SUB",
   RESERVED         "SUBTITLE",
   RESERVED         "SWORD",
@@ -407,6 +409,11 @@ const char *pattern[ NUM_PATTERN ] = {
   SPECIAL          "(\010|\011|\013|\014|\015|\032|\040|(\\[^\n]*\n))*",
   SPECIAL          "[^\n]*",
 } ;
+
+int checkInstruction(int tokenId) {
+  return (tokenId < PRODUCTION_OFFSET) && ((PROCESSOR(*pattern[tokenId]) > processor) || (COPROCESSOR(*pattern[tokenId]) > coprocessor)) ;
+}
+
 
 char * prod_list[] = {
   "addOp",
@@ -530,21 +537,15 @@ void printProdName(int prodId) {
 
 void dump_productions()
 {
-  
-
-  unsigned int offset = 8128;
-
   for (unsigned int idx = 0; strlen(prod_list[idx]) > 0; idx++ ) {
-    unsigned int B = (idx+offset) % 127 + 1 ;
-    unsigned int A = (idx+offset) / 127 + 1 ;
+    unsigned int B = (idx + PRODUCTION_OFFSET) % 127 + 1 ;
+    unsigned int A = (idx + PRODUCTION_OFFSET) / 127 + 1 ;
     printf("#define SPD_%-15s \"\\%03o\\%03o\"\n", prod_list[idx], A, B ) ;
   }
 
   for ( unsigned int idx = 0; strlen(prod_list[idx]) > 0; idx++  ) {
-    printf("  PRD_%-15s = %3i,\n", prod_list[idx], idx + offset) ;
+    printf("  PRD_%-15s = %3i,\n", prod_list[idx], idx + PRODUCTION_OFFSET) ;
   }
-
-//  printf("  PRD_STMT       = %i,\n", pid(SPD_STMT));
 }
 
 void dump_pattern() 
@@ -1122,6 +1123,13 @@ ptree_node_t *find_token(int id, FILE *fp)
     
     ptree->production_id = id ;
     
+    if (checkInstruction(id)) {
+      error(ERR_INVALID_INSTRUCTION, -1);
+      free(pat);
+      // should remove ptree here
+      return NULL;
+    }
+
     switch (id) {
       case TOK_INTEGERBIN:
         ptree->value_type = TOK_INTEGERDEC;
@@ -1154,7 +1162,11 @@ ptree_node_t *find_token(int id, FILE *fp)
         ptree->value_type = TOK_STRING;
         ptree->value.s = match;
         break;
-    }
+      case TOK_TEXT:
+        ptree->value_type = TOK_STRING;
+        ptree->value.s = match;
+        break;
+   }
     
 #ifdef DEBUG2
     printf("found -> %s\n", match);

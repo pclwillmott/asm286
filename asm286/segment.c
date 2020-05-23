@@ -101,6 +101,8 @@ void reset_for_pass(int pass) {
   }
   stack_count = 0;
   segment_count = 0;
+  processor = i86;
+  coprocessor = none;
 }
 
 int get_current_position(unsigned int *position, int lineno)

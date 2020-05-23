@@ -33,13 +33,13 @@ int main(int argc, const char * argv[]) {
  *------------------------------------------------------------------------------
  */
 
-  dump_pattern();
+//  dump_pattern();
 
   for (int pass = 0; pass < 2; pass++) {
     maxPos = 0;
     printf("Pass %i\n",pass+1);
     reset_for_pass(pass);
-    if ( process2("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE 2.ASM", pass ) ) {
+    if ( process("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE 2.ASM", pass ) ) {
       goto fail;
     }
     if (segment_stack_count()) {
@@ -65,170 +65,9 @@ fail:
  * It returns 0 on success and -1 on failure.
  */
 
-#ifdef ROCKY
-
-int process(const char *filename, int pass) {
-  
-  int result = -1, is_continue = 0, in_string, has_string ;
-  
-  unsigned long idx, len ;
-  
-  FILE *fp = NULL ;
-  
-  #define MAX_LINE (256)
-  
-  char linebuf[MAX_LINE], statement[MAX_LINE] ;
-  
-  char *wptr ;
-  
-  unsigned int line_number = 1, stmt_line = 1 ;
-
-/*
- *------------------------------------------------------------------------------
- */
-  
-  if ( ( fp = fopen(filename, "r")) == NULL ) {
-    goto fail;
-  }
-  
-  strcpy(statement, "") ;
-  
-  while ( fgets(linebuf, sizeof(linebuf), fp) ) {
-    
-    char *ptr = linebuf ;
-    
-/*
- * If it is not a continuation line then assemble the statement.
- */
-    
-    if ( ! ( is_continue = ( linebuf[0] == '&' ) ) ) {
-      if ( strlen(statement) > 0 ) {
-        if ( assemble(statement, stmt_line, pass ) ) {
-          goto fail ;
-        }
-        strcpy(statement, "") ;
-        stmt_line = line_number ;
-      }
-    }
-    
-/*
- * Remove newline.
- */
-    
-    len = strlen(linebuf) ;
-    
-    if ( linebuf[len-1] == '\n' ) {
-      linebuf[--len] = '\0' ;
-    }
-    
- /*
-  * Strip comments from new line.
-  */
-    
-    in_string = 0 ;
-    has_string = 0 ;
-    
-    for ( idx = 0; idx < len; idx++ ) {
-      
-      char c = linebuf[idx];
-      
-      int is_quote = ( c == '\'' ) ;
-      
-      if ( in_string ) {
-        if ( is_quote ) {
-          in_string = 0 ;
-        }
-      }
-      else if ( is_quote ) {
-        in_string = 1 ;
-        has_string = 1 ;
-      }
-      else if ( c == ';' ) {
-        linebuf[idx] = '\0' ;
-        break;
-      }
-      
-    }
-    
-/*
- * Line continuation and string concatenation.
- */
-    
-    if ( is_continue ) {
-      
-      char *eptr = &statement[strlen(statement)-1] ;
-      
-      ptr++ ;
-
-      if ( *ptr == ',' ) {
-        
-        ptr++ ;
-        
-        while ( *ptr && isspace(*ptr) ) {
-          ptr++ ;
-        }
-        
-        if ( *eptr == '\'' && *ptr == '\'' ) {
-          *eptr = '\0' ;
-          ptr++ ;
-        }
-        
-      }
-      
-    }
-    
-/*
- * Remove trailing whitespace.
- */
-    
-    wptr = &linebuf[strlen(linebuf)-1] ;
-    
-    while ( wptr > ptr && isspace(*wptr)) {
-      *wptr-- = '\0' ;
-    }
-    
-    strcat( statement, ptr ) ;
-    
-    line_number++ ;
-    
-  }
-
-  if ( strlen(statement) > 0 ) {
-    if ( assemble(statement, stmt_line, pass ) ) {
-      goto fail ;
-    }
-  }
-
-/*
- * Tidy-Up.
- */
-  
-  result = 0 ;
-  
-fail:
-  
-  if ( fp != NULL ) {
-    fclose(fp) ;
-  }
-  
-/*
- * Finished.
- */
-  
-  return result ;
-  
-}
-
-#endif
-
-/*
- * This routine assembles a single file.
- * It returns 0 on success and -1 on failure.
- */
-
 long int maxPos = 0L;
 
-int process2(const char *filename, int pass) {
+int process(const char *filename, int pass) {
   
   FILE *fp = NULL ;
   
@@ -243,40 +82,32 @@ int process2(const char *filename, int pass) {
   if ( ( fp = fopen(filename, "r")) == NULL ) {
     goto fail;
   }
-  
+/*
   fseek(fp, 0L, SEEK_END);
   long int end_of_file = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
-  
-  while (ftell(fp)<end_of_file) {
-    
-//    printf("process2\n");
-    if ( ( ( pt = match2 ( PRD_module, fp, 0 ) ) == NULL )/* || ( tp != NULL ) */ ) {
-      if (ftell(fp)==end_of_file) {
-        break;
-      }
-      error ( ERR_SYNTAX_ERROR, 0 ) ;
-      goto fail ;
-    }
-    
-    /*
-     * Execute command.
-     */
-    
-    else if ( ! execute ( pt, pass, 0 ) ) {
-      goto fail ;
-    }
-    
-    /*
-     * Tidy-Up
-     */
-    
-    if ( pt != NULL ) {
-      delete_ptree ( pt, 1, 1, 0 ) ;
-    }
-
+*/
+  if ( ( ( pt = match2 ( PRD_module, fp, 0 ) ) == NULL )/* || ( tp != NULL ) */ ) {
+    error ( ERR_SYNTAX_ERROR, 0 ) ;
+    goto fail ;
   }
   
+  /*
+   * Execute command.
+   */
+  
+  else if ( ! execute ( pt, pass, 0 ) ) {
+    goto fail ;
+  }
+  
+  /*
+   * Tidy-Up
+   */
+  
+  if ( pt != NULL ) {
+    delete_ptree ( pt, 1, 1, 0 ) ;
+  }
+
   /*
    * Tidy-Up.
    */
@@ -306,7 +137,6 @@ fail:
    */
   
   return result ;
-  
 
 }
 

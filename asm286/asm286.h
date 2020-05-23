@@ -50,9 +50,10 @@ enum {
   ERR_SEGMENT_NESTING_FAULT    = 12,
   ERR_SEGMENT_NOT_ENDED        = 13,
   ERR_PRODUCTION_NOT_FOUND     = 14,
+  ERR_INVALID_INSTRUCTION      = 15,
 } ;
 
-#define NUM_ERR ( 14 )
+#define NUM_ERR ( 15 )
 
 /*
  * Symbol Table stuff.
@@ -80,11 +81,30 @@ enum {
 #define KEYWORD_RESERVED "\003"
 #define SPECIAL          "\004"
 
+#define PROCESSOR_MASK 070
+#define COPROCESSOR_MASK 0300
+
+#define PROCESSOR(x) (((x) & PROCESSOR_MASK) >> 3)
+#define COPROCESSOR(x) (((x) & COPROCESSOR_MASK) >> 5)
+
+enum ProcessorType {
+  i86 = 0,
+  i186 = 1,
+  i286 = 2,
+  i286p = 3,
+};
+
+enum CoProcessorType {
+  none = 0,
+  i87 = 1,
+  i287 = 2,
+};
+
 /*
  * Token string constants.
  */
 
-#define NUM_PATTERN ( 374 )  /* Number of token patterns */
+#define NUM_PATTERN ( 376 )  /* Number of token patterns */
 
 #define STK_UNDERSCORE  "\001\001"
 #define STK_MINUS       "\001\002"
@@ -355,121 +375,123 @@ enum {
 #define STK_LOW         "\003\010"
 #define STK_LSL         "\003\011"
 #define STK_LT          "\003\012"
-#define STK_MASK        "\003\013"
-#define STK_MEDIUM      "\003\014"
-#define STK_MEMORY      "\003\015"
-#define STK_MOD         "\003\016"
-#define STK_MOV         "\003\017"
-#define STK_MOVS        "\003\020"
-#define STK_MOVSB       "\003\021"
-#define STK_MOVSW       "\003\022"
-#define STK_MUL         "\003\023"
-#define STK_NAME        "\003\024"
-#define STK_NE          "\003\025"
-#define STK_NEAR        "\003\026"
-#define STK_NEARSTACK   "\003\027"
-#define STK_NEG         "\003\030"
-#define STK_NOP         "\003\031"
-#define STK_NOT         "\003\032"
-#define STK_NOTHING     "\003\033"
-#define STK_OFFSET      "\003\034"
-#define STK_OR          "\003\035"
-#define STK_ORG         "\003\036"
-#define STK_OUT         "\003\037"
-#define STK_OUTS        "\003\040"
-#define STK_OUTSB       "\003\041"
-#define STK_OUTSW       "\003\042"
-#define STK_PARA        "\003\043"
-#define STK_PAGE        "\003\044"
-#define STK_POP         "\003\045"
-#define STK_POPA        "\003\046"
-#define STK_POPF        "\003\047"
-#define STK_PRIVATE     "\003\050"
-#define STK_PTR         "\003\051"
-#define STK_PUBLIC      "\003\052"
-#define STK_PUSH        "\003\053"
-#define STK_PUSHA       "\003\054"
-#define STK_PUSHF       "\003\055"
-#define STK_QWORD       "\003\056"
-#define STK_RCL         "\003\057"
-#define STK_RCR         "\003\060"
-#define STK_REAL4       "\003\061"
-#define STK_REAL8       "\003\062"
-#define STK_REAL10      "\003\063"
-#define STK_REP         "\003\064"
-#define STK_REPE        "\003\065"
-#define STK_REPNE       "\003\066"
-#define STK_REPNZ       "\003\067"
-#define STK_REPZ        "\003\070"
-#define STK_RET         "\003\071"
-#define STK_ROL         "\003\072"
-#define STK_ROR         "\003\073"
-#define STK_SAHF        "\003\074"
-#define STK_SAL         "\003\075"
-#define STK_SAR         "\003\076"
-#define STK_SBB         "\003\077"
-#define STK_SBYTE       "\003\100"
-#define STK_SCAS        "\003\101"
-#define STK_SCASB       "\003\102"
-#define STK_SCASW       "\003\103"
-#define STK_SDWORD      "\003\104"
-#define STK_SEG         "\003\105"
-#define STK_SEGMENT     "\003\106"
-#define STK_SGDT        "\003\107"
-#define STK_SHL         "\003\110"
-#define STK_SHORT       "\003\111"
-#define STK_SHR         "\003\112"
-#define STK_SI          "\003\113"
-#define STK_SIDT        "\003\114"
-#define STK_SIZE        "\003\115"
-#define STK_SIZEOF      "\003\116"
-#define STK_SLDT        "\003\117"
-#define STK_SMALL       "\003\120"
-#define STK_SMSW        "\003\121"
-#define STK_SP          "\003\122"
-#define STK_SS          "\003\123"
-#define STK_ST          "\003\124"
-#define STK_STACK       "\003\125"
-#define STK_STC         "\003\126"
-#define STK_STD         "\003\127"
-#define STK_STI         "\003\130"
-#define STK_STOS        "\003\131"
-#define STK_STOSB       "\003\132"
-#define STK_STOSW       "\003\133"
-#define STK_SUB         "\003\134"
-#define STK_SUBTITLE    "\003\135"
-#define STK_SWORD       "\003\136"
-#define STK_TBYTE       "\003\137"
-#define STK_TEST        "\003\140"
-#define STK_THIS        "\003\141"
-#define STK_TINY        "\003\142"
-#define STK_TITLE       "\003\143"
-#define STK_TYPE        "\003\144"
-#define STK_VERR        "\003\145"
-#define STK_VERW        "\003\146"
-#define STK_WAIT        "\003\147"
-#define STK_WIDTH       "\003\150"
-#define STK_WORD        "\003\151"
-#define STK_XCHG        "\003\152"
-#define STK_XLAT        "\003\153"
-#define STK_XLATB       "\003\154"
-#define STK_XOR         "\003\155"
+#define STK_LTR         "\003\013"
+#define STK_MASK        "\003\014"
+#define STK_MEDIUM      "\003\015"
+#define STK_MEMORY      "\003\016"
+#define STK_MOD         "\003\017"
+#define STK_MOV         "\003\020"
+#define STK_MOVS        "\003\021"
+#define STK_MOVSB       "\003\022"
+#define STK_MOVSW       "\003\023"
+#define STK_MUL         "\003\024"
+#define STK_NAME        "\003\025"
+#define STK_NE          "\003\026"
+#define STK_NEAR        "\003\027"
+#define STK_NEARSTACK   "\003\030"
+#define STK_NEG         "\003\031"
+#define STK_NOP         "\003\032"
+#define STK_NOT         "\003\033"
+#define STK_NOTHING     "\003\034"
+#define STK_OFFSET      "\003\035"
+#define STK_OR          "\003\036"
+#define STK_ORG         "\003\037"
+#define STK_OUT         "\003\040"
+#define STK_OUTS        "\003\041"
+#define STK_OUTSB       "\003\042"
+#define STK_OUTSW       "\003\043"
+#define STK_PARA        "\003\044"
+#define STK_PAGE        "\003\045"
+#define STK_POP         "\003\046"
+#define STK_POPA        "\003\047"
+#define STK_POPF        "\003\050"
+#define STK_PRIVATE     "\003\051"
+#define STK_PTR         "\003\052"
+#define STK_PUBLIC      "\003\053"
+#define STK_PUSH        "\003\054"
+#define STK_PUSHA       "\003\055"
+#define STK_PUSHF       "\003\056"
+#define STK_QWORD       "\003\057"
+#define STK_RCL         "\003\060"
+#define STK_RCR         "\003\061"
+#define STK_REAL4       "\003\062"
+#define STK_REAL8       "\003\063"
+#define STK_REAL10      "\003\064"
+#define STK_REP         "\003\065"
+#define STK_REPE        "\003\066"
+#define STK_REPNE       "\003\067"
+#define STK_REPNZ       "\003\070"
+#define STK_REPZ        "\003\071"
+#define STK_RET         "\003\072"
+#define STK_ROL         "\003\073"
+#define STK_ROR         "\003\074"
+#define STK_SAHF        "\003\075"
+#define STK_SAL         "\003\076"
+#define STK_SAR         "\003\077"
+#define STK_SBB         "\003\100"
+#define STK_SBYTE       "\003\101"
+#define STK_SCAS        "\003\102"
+#define STK_SCASB       "\003\103"
+#define STK_SCASW       "\003\104"
+#define STK_SDWORD      "\003\105"
+#define STK_SEG         "\003\106"
+#define STK_SEGMENT     "\003\107"
+#define STK_SGDT        "\003\110"
+#define STK_SHL         "\003\111"
+#define STK_SHORT       "\003\112"
+#define STK_SHR         "\003\113"
+#define STK_SI          "\003\114"
+#define STK_SIDT        "\003\115"
+#define STK_SIZE        "\003\116"
+#define STK_SIZEOF      "\003\117"
+#define STK_SLDT        "\003\120"
+#define STK_SMALL       "\003\121"
+#define STK_SMSW        "\003\122"
+#define STK_SP          "\003\123"
+#define STK_SS          "\003\124"
+#define STK_ST          "\003\125"
+#define STK_STACK       "\003\126"
+#define STK_STC         "\003\127"
+#define STK_STD         "\003\130"
+#define STK_STI         "\003\131"
+#define STK_STOS        "\003\132"
+#define STK_STOSB       "\003\133"
+#define STK_STOSW       "\003\134"
+#define STK_STR         "\003\135"
+#define STK_SUB         "\003\136"
+#define STK_SUBTITLE    "\003\137"
+#define STK_SWORD       "\003\140"
+#define STK_TBYTE       "\003\141"
+#define STK_TEST        "\003\142"
+#define STK_THIS        "\003\143"
+#define STK_TINY        "\003\144"
+#define STK_TITLE       "\003\145"
+#define STK_TYPE        "\003\146"
+#define STK_VERR        "\003\147"
+#define STK_VERW        "\003\150"
+#define STK_WAIT        "\003\151"
+#define STK_WIDTH       "\003\152"
+#define STK_WORD        "\003\153"
+#define STK_XCHG        "\003\154"
+#define STK_XLAT        "\003\155"
+#define STK_XLATB       "\003\156"
+#define STK_XOR         "\003\157"
 
 /*
  * END OF AUTONUBER SECTION
  */
 
-#define STK_INTEGERBIN  "\003\137"
-#define STK_INTEGEROCT  "\003\140"
-#define STK_INTEGERDEC  "\003\141"
-#define STK_INTEGERHEX  "\003\142"
-#define STK_DOUBLE      "\003\143"
-#define STK_STRING      "\003\144"
-#define STK_IDENTIFIER  "\003\145"
-#define STK_INST_LABEL  "\003\146"
-#define STK_NEWLINE     "\003\147"
-#define STK_WHITESPACE  "\003\150"
-#define STK_TEXT        "\003\151"
+#define STK_INTEGERBIN  "\003\160"
+#define STK_INTEGEROCT  "\003\161"
+#define STK_INTEGERDEC  "\003\162"
+#define STK_INTEGERHEX  "\003\163"
+#define STK_DOUBLE      "\003\164"
+#define STK_STRING      "\003\165"
+#define STK_IDENTIFIER  "\003\166"
+#define STK_INST_LABEL  "\003\167"
+#define STK_NEWLINE     "\003\170"
+#define STK_WHITESPACE  "\003\171"
+#define STK_TEXT        "\003\172"
 
 /*
  * Production string constants.
@@ -858,117 +880,119 @@ enum {
   TOK_LOW         = 261,
   TOK_LSL         = 262,
   TOK_LT          = 263,
-  TOK_MASK        = 264,
-  TOK_MEDIUM      = 265,
-  TOK_MEMORY      = 266,
-  TOK_MOD         = 267,
-  TOK_MOV         = 268,
-  TOK_MOVS        = 269,
-  TOK_MOVSB       = 270,
-  TOK_MOVSW       = 271,
-  TOK_MUL         = 272,
-  TOK_NAME        = 273,
-  TOK_NE          = 274,
-  TOK_NEAR        = 275,
-  TOK_NEARSTACK   = 276,
-  TOK_NEG         = 277,
-  TOK_NOP         = 278,
-  TOK_NOT         = 279,
-  TOK_NOTHING     = 280,
-  TOK_OFFSET      = 281,
-  TOK_OR          = 282,
-  TOK_ORG         = 283,
-  TOK_OUT         = 284,
-  TOK_OUTS        = 285,
-  TOK_OUTSB       = 286,
-  TOK_OUTSW       = 287,
-  TOK_PARA        = 288,
-  TOK_PAGE        = 289,
-  TOK_POP         = 290,
-  TOK_POPA        = 291,
-  TOK_POPF        = 292,
-  TOK_PRIVATE     = 293,
-  TOK_PTR         = 294,
-  TOK_PUBLIC      = 295,
-  TOK_PUSH        = 296,
-  TOK_PUSHA       = 297,
-  TOK_PUSHF       = 298,
-  TOK_QWORD       = 299,
-  TOK_RCL         = 300,
-  TOK_RCR         = 301,
-  TOK_REAL4       = 302,
-  TOK_REAL8       = 303,
-  TOK_REAL10      = 304,
-  TOK_REP         = 305,
-  TOK_REPE        = 306,
-  TOK_REPNE       = 307,
-  TOK_REPNZ       = 308,
-  TOK_REPZ        = 309,
-  TOK_RET         = 310,
-  TOK_ROL         = 311,
-  TOK_ROR         = 312,
-  TOK_SAHF        = 313,
-  TOK_SAL         = 314,
-  TOK_SAR         = 315,
-  TOK_SBB         = 316,
-  TOK_SBYTE       = 317,
-  TOK_SCAS        = 318,
-  TOK_SCASB       = 319,
-  TOK_SCASW       = 320,
-  TOK_SDWORD      = 321,
-  TOK_SEG         = 322,
-  TOK_SEGMENT     = 323,
-  TOK_SGDT        = 324,
-  TOK_SHL         = 325,
-  TOK_SHORT       = 326,
-  TOK_SHR         = 327,
-  TOK_SI          = 328,
-  TOK_SIDT        = 329,
-  TOK_SIZE        = 330,
-  TOK_SIZEOF      = 331,
-  TOK_SLDT        = 332,
-  TOK_SMALL       = 333,
-  TOK_SMSW        = 334,
-  TOK_SP          = 335,
-  TOK_SS          = 336,
-  TOK_ST          = 337,
-  TOK_STACK       = 338,
-  TOK_STC         = 339,
-  TOK_STD         = 340,
-  TOK_STI         = 341,
-  TOK_STOS        = 342,
-  TOK_STOSB       = 343,
-  TOK_STOSW       = 344,
-  TOK_SUB         = 345,
-  TOK_SUBTITLE    = 346,
-  TOK_SWORD       = 347,
-  TOK_TBYTE       = 348,
-  TOK_TEST        = 349,
-  TOK_THIS        = 350,
-  TOK_TINY        = 351,
-  TOK_TITLE       = 352,
-  TOK_TYPE        = 353,
-  TOK_VERR        = 354,
-  TOK_VERW        = 355,
-  TOK_WAIT        = 356,
-  TOK_WIDTH       = 357,
-  TOK_WORD        = 358,
-  TOK_XCHG        = 359,
-  TOK_XLAT        = 360,
-  TOK_XLATB       = 361,
-  TOK_XOR         = 362,
+  TOK_LTR         = 264,
+  TOK_MASK        = 265,
+  TOK_MEDIUM      = 266,
+  TOK_MEMORY      = 267,
+  TOK_MOD         = 268,
+  TOK_MOV         = 269,
+  TOK_MOVS        = 270,
+  TOK_MOVSB       = 271,
+  TOK_MOVSW       = 272,
+  TOK_MUL         = 273,
+  TOK_NAME        = 274,
+  TOK_NE          = 275,
+  TOK_NEAR        = 276,
+  TOK_NEARSTACK   = 277,
+  TOK_NEG         = 278,
+  TOK_NOP         = 279,
+  TOK_NOT         = 280,
+  TOK_NOTHING     = 281,
+  TOK_OFFSET      = 282,
+  TOK_OR          = 283,
+  TOK_ORG         = 284,
+  TOK_OUT         = 285,
+  TOK_OUTS        = 286,
+  TOK_OUTSB       = 287,
+  TOK_OUTSW       = 288,
+  TOK_PARA        = 289,
+  TOK_PAGE        = 290,
+  TOK_POP         = 291,
+  TOK_POPA        = 292,
+  TOK_POPF        = 293,
+  TOK_PRIVATE     = 294,
+  TOK_PTR         = 295,
+  TOK_PUBLIC      = 296,
+  TOK_PUSH        = 297,
+  TOK_PUSHA       = 298,
+  TOK_PUSHF       = 299,
+  TOK_QWORD       = 300,
+  TOK_RCL         = 301,
+  TOK_RCR         = 302,
+  TOK_REAL4       = 303,
+  TOK_REAL8       = 304,
+  TOK_REAL10      = 305,
+  TOK_REP         = 306,
+  TOK_REPE        = 307,
+  TOK_REPNE       = 308,
+  TOK_REPNZ       = 309,
+  TOK_REPZ        = 310,
+  TOK_RET         = 311,
+  TOK_ROL         = 312,
+  TOK_ROR         = 313,
+  TOK_SAHF        = 314,
+  TOK_SAL         = 315,
+  TOK_SAR         = 316,
+  TOK_SBB         = 317,
+  TOK_SBYTE       = 318,
+  TOK_SCAS        = 319,
+  TOK_SCASB       = 320,
+  TOK_SCASW       = 321,
+  TOK_SDWORD      = 322,
+  TOK_SEG         = 323,
+  TOK_SEGMENT     = 324,
+  TOK_SGDT        = 325,
+  TOK_SHL         = 326,
+  TOK_SHORT       = 327,
+  TOK_SHR         = 328,
+  TOK_SI          = 329,
+  TOK_SIDT        = 330,
+  TOK_SIZE        = 331,
+  TOK_SIZEOF      = 332,
+  TOK_SLDT        = 333,
+  TOK_SMALL       = 334,
+  TOK_SMSW        = 335,
+  TOK_SP          = 336,
+  TOK_SS          = 337,
+  TOK_ST          = 338,
+  TOK_STACK       = 339,
+  TOK_STC         = 340,
+  TOK_STD         = 341,
+  TOK_STI         = 342,
+  TOK_STOS        = 343,
+  TOK_STOSB       = 344,
+  TOK_STOSW       = 345,
+  TOK_STR         = 346,
+  TOK_SUB         = 347,
+  TOK_SUBTITLE    = 348,
+  TOK_SWORD       = 349,
+  TOK_TBYTE       = 350,
+  TOK_TEST        = 351,
+  TOK_THIS        = 352,
+  TOK_TINY        = 353,
+  TOK_TITLE       = 354,
+  TOK_TYPE        = 355,
+  TOK_VERR        = 356,
+  TOK_VERW        = 357,
+  TOK_WAIT        = 358,
+  TOK_WIDTH       = 359,
+  TOK_WORD        = 360,
+  TOK_XCHG        = 361,
+  TOK_XLAT        = 362,
+  TOK_XLATB       = 363,
+  TOK_XOR         = 364,
 
-  TOK_INTEGERBIN  = 363,
-  TOK_INTEGEROCT  = 364,
-  TOK_INTEGERDEC  = 365,
-  TOK_INTEGERHEX  = 366,
-  TOK_DOUBLE      = 367,
-  TOK_STRING      = 368,
-  TOK_IDENTIFIER  = 369,
-  TOK_INST_LABEL  = 370,
-  TOK_NEWLINE     = 371,
-  TOK_WHITESPACE  = 372,
-  TOK_TEXT        = 373,
+  TOK_INTEGERBIN  = 365,
+  TOK_INTEGEROCT  = 366,
+  TOK_INTEGERDEC  = 367,
+  TOK_INTEGERHEX  = 368,
+  TOK_DOUBLE      = 369,
+  TOK_STRING      = 370,
+  TOK_IDENTIFIER  = 371,
+  TOK_INST_LABEL  = 372,
+  TOK_NEWLINE     = 373,
+  TOK_WHITESPACE  = 374,
+  TOK_TEXT        = 375,
   
 /*
  * Productions
@@ -1168,7 +1192,6 @@ struct segment_table_t {
  * Prototypes.
  */
 
-int process(const char *, int) ;
 int assemble(const char *, int, int ) ;
 tlist_node_t * tokenize(const char *, int) ;
 void delete_tlist( tlist_node_t ** ) ;
@@ -1200,12 +1223,21 @@ int dep_disp(unsigned char [], int, int, int, int);
 unsigned char rm_disp_mod(ptree_node_t *, int *, int *);
 int dep_opcodes(unsigned char [], int, int, int);
 int is_word(int);
-int process2(const char *, int);
+int process(const char *, int);
 ptree_node_t * match2(int, FILE *, int);
 ptree_node_t *find_token(int, FILE *);
 int match_pattern2(FILE *, const char *, char **, unsigned long *);
 void printProdName(int) ;
+int checkInstruction(int);
+
+extern int processor;
+extern int coprocessor;
+extern char *title;
+extern char *subtitle;
+extern int list;
+
 #endif /* asm286_h */
+
 
 /*
  *------------------------------------------------------------------------------

@@ -5,77 +5,28 @@
  *
  *  Description:
  *
- *    error.c       Display error message
+ *    global.c       Global Common Data
  *
  *  This revision:
  *
- *    2020 April 10 Paul Willmott Segment Stack Errors added.
+ *    2020 May 23 Paul Willmott Baseline.
  *
  *  Revision History:
  *
- *    2019 November 17 Paul Willmott Baseline.
+ *    2020 May 23 Paul Willmott Baseline.
  *
- *  Copyright (c) 2019-2020 Paul C. L. Willmott. See license at end.
+ *  Copyright (c) 2020 Paul C. L. Willmott. See license at end.
  *
  *------------------------------------------------------------------------------
  */
 
-#include <stdio.h>
-#include "asm286.h"
+#include <stdlib.h>
 
-void error( int err, int lineno )
-{
-  
-  const char *message[ NUM_ERR ] = {
-    "Internal error",
-    "Out of memory",
-    "Line buffer overflow",
-    "Syntax error",
-    "String too long",
-    "Identifier too long",
-    "Identifier already exists",
-    "Symbol table full",
-    "Segment Stack Overflow",
-    "Too Many Segments",
-    "Not In Segment",
-    "Segment Nesting Fault",
-    "Segment Not Ended",
-    "Production Not Found",
-    "Invalid Instruction",
-  } ;
-  
-  char tmp_str[ 128 ] ;
-  
-/*
- *-----------------------------------------------------------------------------
- */
-  
-/*
- * Output error message.
- */
-  
-  if ( ( err > 0 ) && ( err <= NUM_ERR ) ) {
-    sprintf ( tmp_str, "%s", message[ err - 1 ] ) ;
-  }
-  else {
-    sprintf ( tmp_str, "Error %i", err ) ;
-  }
-  
-  fprintf ( stderr, "%s", tmp_str ) ;
-  
-  if ( lineno > 0 ) {
-    fprintf ( stderr, " at line %i", lineno ) ;
-  }
-    
-  fprintf( stderr, "\n" ) ;
-  
-  return ;
-  
-/*
- * Finished
- */
-  
-}
+int processor = 0;
+int coprocessor = 0;
+char *title = NULL;
+char *subtitle = NULL;
+int list = 0;
 
 /*
  *------------------------------------------------------------------------------

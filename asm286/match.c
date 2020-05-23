@@ -405,57 +405,6 @@ ptree_node_t * match2
   }
   indent++;
   switch (production_id) {
-    case PRD_TOP:
-      printf("Searching for: PRD_TOP\n");
-      break;
-    case PRD_DIRECTIVE_LIST:
-      printf("Searching for: PRD_DIRECTIVE_LIST\n");
-      break;
-    case PRD_DIRECTIVE:
-      printf("Searching for: PRD_DIRECTIVE\n");
-      break;
-    case PRD_SEGMENT_DEF:
-      printf("Searching for: PRD_SEGMENT_DEF\n");
-      break;
-    case PRD_SEGMENT_DIR:
-      printf("Searching for: PRD_SEGMENT_DIR\n");
-      break;
-    case PRD_SEG_ID:
-      printf("Searching for: PRD_SEG_ID\n");
-      break;
-    case PRD_NEWLINE:
-      printf("Searching for: PRD_NEWLINE\n");
-      break;
-    case PRD_IN_SEG_DIR_LIST:
-      printf("Searching for: PRD_IN_SEG_DIR_LIST\n");
-      break;
-    case PRD_IN_SEG_DIR:
-      printf("Searching for: PRD_IN_SEG_DIR\n");
-      break;
-    case PRD_IN_SEGMENT_DIR:
-      printf("Searching for: PRD_IN_SEGMENT_DIR\n");
-      break;
-    case PRD_INSTRUCTION:
-      printf("Searching for: PRD_INSTRUCTION\n");
-      break;
-    case PRD_INST_PREFIX:
-      printf("Searching for: PRD_INST_PREFIX\n");
-      break;
-    case PRD_XINST_PREFIX:
-      printf("Searching for: PRD_INST_XPREFIX\n");
-      break;
-    case PRD_ASM_INSTRUCTION:
-      printf("Searching for: PRD_ASM_INSTRUCTION\n");
-      break;
-    case PRD_MNEMONIC:
-      printf("Searching for: PRD_MNEMONIC\n");
-      break;
-    case PRD_XMNEMONIC:
-      printf("Searching for: PRD_XMNEMONIC\n");
-      break;
-    case PRD_ENDS_DIR:
-      printf("Searching for: PRD_ENDS_DIR\n");
-      break;
     default:
       printf("Searching for: %o %o\n", production_id / 127 + 1, production_id % 127 + 1);
       break;

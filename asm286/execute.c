@@ -97,7 +97,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
  * Jump Table
  */
 
-  int result, i1 = 0, i2 = 0;
+//  int result, i1 = 0, i2 = 0;
   char *str ;
   int pass1 = (pass == 0);
   int pass2 = (pass == 1);
@@ -113,8 +113,99 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
   int literal_count = 0;
   
   int disp = 0;
-/*
+
   switch ( ptree->production_id ) {
+      
+    case PRD_echoDir:
+      if (pass2) {
+        if (ptree->variant == 0) {
+          printf("%i\n", ptree->args[2]->value.i);
+        }
+        else {
+          printf("%s\n", ptree->args[1]->value.s);
+        }
+      }
+      break;
+    case PRD_e07:
+    {
+      int result = ptree->args[1]->value.i;
+      ptree->value_type = TOK_INTEGERDEC;
+      ptree->value.i = (ptree->args[0]->variant == 0) ? result >> 8: result & 0xff;
+      break;
+    }
+    case PRD_e03:
+    {
+      ptree->value_type = TOK_INTEGERDEC;
+      ptree->value.i = ~ptree->args[1]->value.i;
+      break;
+    }
+    case PRD_e01:
+    case PRD_e02:
+    case PRD_e04:
+    case PRD_e05:
+    case PRD_e06:
+    {
+      int i1 = ptree->args[0]->value.i;
+      int i2 = ptree->args[2]->value.i;
+      int result;
+      switch (ptree->args[1]->args[0]->production_id) {
+        case TOK_MULTIPLY:
+          result = i1 * i2;
+          break;
+        case TOK_DIVIDE:
+          result = i1 / i2;
+          break;
+        case TOK_MOD:
+          result = i1 % i2;
+          break;
+        case TOK_SHL:
+          result = i1 << i2;
+          break;
+        case TOK_SHR:
+          result = i1 >> i2;
+          break;
+        case TOK_PLUS:
+          result = i1 + i2;
+          break;
+        case TOK_MINUS:
+          result = i1 - i2;
+          break;
+        case TOK_AND:
+          result = i1 & i2;
+          break;
+        case TOK_OR:
+          result = i1 | i2;
+          break;
+        case TOK_XOR:
+          result = i1 ^ i2;
+          break;
+        case TOK_EQ:
+          result = (i1 == i2) ? 0 : -1;
+          break;
+        case TOK_NE:
+          result = (i1 != i2) ? 0 : -1;
+          break;
+        case TOK_LT:
+          result = (i1 < i2) ? 0 : -1;
+          break;
+        case TOK_GT:
+          result = (i1 > i2) ? 0 : -1;
+          break;
+        case TOK_LE:
+          result = (i1 <= i2) ? 0 : -1;
+          break;
+        case TOK_GE:
+          result = (i1 >= i2) ? 0 : -1;
+          break;
+        default:
+          result = 0;
+          break;
+      }
+      ptree->value_type = TOK_INTEGERDEC;
+      ptree->value.i = result;
+      break;
+    }
+#ifdef WALLY
     case PRD_ROTATE:
       {
         int w = 1;
@@ -361,69 +452,6 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       ptree->value_type = ptree->args[1]->value_type;
       ptree->value.i = ~ ptree->args[1]->value.i;
       break;
-    case PRD_GRP4_EXP:
-    case PRD_GRP5_EXP:
-    case PRD_GRP6_EXP:
-    case PRD_GRP8_EXP:
-    case PRD_GRP9_EXP:
-      i1 = ptree->args[0]->value.i;
-      i2 = ptree->args[2]->value.i;
-      switch (ptree->args[1]->args[0]->production_id) {
-        case TOK_MULTIPLY:
-          result = i1 * i2;
-          break;
-        case TOK_DIVIDE:
-          result = i1 / i2;
-          break;
-        case TOK_MOD:
-          result = i1 % i2;
-          break;
-        case TOK_SHL:
-          result = i1 << i2;
-          break;
-        case TOK_SHR:
-          result = i1 >> i2;
-          break;
-        case TOK_PLUS:
-          result = i1 + i2;
-          break;
-        case TOK_MINUS:
-          result = i1 - i2;
-          break;
-        case TOK_AND:
-          result = i1 & i2;
-          break;
-        case TOK_OR:
-          result = i1 | i2;
-          break;
-        case TOK_XOR:
-          result = i1 ^ i2;
-          break;
-        case TOK_EQ:
-          result = (i1 == i2) ? 0 : -1;
-          break;
-        case TOK_NE:
-          result = (i1 != i2) ? 0 : -1;
-          break;
-        case TOK_LT:
-          result = (i1 < i2) ? 0 : -1;
-          break;
-        case TOK_GT:
-          result = (i1 > i2) ? 0 : -1;
-          break;
-        case TOK_LE:
-          result = (i1 <= i2) ? 0 : -1;
-          break;
-        case TOK_GE:
-          result = (i1 >= i2) ? 0 : -1;
-          break;
-        default:
-          result = 0;
-          break;
-      }
-      ptree->value_type = TOK_INTEGERDEC;
-      ptree->value.i = result;
-      break;
     case PRD_JR:
       {
         const unsigned char jr[] = {
@@ -503,8 +531,9 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
         }
       }
       break;
+#endif
   }
-*/
+
   // Do the code deposits
   
   if (dep_disp(opcode, opcode_count, disp, pass, lineno)) {
