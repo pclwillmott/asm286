@@ -1,5 +1,6 @@
 ; hello
-
+.286
+.287
 ECHOGood Day!
 ECHO = 1 + 1
 ECHO = NOT 0
@@ -12,16 +13,17 @@ ECHO = LOW 0eeffh
 code SEGMENT
 ECHO NOP
 ECHO NOP
-NOP
-
-
-
-
+ERIC: NOP
+data SEGMENT
+FRED:: DAA
+data ENDS
+GG: NOP
+fred: NOP
+PUBLIC    FRED
 
 F2XM1
-ECHO NOP
+ECHO NOP and some more
 code ENDS
-
 
 
 

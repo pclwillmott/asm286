@@ -51,18 +51,52 @@ enum {
   ERR_SEGMENT_NOT_ENDED        = 13,
   ERR_PRODUCTION_NOT_FOUND     = 14,
   ERR_INVALID_INSTRUCTION      = 15,
+  ERR_IDENTIFIER_NOT_FOUND     = 16,
 } ;
 
-#define NUM_ERR ( 15 )
+#define NUM_ERR ( 16 )
 
 /*
  * Symbol Table stuff.
  */
 
-enum {
-  SYMBOL_LABEL    = 0,
-  SYMBOL_VARIABLE = 1,
-  SYMBOL_CONSTANT = 2,
+enum SymbolType {
+  ST_LABEL    = 0,
+  ST_VARIABLE = 1,
+  ST_CONSTANT = 2,
+};
+
+enum DataType {
+  DT_UNASSIGNED = -1,
+  DT_BYTE   = 0,
+  DT_SBYTE  = 1,
+  DT_WORD   = 2,
+  DT_SWORD  = 3,
+  DT_DWORD  = 4,
+  DT_SDWORD = 5,
+  DT_FWORD  = 6,
+  DT_QWORD  = 7,
+  DT_TBYTE  = 8,
+  DT_REAL4  = 9,
+  DT_REAL8  = 10,
+  DT_REAL10 = 11,
+};
+
+enum Distance {
+  DIST_UNASSIGNED = -1,
+  DIST_NEAR = 0,
+  DIST_FAR = 1,
+};
+
+enum Visibility {
+  VS_PRIVATE = 0,
+  VS_PUBLIC = 1,
+  VS_EXTERN = 2,
+};
+
+enum Language {
+  LG_UNASSIGNED = -1,
+  LG_C = 0,
 };
 
 #define MAX_SYMBOLS 128
@@ -1192,24 +1226,26 @@ struct segment_table_t {
  * Prototypes.
  */
 
-int assemble(const char *, int, int ) ;
-tlist_node_t * tokenize(const char *, int) ;
-void delete_tlist( tlist_node_t ** ) ;
-void dump_pattern( void ) ;
-void error( int, int ) ;
-ptree_node_t * match( int, tlist_node_t **, int ) ;
-void delete_ptree( ptree_node_t *, int, int, int ) ;
-int execute ( ptree_node_t *, int, int ) ;
-unsigned int pid( const char * ) ;
-unsigned char to_byte( char ) ;
-int dep(unsigned char, int, int) ;
-int depw(unsigned short, int, int) ;
-int depd(unsigned int, int, int) ;
-int setstr(char **, char *) ;
-int get_symbol_value(const char *, int *) ;
-int get_symbol_index(const char *) ;
-int add_symbol(const char *, int, int) ;
-void dump_symbol_table(void) ;
+int assemble(const char *, int, int );
+tlist_node_t * tokenize(const char *, int);
+void delete_tlist( tlist_node_t ** );
+void dump_pattern( void );
+void error(void);
+ptree_node_t * match( int, tlist_node_t **, int );
+void delete_ptree( ptree_node_t *, int, int, int );
+int execute ( ptree_node_t *, int, int );
+unsigned int pid( const char * );
+unsigned char to_byte( char );
+int dep(unsigned char, int, int);
+int depw(unsigned short, int, int);
+int depd(unsigned int, int, int);
+int setstr(char **, char *);
+int get_symbol_value(const char *, int *);
+int get_symbol_index(const char *);
+int add_symbol(const char *, enum SymbolType, enum DataType, enum Distance, int, enum Language, int);
+int add_label(const char *, enum Distance, int);
+int segment_stack_top_index(void);
+void dump_symbol_table(void);
 int open_segment(const char *, int);
 int open_segment_with_attributes(const char *, int, int);
 int close_segment(const char *, int);
@@ -1227,15 +1263,18 @@ int process(const char *, int);
 ptree_node_t * match2(int, FILE *, int);
 ptree_node_t *find_token(int, FILE *);
 int match_pattern2(FILE *, const char *, char **, unsigned long *);
-void printProdName(int) ;
+void printProdName(int);
 int checkInstruction(int);
-
+char *get_segment_name(int);
+int set_sumbol_visibility(const char *, enum Visibility);
+void trim(char *);
 extern int processor;
 extern int coprocessor;
 extern char *title;
 extern char *subtitle;
 extern int list;
-
+extern int check_instructions;
+extern int errno;
 #endif /* asm286_h */
 
 

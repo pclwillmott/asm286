@@ -31,6 +31,10 @@ unsigned int segment_count = 0;
 unsigned int segment_stack[MAX_SEGMENT_STACK];
 unsigned int stack_count = 0;
 
+char *get_segment_name(int idx) {
+  return segment_table[idx].name;
+}
+
 int get_segment_index(const char *name) {
   for (int i = 0; i < segment_count; i++) {
     if (strcmp(name, segment_table[i].name) == 0) {
@@ -48,13 +52,13 @@ int open_segment(const char *name, int lineno)
 int open_segment_with_attributes(const char *name, int attributes, int lineno)
 {
   if (stack_count == MAX_SEGMENT_STACK) {
-    error(ERR_SEGMENT_STACK_OVERFLOW, lineno);
+    errno = ERR_SEGMENT_STACK_OVERFLOW;
     return 1;
   }
   int index;
   if ((index = get_segment_index(name)) == -1) {
     if (segment_count == MAX_SEGMENT) {
-      error(ERR_TOO_MANY_SEGMENTS, lineno);
+      errno = ERR_TOO_MANY_SEGMENTS;
       return 1;
     }
     index = segment_count++;
@@ -75,7 +79,7 @@ int close_segment(const char *name, int lineno)
     return 1;
   }
   if (strcmp(name, segment->name)) {
-    error(ERR_SEGMENT_NESTING_FAULT, lineno);
+    errno = ERR_SEGMENT_NESTING_FAULT;
     return 1;
   }
   stack_count--;
@@ -86,10 +90,18 @@ int segment_stack_count() {
   return stack_count;
 }
 
+int segment_stack_top_index() {
+  if (stack_count == 0) {
+    errno = ERR_NOT_IN_SEGMENT;
+    return -1;
+  }
+  return segment_stack[stack_count-1];
+}
+
 segment_table_t *segment_stack_top(int lineno)
 {
   if (stack_count == 0) {
-    error(ERR_NOT_IN_SEGMENT, lineno);
+    errno = ERR_NOT_IN_SEGMENT;
     return NULL;
   }
   return &segment_table[segment_stack[stack_count-1]];
@@ -101,8 +113,6 @@ void reset_for_pass(int pass) {
   }
   stack_count = 0;
   segment_count = 0;
-  processor = i86;
-  coprocessor = none;
 }
 
 int get_current_position(unsigned int *position, int lineno)

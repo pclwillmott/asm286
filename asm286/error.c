@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include "asm286.h"
 
-void error( int err, int lineno )
+void error()
 {
   
   const char *message[ NUM_ERR ] = {
@@ -42,6 +42,7 @@ void error( int err, int lineno )
     "Segment Not Ended",
     "Production Not Found",
     "Invalid Instruction",
+    "Identifier Not Found",
   } ;
   
   char tmp_str[ 128 ] ;
@@ -54,20 +55,14 @@ void error( int err, int lineno )
  * Output error message.
  */
   
-  if ( ( err > 0 ) && ( err <= NUM_ERR ) ) {
-    sprintf ( tmp_str, "%s", message[ err - 1 ] ) ;
+  if ( ( errno > 0 ) && ( errno <= NUM_ERR ) ) {
+    sprintf ( tmp_str, "%s", message[ errno - 1 ] ) ;
   }
   else {
-    sprintf ( tmp_str, "Error %i", err ) ;
+    sprintf ( tmp_str, "Error %i", errno ) ;
   }
   
-  fprintf ( stderr, "%s", tmp_str ) ;
-  
-  if ( lineno > 0 ) {
-    fprintf ( stderr, " at line %i", lineno ) ;
-  }
-    
-  fprintf( stderr, "\n" ) ;
+  fprintf ( stderr, "%s\n", tmp_str ) ;
   
   return ;
   

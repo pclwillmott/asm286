@@ -35,15 +35,19 @@ int main(int argc, const char * argv[]) {
 
 //  dump_pattern();
 
+  processor = i86;
+  coprocessor = none;
+  
   for (int pass = 0; pass < 2; pass++) {
     maxPos = 0;
+    check_instructions = pass == 1;
     printf("Pass %i\n",pass+1);
     reset_for_pass(pass);
     if ( process("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE 2.ASM", pass ) ) {
       goto fail;
     }
     if (segment_stack_count()) {
-      error(ERR_SEGMENT_NOT_ENDED,0);
+      errno = ERR_SEGMENT_NOT_ENDED;
       goto fail;
     }
   }
@@ -88,7 +92,9 @@ int process(const char *filename, int pass) {
   fseek(fp, 0L, SEEK_SET);
 */
   if ( ( ( pt = match2 ( PRD_module, fp, 0 ) ) == NULL )/* || ( tp != NULL ) */ ) {
-    error ( ERR_SYNTAX_ERROR, 0 ) ;
+    if (errno == 0) {
+      errno = ERR_SYNTAX_ERROR;
+    }
     goto fail ;
   }
   
@@ -117,6 +123,7 @@ int process(const char *filename, int pass) {
 fail:
   
   if (result) {
+    error();
     char buffer[256];
     long int x = maxPos - 10;
     if (x <0L) {

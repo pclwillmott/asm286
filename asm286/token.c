@@ -411,7 +411,7 @@ const char *pattern[ NUM_PATTERN ] = {
 } ;
 
 int checkInstruction(int tokenId) {
-  return (tokenId < PRODUCTION_OFFSET) && ((PROCESSOR(*pattern[tokenId]) > processor) || (COPROCESSOR(*pattern[tokenId]) > coprocessor)) ;
+  return (check_instructions && tokenId < PRODUCTION_OFFSET) && ((PROCESSOR(*pattern[tokenId]) > processor) || (COPROCESSOR(*pattern[tokenId]) > coprocessor)) ;
 }
 
 
@@ -653,7 +653,7 @@ int match_pattern
 (
   const char *statement,
   const char *pattern,
-  const char **match,
+  char **match,
   unsigned long *matchlen
 )
 {
@@ -722,7 +722,7 @@ int match_pattern
           free(expression) ;
         }
         if ( ( expression = (char *) malloc( seglen + 1 - 2 ) ) == NULL ) {
-          error( ERR_OUT_OF_MEMORY, -1 ) ;
+          errno = ERR_OUT_OF_MEMORY ;
           goto fail;
         }
         strncpy( expression, pattern + 1 , seglen - 2 ) ;
@@ -1001,21 +1001,21 @@ tlist_node_t * tokenize( const char *statement, int lineno )
  */
     
     if ( ! bestlen ) {
-      error( ERR_SYNTAX_ERROR, lineno ) ;
+      errno = ERR_SYNTAX_ERROR ;
       goto fail ;
     }
     
     tlist_node_t *node ;
     
     if ( ( node = (tlist_node_t *) malloc( sizeof(tlist_node_t) ) ) == NULL ) {
-      error( ERR_OUT_OF_MEMORY, -1 ) ;
+      errno = ERR_OUT_OF_MEMORY ;
       goto fail ;
     }
     
     node->token_id = bestidx ;
     
     if ( ( node->token = (char *) malloc( bestlen + 1 ) ) == NULL ) {
-      error( ERR_OUT_OF_MEMORY, -1 ) ;
+      errno = ERR_OUT_OF_MEMORY ;
       goto fail ;
     }
     
@@ -1045,7 +1045,7 @@ tlist_node_t * tokenize( const char *statement, int lineno )
         break;
       case TOK_INST_LABEL:
         node->value_type = TOK_STRING;
-        node->token[strlen(node->token)-1] = '\0';
+  //      node->token[strlen(node->token)-1] = '\0';
         setstr(&node->value.s, node->token);
         break;
       case TOK_DOUBLE:
@@ -1106,17 +1106,17 @@ ptree_node_t *find_token(int id, FILE *fp)
   char *pat;
   
   if ((pat = (char *) malloc (strlen(pattern[id]+1) + strlen(pattern[TOK_WHITESPACE]+1) + 1)) == NULL ) {
-    error(ERR_OUT_OF_MEMORY, -1);
+    errno = ERR_OUT_OF_MEMORY;
     return NULL;
   }
   
   strcpy(pat, pattern[TOK_WHITESPACE]+1);
   strcat(pat, pattern[id]+1);
-  
+
   if ( ! match_pattern2( fp, pat, &match, &matchlen ) ) {
     
     if ((ptree = (ptree_node_t *) malloc(sizeof(ptree_node_t))) == NULL) {
-      error(ERR_OUT_OF_MEMORY, -1);
+      errno = ERR_OUT_OF_MEMORY;
       free(pat);
       return NULL;
     }
@@ -1124,50 +1124,56 @@ ptree_node_t *find_token(int id, FILE *fp)
     ptree->production_id = id ;
     
     if (checkInstruction(id)) {
-      error(ERR_INVALID_INSTRUCTION, -1);
+      errno = ERR_INVALID_INSTRUCTION;
       free(pat);
       // should remove ptree here
       return NULL;
     }
 
-    switch (id) {
-      case TOK_INTEGERBIN:
-        ptree->value_type = TOK_INTEGERDEC;
-        ptree->value.i = (int) strtol(match, NULL, 2) ;
-        break;
-      case TOK_INTEGERDEC:
-        ptree->value_type = TOK_INTEGERDEC;
-        ptree->value.i = (int) strtol(match, NULL, 10) ;
-        break;
-      case TOK_INTEGERHEX:
-        ptree->value_type = TOK_INTEGERDEC;
-        ptree->value.i = (int) strtol(match, NULL, 16) ;
-        break;
-      case TOK_INTEGEROCT:
-        ptree->value_type = TOK_INTEGERDEC;
-        ptree->value.i = (int) strtol(match, NULL, 8) ;
-        break;
-      case TOK_IDENTIFIER:
-        ptree->value_type = TOK_STRING;
-        ptree->value.s = match;
-        break;
-      case TOK_INST_LABEL:
-        ptree->value_type = TOK_STRING;
-        ptree->value.s = match;
-        break;
-      case TOK_DOUBLE:
-        ptree->value_type = TOK_DOUBLE;
-        break;
-      case TOK_STRING:
-        ptree->value_type = TOK_STRING;
-        ptree->value.s = match;
-        break;
-      case TOK_TEXT:
-        ptree->value_type = TOK_STRING;
-        ptree->value.s = match;
-        break;
-   }
-    
+    if (*pattern[id] == '\004') { // SPECIAL
+      
+      trim(match);
+      
+      switch (id) {
+        case TOK_INTEGERBIN:
+          ptree->value_type = TOK_INTEGERDEC;
+          ptree->value.i = (int) strtol(match, NULL, 2) ;
+          break;
+        case TOK_INTEGERDEC:
+          ptree->value_type = TOK_INTEGERDEC;
+          ptree->value.i = (int) strtol(match, NULL, 10) ;
+          break;
+        case TOK_INTEGERHEX:
+          ptree->value_type = TOK_INTEGERDEC;
+          ptree->value.i = (int) strtol(match, NULL, 16) ;
+          break;
+        case TOK_INTEGEROCT:
+          ptree->value_type = TOK_INTEGERDEC;
+          ptree->value.i = (int) strtol(match, NULL, 8) ;
+          break;
+        case TOK_IDENTIFIER:
+          ptree->value_type = TOK_STRING;
+          ptree->value.s = match;
+          break;
+        case TOK_INST_LABEL:
+          ptree->value_type = TOK_STRING;
+          ptree->value.s = match;
+          break;
+        case TOK_DOUBLE:
+          ptree->value_type = TOK_DOUBLE;
+          break;
+        case TOK_STRING:
+          ptree->value_type = TOK_STRING;
+          ptree->value.s = match;
+          break;
+        case TOK_TEXT:
+          ptree->value_type = TOK_STRING;
+          ptree->value.s = match;
+          break;
+      }
+      
+    }
+
 #ifdef DEBUG2
     printf("found -> %s\n", match);
 #endif
@@ -1220,7 +1226,7 @@ int match_pattern2
   char *expression = NULL, *ptr ;
   
   if ((*match = (char *) malloc(256)) == NULL) {
-    error( ERR_OUT_OF_MEMORY, -1 ) ;
+    errno = ERR_OUT_OF_MEMORY ;
     goto fail;
   }
   **match = '\0';
@@ -1287,7 +1293,7 @@ int match_pattern2
           free(expression) ;
         }
         if ( ( expression = (char *) malloc( seglen + 1 - 2 ) ) == NULL ) {
-          error( ERR_OUT_OF_MEMORY, -1 ) ;
+          errno = ERR_OUT_OF_MEMORY ;
           goto fail;
         }
         strncpy( expression, pattern + 1 , seglen - 2 ) ;
@@ -1398,7 +1404,7 @@ int match_pattern2
             ptr++ ;
           }
           if ( ( is_match = *ptr ) ) {
-            strncat(*match, &ct, 1);
+            strncat(*match, (const char *)&cti, 1);
             sptr++;
           }
           break ;
@@ -1416,7 +1422,7 @@ int match_pattern2
           break ;
         default:
           if ( ( is_match = ( ct == start ) ) ) {
-            strncat(*match, (char *)&ct, 1);
+            strncat(*match, (char *)&cti, 1);
             sptr++ ;
           }
           break ;
@@ -1495,6 +1501,29 @@ fail:
   
   return result ;
   
+}
+
+void trim(char * s){
+  char *white = "\010\011\013\014\015\032\040";
+  unsigned long i;
+  for (i = 0; s[i]; i++) {
+    int w = 0;
+    for (int j = 0; white[j]; j++) {
+      if (s[i] == white[j]) {
+        w = 1;
+        break;
+      }
+    }
+    if (!w) {
+      break;
+    }
+  }
+  if (s[i]) {
+    unsigned long l = strlen(s) - i;
+    for (unsigned long j = 0; j <= l; j++) {
+      s[j] = s[j+i];
+    }
+  }
 }
 
 /*

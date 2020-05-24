@@ -118,7 +118,7 @@ ptree_node_t * match
  */
   
   if ( j == PRD_LAST ) {
-    error ( ERR_PRODUCTION_NOT_FOUND, -1 ) ;
+    errno = ERR_PRODUCTION_NOT_FOUND ;
     return NULL ;
   }
   
@@ -140,7 +140,7 @@ ptree_node_t * match
  */
   
   if ( ( ptree = ( ptree_node_t * ) malloc ( sizeof ( ptree_node_t ) ) ) == NULL ) {
-    error ( ERR_OUT_OF_MEMORY, -1 ) ;
+    errno = ERR_OUT_OF_MEMORY ;
     return NULL ;
   }
   
@@ -173,7 +173,7 @@ ptree_node_t * match
  */
     
     if ( ( ptree->args = ( ptree_node_t ** ) malloc ( sizeof ( ptree_node_t * ) * num_args ) ) == NULL ) {
-      error ( ERR_OUT_OF_MEMORY, -1 ) ;
+      errno = ERR_OUT_OF_MEMORY ;
       free ( ptree ) ;
       return NULL ;
     }
@@ -204,7 +204,7 @@ ptree_node_t * match
         if ( arg == tp->token_id ) {
           
           if ( ( ptree->args[ arg_index ] = ( ptree_node_t * ) malloc ( sizeof ( ptree_node_t ) ) ) == NULL ) {
-            error ( ERR_OUT_OF_MEMORY, -1 ) ;
+            errno = ERR_OUT_OF_MEMORY ;
             delete_ptree ( ptree, 1, 1, start_arg ) ;
             return NULL ;
           }
@@ -218,7 +218,7 @@ ptree_node_t * match
           if ( ptree->args[ arg_index ]->value_type == TOK_STRING ) {
             
             if ( ( ptree->args[ arg_index ]->value.s = ( char * ) malloc ( strlen ( tp->value.s ) + 1 ) ) == NULL ) {
-              error ( ERR_OUT_OF_MEMORY, -1 ) ;
+              errno = ERR_OUT_OF_MEMORY ;
               delete_ptree ( ptree, 1, 1, start_arg ) ;
               return NULL ;
             }
@@ -424,7 +424,7 @@ ptree_node_t * match2
    */
   
   if ( j == PRD_LAST ) {
-    error ( ERR_PRODUCTION_NOT_FOUND, -1 ) ;
+    errno = ERR_PRODUCTION_NOT_FOUND ;
     printProdName(production_id);
     return NULL ;
   }
@@ -447,7 +447,7 @@ ptree_node_t * match2
    */
   
   if ( ( ptree = ( ptree_node_t * ) malloc ( sizeof ( ptree_node_t ) ) ) == NULL ) {
-    error ( ERR_OUT_OF_MEMORY, -1 ) ;
+    errno = ERR_OUT_OF_MEMORY ;
     return NULL ;
   }
   
@@ -480,7 +480,7 @@ ptree_node_t * match2
      */
     
     if ( ( ptree->args = ( ptree_node_t ** ) malloc ( sizeof ( ptree_node_t * ) * num_args ) ) == NULL ) {
-      error ( ERR_OUT_OF_MEMORY, -1 ) ;
+      errno = ERR_OUT_OF_MEMORY ;
       free ( ptree ) ;
       return NULL ;
     }

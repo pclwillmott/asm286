@@ -27,6 +27,8 @@ int coprocessor = 0;
 char *title = NULL;
 char *subtitle = NULL;
 int list = 0;
+int check_instructions = 0;
+int errno = 0;
 
 /*
  *------------------------------------------------------------------------------

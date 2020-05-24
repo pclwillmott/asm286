@@ -116,6 +116,60 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
 
   switch ( ptree->production_id ) {
       
+    case PRD_pubDef:
+    {
+      if (set_sumbol_visibility(ptree->args[(ptree->variant == 0) ? 1 : 0]->value.s, VS_PUBLIC)) {
+        errno = ERR_IDENTIFIER_NOT_FOUND;
+        return FAIL;
+      }
+      break;
+    }
+    case PRD_labelDef:
+    {
+      if (pass1) {
+        enum Distance dist;
+        char *t;
+        setstr(&t,ptree->args[0]->value.s);
+        unsigned long l = strlen(t);
+        if (t[l-2] == ':') {
+          dist = DIST_FAR;
+          l -= 2;
+        }
+        else {
+          dist = DIST_NEAR;
+          l--;
+        }
+        t[l] = '\0' ;
+        if (get_current_position(&pos, lineno)) {
+          return FAIL;
+        }
+        if (add_label(t, dist, pos)) {
+          return FAIL;
+        }
+        free(t);
+      }
+      break;
+    }
+    case PRD_segmentDir:
+      if (open_segment(ptree->args[0]->value.s, lineno)) {
+        return FAIL;
+      }
+      break;
+    case PRD_endsDir:
+      if (close_segment(ptree->args[0]->value.s, lineno)) {
+        return FAIL;
+      }
+      break;
+    case PRD_processorDir:
+    {
+      if (ptree->variant == 0) {
+        processor = ptree->args[0]->variant;
+      }
+      else {
+        coprocessor = ptree->args[0]->variant;
+      }
+      break;
+    }
     case PRD_echoDir:
       if (pass2) {
         if (ptree->variant == 0) {
@@ -413,16 +467,6 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
         return FAIL;
       }
       break;
-    case PRD_INST_LABEL:
-      if (pass1) {
-        if (get_current_position(&pos, lineno)) {
-          return FAIL;
-        }
-        if (add_symbol(ptree->args[0]->value.s, SYMBOL_LABEL, pos)) {
-          return FAIL;
-        }
-      }
-      break;
     case PRD_CON_NUM:
       ptree->value_type = ptree->args[0]->value_type;
       ptree->value.i = ptree->args[0]->value.i;
@@ -579,7 +623,7 @@ int setstr
    */
   
   if ( ( (*str) = ( char * ) malloc ( strlen ( value ) + 1 ) ) == NULL ) {
-    error ( ERR_OUT_OF_MEMORY, 0 ) ;
+    errno = ERR_OUT_OF_MEMORY;
     return FAIL ;
   }
   

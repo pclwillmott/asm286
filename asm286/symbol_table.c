@@ -29,7 +29,12 @@ static char * symbol_table[MAX_SYMBOLS];
 
 static int symbol_value[MAX_SYMBOLS];
 
-static int symbol_type[MAX_SYMBOLS];
+static enum SymbolType symbol_type[MAX_SYMBOLS];
+static enum DataType symbol_datatype[MAX_SYMBOLS];
+static enum Distance symbol_distance[MAX_SYMBOLS];
+static enum Visibility symbol_visibility[MAX_SYMBOLS];
+static enum Language symbol_language[MAX_SYMBOLS];
+static int symbol_segment[MAX_SYMBOLS];
 
 static int symbol_count = 0;
 
@@ -51,29 +56,96 @@ int get_symbol_index(const char *symbol_name) {
   return -1;
 }
 
-int add_symbol(const char *symbol_name, int type, int value) {
+int set_sumbol_visibility(const char *symbol_name, enum Visibility visibility) {
+  int idx ;
+  if ((idx = get_symbol_index(symbol_name)) == -1) {
+    return idx;
+  }
+  symbol_visibility[idx] = visibility;
+  return 0;
+}
+
+int add_label(const char *symbol_name, enum Distance dist, int value) {
+  return add_symbol(
+    symbol_name,
+    ST_LABEL,
+    DT_UNASSIGNED,
+    dist,
+    segment_stack_top_index(),
+    LG_UNASSIGNED,
+    value
+  );
+}
+
+int add_symbol(const char *symbol_name, enum SymbolType type, enum DataType dtype, enum Distance dist, int segment, enum Language lang, int value) {
   if (symbol_count == MAX_SYMBOLS) {
-    error(ERR_SYMBOL_TABLE_FULL, 0);
+    errno = ERR_SYMBOL_TABLE_FULL;
     return 1;
   }
   if (get_symbol_index(symbol_name) != -1) {
-    error(ERR_IDENTIFIER_EXISTS, 0);
+    errno = ERR_IDENTIFIER_EXISTS;
     return 1;
   }
   if ( (symbol_table[symbol_count] = malloc(strlen(symbol_name) + 1)) == NULL ) {
-    error(ERR_OUT_OF_MEMORY, 0) ;
+    errno = ERR_OUT_OF_MEMORY ;
     return 1;
   }
   strcpy(symbol_table[symbol_count], symbol_name) ;
   symbol_type[symbol_count] = type;
+  symbol_datatype[symbol_count] = dtype;
+  symbol_segment[symbol_count] = segment;
+  symbol_distance[symbol_count] = dist;
+  symbol_visibility[symbol_count] = VS_PRIVATE;
+  symbol_language[symbol_count] = lang;
   symbol_value[symbol_count++] = value;
   return 0;
 }
 
 void dump_symbol_table() {
+  char *st[] = {
+    "LABEL",
+    "VAR",
+    "CONST",
+  };
+  char *dt[] = {
+    "UNASSIGNED",
+    "BYTE",
+    "SBYTE",
+    "WORD",
+    "SWORD",
+    "DWORD",
+    "SDWORD",
+    "FWORD",
+    "QWORD",
+    "TBYTE",
+    "REAL4",
+    "REAL8",
+    "REAL10",
+  };
+  char *dist[] = {
+    "UNASSIGNED",
+    "NEAR",
+    "FAR",
+  };
+  char *vs[] = {
+    "PRIVATE",
+    "PUBLIC",
+    "EXTERN",
+  };
+  char *lg[] = {
+    "UNASSIGNED",
+    "C",
+  };
+  
   printf("\n");
+  printf("%-32s %-10s %-10s %-10s %-10s %-10s %-10s %10s\n","id", "type", "data Type", "distance", "segment", "visibility", "language", "value");
+  printf("%-32s %-10s %-10s %-10s %-10s %-10s %-10s %10s\n","--", "----", "---------", "--------", "-------", "----------", "--------", "-----");
   for (int idx = 0; idx < symbol_count; idx++) {
-    printf("%-32s %3i %3i\n",symbol_table[idx],symbol_type[idx], symbol_value[idx]);
+    char *name = "";
+    if (symbol_segment[idx] != -1) {
+      name = get_segment_name(symbol_segment[idx]);
+    }
+    printf("%-32s %-10s %-10s %-10s %-10s %-10s %-10s %10i\n",symbol_table[idx], st[symbol_type[idx]], dt[symbol_datatype[idx]+1], dist[symbol_distance[idx]+1], name, vs[symbol_visibility[idx]], lg[symbol_language[idx]+1], symbol_value[idx]);
   }
 }
 
