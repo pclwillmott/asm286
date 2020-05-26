@@ -21,6 +21,7 @@
  */
 
 #include <stdlib.h>
+#include "asm286_t.h"
 
 int processor = 0;
 int coprocessor = 0;
@@ -29,6 +30,9 @@ char *subtitle = NULL;
 int list = 0;
 int check_instructions = 0;
 int errno = 0;
+enum Language language_type = LG_UNASSIGNED;
+enum Distance stack_distance = DIST_NEAR;
+int main_routine = 0;
 
 /*
  *------------------------------------------------------------------------------

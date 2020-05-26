@@ -53,6 +53,8 @@ int main(int argc, const char * argv[]) {
   }
   
   dump_symbol_table();
+  
+  dump_segment_table();
 
 fail:
   

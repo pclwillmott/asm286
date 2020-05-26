@@ -1,5 +1,6 @@
+.MODEL LARGE
 ; hello
-.286
+.286P
 .287
 ECHOGood Day!
 ECHO = 1 + 1
@@ -20,8 +21,12 @@ data ENDS
 GG: NOP
 fred: NOP
 PUBLIC    FRED
+ECHO = @Model
+ECHO = $
+ECHO = -@Cpu
+ECHO = - -1
 
-F2XM1
+;F2XM1
 ECHO NOP and some more
 code ENDS
 

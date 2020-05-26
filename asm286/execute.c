@@ -116,6 +116,95 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
 
   switch ( ptree->production_id ) {
       
+    case PRD_endDir:
+    {
+      main_routine = ptree->args[1]->value.i;
+      break;
+    }
+    case PRD_modelOpt:
+    {
+      switch (ptree->variant) {
+        case 0: // Language Type
+          language_type = ptree->args[0]->variant;
+          break;
+        case 1: // Stack
+          stack_distance = ptree->args[0]->variant;
+          break;
+      }
+      break;
+    }
+    case PRD_e11:
+    {
+      switch (ptree->variant) {
+        case 7: // $
+        {
+          unsigned int value;
+          
+          if (get_current_position(&value)) {
+            return FAIL;
+          }
+          ptree->value_type = TOK_INTEGERDEC;
+          ptree->value.i = value;
+          break;
+        }
+        case 12: // identifier
+        {
+          int value;
+          if (get_symbol_value(ptree->args[0]->value.s, &value)) {
+            return FAIL;
+          }
+          ptree->value.i = value;
+          ptree->value_type = TOK_INTEGERDEC;
+          break;
+        }
+      }
+      break;
+    }
+    case PRD_modelDir:
+    {
+      if (set_model(ptree->args[1]->variant)) {
+        return FAIL;
+      }
+      break;
+    }
+    case PRD_mnemonicZero:
+    {
+      const unsigned char simple[][3] = {
+        {1, 0x37, 0x00}, // AAA
+        {2, 0xd5, 0x0a}, // AAD
+        {2, 0xd4, 0x0a}, // AAM
+        {1, 0x3f, 0x00}, // AAS
+        {1, 0x98, 0x00}, // CBW
+        {1, 0xf8, 0x00}, // CLC
+        {1, 0xfc, 0x00}, // CLD
+        {1, 0xfa, 0x00}, // CLI
+        {2, 0x0f, 0x06}, // CLTS
+        {1, 0xf5, 0x00}, // CMC
+        {1, 0x99, 0x00}, // CWD
+        {1, 0x27, 0x00}, // DAA
+        {1, 0x2f, 0x00}, // DAS
+        {1, 0xf4, 0x00}, // HLT
+        {1, 0xce, 0x00}, // INTO
+        {1, 0xcf, 0x00}, // IRET
+        {1, 0x9f, 0x00}, // LAHF
+        {1, 0xc9, 0x00}, // LEAVE
+        {1, 0x90, 0x00}, // NOP
+        {1, 0x61, 0x00}, // POPA
+        {1, 0x9d, 0x00}, // POPF
+        {1, 0x60, 0x00}, // PUSHA
+        {1, 0x9c, 0x00}, // PUSHF
+        {1, 0xcb, 0x00}, // RET <- NOT THE WHOLE STORY
+        {1, 0x9e, 0x00}, // SAHF
+        {1, 0xf9, 0x00}, // STC
+        {1, 0xfd, 0x00}, // STD
+        {1, 0xfb, 0x00}, // STI
+        {1, 0x9b, 0x00}, // WAIT
+      };
+      for (int i = 1; i < simple[ptree->variant][0] + 1; i++) {
+        opcode[opcode_count++] = simple[ptree->variant][i];
+      }
+      break;
+    }
     case PRD_pubDef:
     {
       if (set_sumbol_visibility(ptree->args[(ptree->variant == 0) ? 1 : 0]->value.s, VS_PUBLIC)) {
@@ -140,7 +229,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
           l--;
         }
         t[l] = '\0' ;
-        if (get_current_position(&pos, lineno)) {
+        if (get_current_position(&pos)) {
           return FAIL;
         }
         if (add_label(t, dist, pos)) {
@@ -163,10 +252,16 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
     case PRD_processorDir:
     {
       if (ptree->variant == 0) {
-        processor = ptree->args[0]->variant;
+        int priority[] = { 0, 1, 3, 2 }; 
+        processor = priority[ptree->args[0]->variant];
       }
       else {
         coprocessor = ptree->args[0]->variant;
+      }
+      int pmask[] = { 0x01, 0x03, 0x07, 0x87 };
+      int cpmask[] = { 0x00, 0x01, 0x05 };
+      if (set_variable("@Cpu", DT_WORD, cpmask[coprocessor] << 8 | pmask[processor])) {
+        return FAIL;
       }
       break;
     }
@@ -181,6 +276,13 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       }
       break;
     case PRD_e07:
+    {
+      int result = ptree->args[1]->value.i;
+      ptree->value_type = TOK_INTEGERDEC;
+      ptree->value.i = (ptree->args[0]->variant == 0) ? result : -1 * result;
+      break;
+    }
+    case PRD_e08:
     {
       int result = ptree->args[1]->value.i;
       ptree->value_type = TOK_INTEGERDEC;
@@ -452,16 +554,6 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
         }
       }
       break;
-    case PRD_SEGMENT:
-      if (open_segment(ptree->args[0]->value.s, lineno)) {
-        return FAIL;
-      }
-      break;
-    case PRD_ENDS:
-      if (close_segment(ptree->args[0]->value.s, lineno)) {
-        return FAIL;
-      }
-      break;
     case PRD_ORG:
       if (set_current_position(ptree->args[1]->value.i, lineno)) {
         return FAIL;
@@ -537,42 +629,6 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
           return FAIL;
         }
         opcode[opcode_count++] = (unsigned char)((signed char)(ptree->args[1]->value.i - cp - 2));
-      }
-      break;
-    case PRD_SIMPLE:
-      {
-        const unsigned char simple[][3] = {
-          {1, 0x37, 0x00}, // AAA
-          {2, 0xd5, 0x0a}, // AAD
-          {2, 0xd4, 0x0a}, // AAM
-          {1, 0x3f, 0x00}, // AAS
-          {1, 0x98, 0x00}, // CBW
-          {1, 0xf8, 0x00}, // CLC
-          {1, 0xfc, 0x00}, // CLD
-          {1, 0xfa, 0x00}, // CLI
-          {2, 0x0f, 0x06}, // CLTS
-          {1, 0xf5, 0x00}, // CMC
-          {1, 0x99, 0x00}, // CWD
-          {1, 0x27, 0x00}, // DAA
-          {1, 0x2f, 0x00}, // DAS
-          {1, 0xf4, 0x00}, // HLT
-          {1, 0xcf, 0x00}, // IRET
-          {1, 0x9f, 0x00}, // LAHF
-          {1, 0xc9, 0x00}, // LEAVE
-          {1, 0x90, 0x00}, // NOP
-          {1, 0x61, 0x00}, // POPA
-          {1, 0x9d, 0x00}, // POPF
-          {1, 0x60, 0x00}, // PUSHA
-          {1, 0x9c, 0x00}, // PUSHF
-          {1, 0x9e, 0x00}, // SAHF
-          {1, 0xf9, 0x00}, // STC
-          {1, 0xfd, 0x00}, // STD
-          {1, 0xfb, 0x00}, // STI
-          {1, 0x9b, 0x00}, // WAIT
-        };
-        for (int i = 1; i < simple[ptree->variant][0] + 1; i++) {
-          opcode[opcode_count++] = simple[ptree->variant][i];
-        }
       }
       break;
 #endif

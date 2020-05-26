@@ -77,6 +77,15 @@ int add_label(const char *symbol_name, enum Distance dist, int value) {
   );
 }
 
+int set_variable(const char *symbol_name, enum DataType dtype, int value) {
+  int idx;
+  if ((idx = get_symbol_index(symbol_name)) == -1) {
+    return add_symbol(symbol_name, ST_VARIABLE, dtype, DIST_UNASSIGNED, -1, LG_UNASSIGNED, value);
+  }
+  symbol_value[idx] = value;
+  return 0;
+}
+
 int add_symbol(const char *symbol_name, enum SymbolType type, enum DataType dtype, enum Distance dist, int segment, enum Language lang, int value) {
   if (symbol_count == MAX_SYMBOLS) {
     errno = ERR_SYMBOL_TABLE_FULL;

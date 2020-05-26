@@ -35,7 +35,7 @@ char *prdlst[] = {
   SPD_module PT_IGNORE SPD_directiveList SPD_endDir,
   SPD_module PT_IGNORE SPD_endDir,
 
-  SPD_endDir PT_IGNORE STK_END SPD_immExpr STK_NEWLINE,
+  SPD_endDir PT_EXECUTE STK_END SPD_immExpr STK_NEWLINE,
   SPD_endDir PT_IGNORE STK_END STK_NEWLINE,
 
   SPD_directiveList PT_IGNORE SPD_directiveList SPD_directive,
@@ -79,20 +79,22 @@ char *prdlst[] = {
   SPD_segOption PT_IGNORE SPD_segAlign,
   SPD_segOption PT_IGNORE SPD_segAttrib,
   SPD_segOption PT_IGNORE SPD_className,
+  SPD_segOption PT_EXECUTE STK_READONLY,
 
-  SPD_segAlign PT_IGNORE STK_BYTE,
-  SPD_segAlign PT_IGNORE STK_WORD,
-  SPD_segAlign PT_IGNORE STK_PARA,
-  SPD_segAlign PT_IGNORE STK_PAGE,
+  SPD_segAlign PT_EXECUTE STK_BYTE,
+  SPD_segAlign PT_EXECUTE STK_WORD,
+  SPD_segAlign PT_EXECUTE STK_DWORD,
+  SPD_segAlign PT_EXECUTE STK_PARA,
+  SPD_segAlign PT_EXECUTE STK_PAGE,
 
-  SPD_segAttrib PT_IGNORE STK_PUBLIC,
-  SPD_segAttrib PT_IGNORE STK_STACK,
-  SPD_segAttrib PT_IGNORE STK_COMMON,
-  SPD_segAttrib PT_IGNORE STK_MEMORY,
-  SPD_segAttrib PT_IGNORE STK_AT SPD_constExpr,
-  SPD_segAttrib PT_IGNORE STK_PRIVATE,
+  SPD_segAttrib PT_EXECUTE STK_PUBLIC,
+  SPD_segAttrib PT_EXECUTE STK_STACK,
+  SPD_segAttrib PT_EXECUTE STK_COMMON,
+  SPD_segAttrib PT_EXECUTE STK_AT SPD_constExpr,
+  SPD_segAttrib PT_EXECUTE STK_PRIVATE,
+  SPD_segAttrib PT_EXECUTE STK_MEMORY,
 
-  SPD_className PT_IGNORE STK_STRING,
+  SPD_className PT_EXECUTE STK_STRING,
   
   SPD_inSegDirList PT_IGNORE SPD_inSegDirList SPD_inSegDir,
   SPD_inSegDirList PT_IGNORE SPD_inSegDir,
@@ -187,9 +189,10 @@ char *prdlst[] = {
   SPD_generalDir PT_IGNORE SPD_pageDir,
   SPD_generalDir PT_IGNORE SPD_listDir,
   SPD_generalDir PT_IGNORE SPD_processorDir,
+  SPD_generalDir PT_IGNORE SPD_optionDir,
 
-  SPD_modelDir PT_IGNORE STK_MODEL SPD_memOption STK_COMMA SPD_modelOptList STK_NEWLINE,
-  SPD_modelDir PT_IGNORE STK_MODEL SPD_memOption STK_NEWLINE,
+  SPD_modelDir PT_EXECUTE STK_MODEL SPD_memOption STK_COMMA SPD_modelOptList STK_NEWLINE,
+  SPD_modelDir PT_EXECUTE STK_MODEL SPD_memOption STK_NEWLINE,
 
   SPD_memOption PT_IGNORE STK_TINY,
   SPD_memOption PT_IGNORE STK_SMALL,
@@ -198,14 +201,15 @@ char *prdlst[] = {
   SPD_memOption PT_IGNORE STK_LARGE,
   SPD_memOption PT_IGNORE STK_HUGE,
 
-  SPD_modelOptList PT_IGNORE SPD_modelOptList SPD_modelOpt,
+  SPD_modelOptList PT_IGNORE SPD_modelOptList STK_COMMA SPD_modelOpt,
   SPD_modelOptList PT_IGNORE SPD_modelOpt,
 
-  SPD_modelOpt PT_IGNORE SPD_langType,
-  SPD_modelOpt PT_IGNORE SPD_stackOption,
+  SPD_modelOpt PT_EXECUTE SPD_langType,
+  SPD_modelOpt PT_EXECUTE SPD_stackOption,
   
   SPD_langType PT_IGNORE STK_C,
-  
+  SPD_langType PT_IGNORE STK_PASCAL,
+
   SPD_stackOption PT_IGNORE STK_NEARSTACK,
   SPD_stackOption PT_IGNORE STK_FARSTACK,
 
@@ -302,8 +306,8 @@ char *prdlst[] = {
   
   SPD_processor PT_IGNORE STK_8086,
   SPD_processor PT_IGNORE STK_186,
-  SPD_processor PT_IGNORE STK_286,
   SPD_processor PT_IGNORE STK_286P,
+  SPD_processor PT_IGNORE STK_286,
 
   SPD_processorDir PT_EXECUTE SPD_processor STK_NEWLINE,
   SPD_processorDir PT_EXECUTE SPD_coprocessor STK_NEWLINE,
@@ -376,36 +380,41 @@ char *prdlst[] = {
   SPD_mulOp PT_IGNORE STK_SHR,
   SPD_mulOp PT_IGNORE STK_SHL,
 
-  SPD_e07 PT_EXECUTE SPD_e07Op SPD_e08,
-  SPD_e07 PT_DROP SPD_e08,
+  SPD_e07   PT_EXECUTE SPD_addOp SPD_e08,
+  SPD_e07   PT_DROP SPD_e08,
 
-  SPD_e07Op PT_IGNORE STK_HIGH,
-  SPD_e07Op PT_IGNORE STK_LOW,
-
-  SPD_e08 PT_EXECUTE STK_OFFSET SPD_e09,
-  SPD_e08 PT_EXECUTE STK_SEG SPD_e09,
-  SPD_e08 PT_EXECUTE STK_TYPE SPD_e09,
-  SPD_e08 PT_EXECUTE STK_THIS SPD_e09,
+  SPD_e08 PT_EXECUTE SPD_e08Op SPD_e09,
   SPD_e08 PT_DROP SPD_e09,
-
-  SPD_e09 PT_EXECUTE SPD_e09 STK_OBRACKET SPD_expr STK_CBRACKET,
-  SPD_e09 PT_DROP SPD_e10,
   
-  SPD_e10 PT_EXECUTE STK_OBRACE SPD_expr STK_CBRACE,
-  SPD_e10 PT_EXECUTE STK_WIDTH STK_IDENTIFIER,
-  SPD_e10 PT_EXECUTE STK_MASK STK_IDENTIFIER,
-  SPD_e10 PT_EXECUTE STK_SIZE SPD_sizeArg,
-  SPD_e10 PT_EXECUTE STK_SIZEOF SPD_sizeArg,
-  SPD_e10 PT_EXECUTE STK_LENGTH STK_IDENTIFIER,
-  SPD_e10 PT_EXECUTE STK_LENGTHOF STK_IDENTIFIER,
-  SPD_e10 PT_DROP SPD_constant,
-  SPD_e10 PT_EXECUTE STK_IDENTIFIER,
-  SPD_e10 PT_EXECUTE STK_DOLLAR,
-  SPD_e10 PT_EXECUTE STK_OBRACKET SPD_expr STK_CBRACKET,
-  SPD_e10 PT_EXECUTE SPD_segmentRegister,
-  SPD_e10 PT_EXECUTE SPD_register,
-  SPD_e10 PT_EXECUTE STK_ST STK_OBRACE SPD_expr STK_CBRACE,
-  SPD_e10 PT_EXECUTE STK_ST,
+  SPD_e08Op PT_IGNORE STK_HIGH,
+  SPD_e08Op PT_IGNORE STK_LOW,
+
+  SPD_e09 PT_EXECUTE STK_OFFSET SPD_e10,
+  SPD_e09 PT_EXECUTE STK_SEG SPD_e10,
+  SPD_e09 PT_EXECUTE STK_TYPE SPD_e10,
+  SPD_e09 PT_EXECUTE STK_THIS SPD_e10,
+  SPD_e09 PT_DROP SPD_e10,
+
+  SPD_e10 PT_EXECUTE SPD_e10 STK_OBRACKET SPD_expr STK_CBRACKET,
+  SPD_e10 PT_DROP SPD_e11,
+  
+  SPD_e11 PT_EXECUTE STK_WIDTH STK_IDENTIFIER,              // 0
+  SPD_e11 PT_EXECUTE STK_MASK STK_IDENTIFIER,               // 1
+  SPD_e11 PT_EXECUTE STK_SIZE SPD_sizeArg,                  // 2
+  SPD_e11 PT_EXECUTE STK_SIZEOF SPD_sizeArg,                // 3
+  SPD_e11 PT_EXECUTE STK_LENGTH STK_IDENTIFIER,             // 4
+  SPD_e11 PT_EXECUTE STK_LENGTHOF STK_IDENTIFIER,           // 5
+  SPD_e11 PT_DROP SPD_constant,                             // 6
+  SPD_e11 PT_EXECUTE STK_DOLLAR,                            // 7
+  SPD_e11 PT_EXECUTE SPD_segmentRegister,                   // 8
+  SPD_e11 PT_EXECUTE SPD_register,                          // 9
+  SPD_e11 PT_EXECUTE STK_ST STK_OBRACE SPD_expr STK_CBRACE, // 10
+  SPD_e11 PT_EXECUTE STK_ST,                                // 11
+  SPD_e11 PT_EXECUTE STK_IDENTIFIER,                        // 12
+  SPD_e11 PT_DROP    SPD_e12,                               // 13
+
+  SPD_e12 PT_EXECUTE STK_OBRACE SPD_expr STK_CBRACE,        // 0
+  SPD_e12 PT_EXECUTE STK_OBRACKET SPD_expr STK_CBRACKET,    // 1
 
   SPD_expr PT_EXECUTE STK_SHORT SPD_e01,
   SPD_expr PT_DROP SPD_e01,
@@ -431,35 +440,35 @@ char *prdlst[] = {
 
   SPD_operand PT_DROP SPD_expr,
   
-  SPD_mnemonicZero PT_IGNORE STK_AAA,
-  SPD_mnemonicZero PT_IGNORE STK_AAD,
-  SPD_mnemonicZero PT_IGNORE STK_AAM,
-  SPD_mnemonicZero PT_IGNORE STK_AAS,
-  SPD_mnemonicZero PT_IGNORE STK_CBW,
-  SPD_mnemonicZero PT_IGNORE STK_CLC,
-  SPD_mnemonicZero PT_IGNORE STK_CLD,
-  SPD_mnemonicZero PT_IGNORE STK_CLI,
-  SPD_mnemonicZero PT_IGNORE STK_CLTS,
-  SPD_mnemonicZero PT_IGNORE STK_CMC,
-  SPD_mnemonicZero PT_IGNORE STK_CWD,
-  SPD_mnemonicZero PT_IGNORE STK_DAA,
-  SPD_mnemonicZero PT_IGNORE STK_DAS,
-  SPD_mnemonicZero PT_IGNORE STK_HLT,
-  SPD_mnemonicZero PT_IGNORE STK_INTO,
-  SPD_mnemonicZero PT_IGNORE STK_IRET,
-  SPD_mnemonicZero PT_IGNORE STK_LAHF,
-  SPD_mnemonicZero PT_IGNORE STK_LEAVE,
-  SPD_mnemonicZero PT_IGNORE STK_NOP,
-  SPD_mnemonicZero PT_IGNORE STK_POPA,
-  SPD_mnemonicZero PT_IGNORE STK_POPF,
-  SPD_mnemonicZero PT_IGNORE STK_PUSHA,
-  SPD_mnemonicZero PT_IGNORE STK_PUSHF,
-  SPD_mnemonicZero PT_IGNORE STK_RET,
-  SPD_mnemonicZero PT_IGNORE STK_SAHF,
-  SPD_mnemonicZero PT_IGNORE STK_STC,
-  SPD_mnemonicZero PT_IGNORE STK_STD,
-  SPD_mnemonicZero PT_IGNORE STK_STI,
-  SPD_mnemonicZero PT_IGNORE STK_WAIT,
+  SPD_mnemonicZero PT_EXECUTE STK_AAA,
+  SPD_mnemonicZero PT_EXECUTE STK_AAD,
+  SPD_mnemonicZero PT_EXECUTE STK_AAM,
+  SPD_mnemonicZero PT_EXECUTE STK_AAS,
+  SPD_mnemonicZero PT_EXECUTE STK_CBW,
+  SPD_mnemonicZero PT_EXECUTE STK_CLC,
+  SPD_mnemonicZero PT_EXECUTE STK_CLD,
+  SPD_mnemonicZero PT_EXECUTE STK_CLI,
+  SPD_mnemonicZero PT_EXECUTE STK_CLTS,
+  SPD_mnemonicZero PT_EXECUTE STK_CMC,
+  SPD_mnemonicZero PT_EXECUTE STK_CWD,
+  SPD_mnemonicZero PT_EXECUTE STK_DAA,
+  SPD_mnemonicZero PT_EXECUTE STK_DAS,
+  SPD_mnemonicZero PT_EXECUTE STK_HLT,
+  SPD_mnemonicZero PT_EXECUTE STK_INTO,
+  SPD_mnemonicZero PT_EXECUTE STK_IRET,
+  SPD_mnemonicZero PT_EXECUTE STK_LAHF,
+  SPD_mnemonicZero PT_EXECUTE STK_LEAVE,
+  SPD_mnemonicZero PT_EXECUTE STK_NOP,
+  SPD_mnemonicZero PT_EXECUTE STK_POPA,
+  SPD_mnemonicZero PT_EXECUTE STK_POPF,
+  SPD_mnemonicZero PT_EXECUTE STK_PUSHA,
+  SPD_mnemonicZero PT_EXECUTE STK_PUSHF,
+  SPD_mnemonicZero PT_EXECUTE STK_RET,
+  SPD_mnemonicZero PT_EXECUTE STK_SAHF,
+  SPD_mnemonicZero PT_EXECUTE STK_STC,
+  SPD_mnemonicZero PT_EXECUTE STK_STD,
+  SPD_mnemonicZero PT_EXECUTE STK_STI,
+  SPD_mnemonicZero PT_EXECUTE STK_WAIT,
 
   SPD_mnemonicOne PT_IGNORE STK_CALL,
   SPD_mnemonicOne PT_IGNORE STK_DEC,
@@ -662,6 +671,22 @@ char *prdlst[] = {
   SPD_fpMnemonicTwo PT_IGNORE STK_FSUBRP,
   SPD_fpMnemonicTwo PT_IGNORE STK_FSUBR,
   SPD_fpMnemonicTwo PT_IGNORE STK_FSUB,
+  
+  SPD_optionDir PT_IGNORE STK_OPTION SPD_optionList STK_NEWLINE,
+  
+  SPD_optionList PT_IGNORE SPD_optionList SPD_commaOptNewline SPD_optionItem,
+  SPD_optionList PT_IGNORE SPD_optionItem,
+
+  SPD_optionItem PT_EXECUTE STK_CASEMAP STK_COLON SPD_mapType,
+  SPD_optionItem PT_EXECUTE STK_LJMP,
+  SPD_optionItem PT_EXECUTE STK_NOLJMP,
+  SPD_optionItem PT_EXECUTE STK_LANGUAGE STK_COLON SPD_langType,
+  SPD_optionItem PT_EXECUTE STK_READONLY,
+  SPD_optionItem PT_EXECUTE STK_NOREADONLY,
+
+  SPD_mapType PT_IGNORE STK_ALL,
+  SPD_mapType PT_IGNORE STK_NOTPUBLIC,
+  SPD_mapType PT_IGNORE STK_NONE,
 
 #ifdef WALLY
   
