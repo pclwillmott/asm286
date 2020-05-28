@@ -43,6 +43,7 @@ void error()
     "Production Not Found",
     "Invalid Instruction",
     "Identifier Not Found",
+    "Too Many Nested IF Statements",
   } ;
   
   char tmp_str[ 128 ] ;

@@ -45,6 +45,10 @@
 		DAB4041923770C26002137DF /* asm286 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = asm286; sourceTree = BUILT_PRODUCTS_DIR; };
 		DAB4041C23770C27002137DF /* asm286.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = asm286.c; sourceTree = "<group>"; };
 		DABEBD6F247D7CCB005DCF00 /* asm286_t.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = asm286_t.h; sourceTree = "<group>"; };
+		DABEBD70247EA695005DCF00 /* SPD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPD.h; sourceTree = "<group>"; };
+		DABEBD71247EA71C005DCF00 /* PRD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PRD.h; sourceTree = "<group>"; };
+		DABEBD72247EA74F005DCF00 /* STK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STK.h; sourceTree = "<group>"; };
+		DABEBD73247EA785005DCF00 /* TOK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOK.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +83,10 @@
 			children = (
 				DAB4041C23770C27002137DF /* asm286.c */,
 				DA72D9C3237726400009CA4A /* asm286.h */,
+				DABEBD72247EA74F005DCF00 /* STK.h */,
+				DABEBD70247EA695005DCF00 /* SPD.h */,
+				DABEBD73247EA785005DCF00 /* TOK.h */,
+				DABEBD71247EA71C005DCF00 /* PRD.h */,
 				DABEBD6F247D7CCB005DCF00 /* asm286_t.h */,
 				DA72D9C4237726BE0009CA4A /* token.c */,
 				DA72D9C623782DCD0009CA4A /* action.c */,

@@ -54,6 +54,7 @@ const char *pattern[ NUM_PATTERN ] = {
   RESERVED         "$",
   RESERVED         ",",
   RESERVED         "=",
+  RESERVED         "%",
   RESERVED         ".8086",
   RESERVED         ".8087",
   RESERVED         ".186",
@@ -118,6 +119,7 @@ const char *pattern[ NUM_PATTERN ] = {
   RESERVED         "DB",
   RESERVED         "DD",
   KEYWORD          "DEC",
+  RESERVED         "DEFINED",
   RESERVED         "DF",
   RESERVED         "DGROUP",
   RESERVED         "DH",
@@ -132,7 +134,10 @@ const char *pattern[ NUM_PATTERN ] = {
   RESERVED         "DWORD",
   RESERVED         "DX",
   RESERVED         "ECHO",
+  RESERVED         "ELSE",
+  RESERVED         "ELSEIF",
   RESERVED         "END",
+  RESERVED         "ENDIF",
   RESERVED         "ENDS",
   KEYWORD          "ENTER",
   RESERVED         "EQ",
@@ -144,6 +149,7 @@ const char *pattern[ NUM_PATTERN ] = {
   RESERVED         "EXTERN",
   KEYWORD_8087     "F2XM1",
   KEYWORD_8087     "FABS",
+  RESERVED         "FALSE",
   KEYWORD_8087     "FADD",
   KEYWORD_8087     "FADDP",
   RESERVED         "FAR",
@@ -230,6 +236,7 @@ const char *pattern[ NUM_PATTERN ] = {
   RESERVED         "HUGE",
   KEYWORD          "HLT",
   KEYWORD          "IDIV",
+  RESERVED         "IF",
   KEYWORD          "IMUL",
   KEYWORD          "IN",
   KEYWORD          "INC",
@@ -395,9 +402,11 @@ const char *pattern[ NUM_PATTERN ] = {
   RESERVED         "SWORD",
   RESERVED         "TBYTE",
   KEYWORD          "TEST",
+  RESERVED         "TEXTEQU",
   RESERVED         "THIS",
   RESERVED         "TINY",
   RESERVED         "TITLE",
+  RESERVED         "TRUE",
   RESERVED         "TYPE",
   KEYWORD_286      "VERR",
   KEYWORD_286      "VERW",
@@ -428,7 +437,6 @@ int checkInstruction(int tokenId) {
 
 char * prod_list[] = {
   "addOp",
-  "altId",
   "andOp",
   "arbitaryText",
   "asmInstruction",
@@ -439,6 +447,7 @@ char * prod_list[] = {
   "assumeSegReg",
   "assumeSegVal",
   "assumeVal",
+  "bool",
   "byteRegister",
   "className",
   "commaOptNewline",
@@ -465,11 +474,17 @@ char * prod_list[] = {
   "e11",
   "e12",
   "echoDir",
+  "elseifBlock",
+  "elseifList",
+  "elseifStatement",
+  "elseBlock",
+  "elseStatement",
   "endDir",
+  "endifStatement",
   "endsDir",
   "equalDir",
   "equDir",
-  "equType",
+  "equId",
   "expr",
   "externDef",
   "externDir",
@@ -484,6 +499,9 @@ char * prod_list[] = {
   "gpRegister",
   "groupDir",
   "groupId",
+  "ifBlock",
+  "ifDir",
+  "ifStatement",
   "immExpr",
   "initValue",
   "inSegDir",
@@ -541,11 +559,13 @@ char * prod_list[] = {
   "simpleSegDir",
   "sizeArg",
   "stackOption",
-  "textLiteral",
-  "textMacroId",
+  "textEquDir",
+  "textList",
+  "textItem",
   "titleDir",
   "titleType",
-  "type",    "",
+  "type",
+  "",
 } ;
 
 void printProdName(int prodId) {
@@ -1180,9 +1200,21 @@ ptree_node_t *find_token(int id, FILE *fp)
           ptree->value_type = TOK_DOUBLE;
           break;
         case TOK_STRING:
+        {
           ptree->value_type = TOK_STRING;
-          ptree->value.s = match;
+          unsigned long l = strlen(match), lim = l - 1;
+          match[l-1] = '\0';
+          for (int y = 2; y < lim; y++) {
+            if ( match[y] == '\'' && match[y-1] == '\'') {
+              for (int x = y-1; x < lim; x++) {
+                match[x] = match[x+1];
+              }
+              lim--;
+            }
+          }
+          ptree->value.s = match+1;
           break;
+        }
         case TOK_TEXT:
           ptree->value_type = TOK_STRING;
           ptree->value.s = match;

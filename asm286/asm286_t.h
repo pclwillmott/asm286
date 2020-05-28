@@ -44,9 +44,10 @@ enum {
   ERR_PRODUCTION_NOT_FOUND     = 14,
   ERR_INVALID_INSTRUCTION      = 15,
   ERR_IDENTIFIER_NOT_FOUND     = 16,
+  ERR_TOO_MANY_NESTED_IFS      = 17,
 } ;
 
-#define NUM_ERR ( 16 )
+#define NUM_ERR ( 17 )
 
 /*
  * Symbol Table stuff.

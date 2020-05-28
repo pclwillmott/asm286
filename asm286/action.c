@@ -41,7 +41,6 @@ char *prdlst[] = {
   SPD_directiveList PT_IGNORE SPD_directiveList SPD_directive,
   SPD_directiveList PT_IGNORE SPD_directive,
 
-//  SPD_directive PT_IGNORE SPD_processorDir,
   SPD_directive PT_IGNORE SPD_generalDir,
   SPD_directive PT_IGNORE SPD_segmentDef,
   SPD_directive PT_IGNORE STK_NEWLINE,
@@ -100,8 +99,9 @@ char *prdlst[] = {
   SPD_inSegDirList PT_IGNORE SPD_inSegDir,
 
   SPD_inSegDir PT_IGNORE SPD_labelDef SPD_inSegmentDir,
+  SPD_inSegDir PT_IGNORE SPD_labelDef STK_NEWLINE,
   SPD_inSegDir PT_IGNORE SPD_inSegmentDir,
-  
+
   SPD_labelDef PT_EXECUTE STK_INST_LABEL,
   
   SPD_inSegmentDir PT_IGNORE SPD_instruction,
@@ -179,11 +179,13 @@ char *prdlst[] = {
   SPD_generalDir PT_IGNORE SPD_echoDir,
   SPD_generalDir PT_IGNORE SPD_publicDir,
   SPD_generalDir PT_IGNORE SPD_modelDir,
+  SPD_generalDir PT_IGNORE SPD_ifDir,
   SPD_generalDir PT_IGNORE SPD_nameDir,
   SPD_generalDir PT_IGNORE SPD_groupDir,
   SPD_generalDir PT_IGNORE SPD_assumeDir,
   SPD_generalDir PT_IGNORE SPD_externDir,
   SPD_generalDir PT_IGNORE SPD_equDir,
+  SPD_generalDir PT_IGNORE SPD_textEquDir,
   SPD_generalDir PT_IGNORE SPD_equalDir,
   SPD_generalDir PT_IGNORE SPD_titleDir,
   SPD_generalDir PT_IGNORE SPD_pageDir,
@@ -293,15 +295,19 @@ char *prdlst[] = {
   SPD_pubDef PT_EXECUTE SPD_langType STK_IDENTIFIER,
   SPD_pubDef PT_EXECUTE STK_IDENTIFIER,
 
-  SPD_equDir PT_IGNORE SPD_textMacroId STK_EQU SPD_equType STK_NEWLINE,
+  SPD_equDir PT_IGNORE SPD_equId STK_EQU SPD_immExpr STK_NEWLINE,
   
-  SPD_textMacroId PT_IGNORE STK_IDENTIFIER,
+  SPD_equId PT_DROP STK_IDENTIFIER,
   
-  SPD_equType PT_IGNORE SPD_immExpr,
-  SPD_equType PT_IGNORE SPD_textLiteral,
+  SPD_textEquDir PT_IGNORE SPD_equId STK_TEXTEQU SPD_textList STK_NEWLINE,
   
-  SPD_textLiteral PT_IGNORE STK_LESS STK_TEXT STK_GREATER STK_NEWLINE,
-  
+  SPD_textList PT_EXECUTE SPD_textList SPD_commaOptNewline SPD_textItem,
+  SPD_textList PT_DROP SPD_textItem,
+
+  SPD_textItem PT_EXECUTE STK_PERCENT SPD_constExpr,
+  SPD_textItem PT_DROP STK_STRING,
+  SPD_textItem PT_EXECUTE SPD_equId,
+
   SPD_equalDir PT_IGNORE STK_IDENTIFIER STK_EQUAL SPD_immExpr STK_NEWLINE,
   
   SPD_processor PT_IGNORE STK_8086,
@@ -339,7 +345,7 @@ char *prdlst[] = {
   SPD_listOption PT_IGNORE STK_LIST,
   SPD_listOption PT_IGNORE STK_NOLIST,
 
-  SPD_echoDir PT_EXECUTE STK_ECHO STK_EQUAL SPD_expr STK_NEWLINE,
+  SPD_echoDir PT_EXECUTE STK_ECHO SPD_textList STK_NEWLINE,
   SPD_echoDir PT_EXECUTE STK_ECHO SPD_arbitaryText STK_NEWLINE,
 
   SPD_e01 PT_EXECUTE SPD_e01 SPD_orOp SPD_e02,
@@ -404,14 +410,15 @@ char *prdlst[] = {
   SPD_e11 PT_EXECUTE STK_SIZEOF SPD_sizeArg,                // 3
   SPD_e11 PT_EXECUTE STK_LENGTH STK_IDENTIFIER,             // 4
   SPD_e11 PT_EXECUTE STK_LENGTHOF STK_IDENTIFIER,           // 5
-  SPD_e11 PT_DROP SPD_constant,                             // 6
-  SPD_e11 PT_EXECUTE STK_DOLLAR,                            // 7
-  SPD_e11 PT_EXECUTE SPD_segmentRegister,                   // 8
-  SPD_e11 PT_EXECUTE SPD_register,                          // 9
-  SPD_e11 PT_EXECUTE STK_ST STK_OBRACE SPD_expr STK_CBRACE, // 10
-  SPD_e11 PT_EXECUTE STK_ST,                                // 11
-  SPD_e11 PT_EXECUTE STK_IDENTIFIER,                        // 12
-  SPD_e11 PT_DROP    SPD_e12,                               // 13
+  SPD_e11 PT_EXECUTE STK_DEFINED STK_IDENTIFIER,            // 6
+  SPD_e11 PT_DROP SPD_constant,                             // 7
+  SPD_e11 PT_EXECUTE STK_DOLLAR,                            // 8
+  SPD_e11 PT_EXECUTE SPD_segmentRegister,                   // 9
+  SPD_e11 PT_EXECUTE SPD_register,                          // 10
+  SPD_e11 PT_EXECUTE STK_ST STK_OBRACE SPD_expr STK_CBRACE, // 11
+  SPD_e11 PT_EXECUTE STK_ST,                                // 12
+  SPD_e11 PT_EXECUTE STK_IDENTIFIER,                        // 13
+  SPD_e11 PT_DROP    SPD_e12,                               // 14
 
   SPD_e12 PT_EXECUTE STK_OBRACE SPD_expr STK_CBRACE,        // 0
   SPD_e12 PT_EXECUTE STK_OBRACKET SPD_expr STK_CBRACKET,    // 1
@@ -429,7 +436,11 @@ char *prdlst[] = {
   SPD_constant PT_DROP STK_INTEGERBIN,
   SPD_constant PT_DROP STK_INTEGEROCT,
   SPD_constant PT_DROP STK_INTEGERDEC,
+  SPD_constant PT_DROP SPD_bool,
 
+  SPD_bool PT_EXECUTE STK_FALSE,
+  SPD_bool PT_EXECUTE STK_TRUE,
+  
   SPD_asmInstruction PT_DROP SPD_mnemonicTwo SPD_operand STK_COMMA SPD_operand STK_NEWLINE,
   SPD_asmInstruction PT_DROP SPD_mnemonicOne SPD_operand STK_NEWLINE,
   SPD_asmInstruction PT_DROP SPD_mnemonicZero STK_NEWLINE,
@@ -687,6 +698,31 @@ char *prdlst[] = {
   SPD_mapType PT_IGNORE STK_ALL,
   SPD_mapType PT_IGNORE STK_NOTPUBLIC,
   SPD_mapType PT_IGNORE STK_NONE,
+  
+  SPD_ifDir PT_IGNORE SPD_ifBlock SPD_elseifList SPD_elseBlock SPD_endifStatement,
+  SPD_ifDir PT_IGNORE SPD_ifBlock SPD_elseifList SPD_endifStatement,
+  SPD_ifDir PT_IGNORE SPD_ifBlock SPD_elseBlock SPD_endifStatement,
+  SPD_ifDir PT_IGNORE SPD_ifBlock SPD_endifStatement,
+
+  SPD_ifBlock PT_IGNORE SPD_ifStatement SPD_inSegDirList,
+  SPD_ifBlock PT_IGNORE SPD_ifStatement,
+  
+  SPD_ifStatement PT_IGNORE STK_IF SPD_constExpr STK_NEWLINE,
+
+  SPD_elseifList PT_IGNORE SPD_elseifList SPD_elseifBlock,
+  SPD_elseifList PT_IGNORE SPD_elseifBlock,
+
+  SPD_elseifBlock PT_IGNORE SPD_elseifStatement SPD_inSegDirList,
+  SPD_elseifBlock PT_IGNORE SPD_elseifStatement,
+
+  SPD_elseifStatement PT_IGNORE STK_ELSEIF SPD_constExpr STK_NEWLINE,
+
+  SPD_elseBlock PT_IGNORE SPD_elseStatement SPD_inSegDirList,
+  SPD_elseBlock PT_IGNORE SPD_elseStatement,
+
+  SPD_elseStatement PT_IGNORE STK_ELSE STK_NEWLINE,
+
+  SPD_endifStatement PT_IGNORE STK_ENDIF STK_NEWLINE,
 
 #ifdef WALLY
   

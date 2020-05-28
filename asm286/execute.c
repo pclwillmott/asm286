@@ -32,6 +32,16 @@ enum {
   FAIL    = 0,
 } ;
 
+struct ifContext {
+  int satisfied;
+  int assemble;
+};
+
+int ifCount = 0;
+int assembleIt = 1;
+
+struct ifContext ifStack[MAX_IF_STACK];
+
 int execute( ptree_node_t *ptree, int pass, int lineno )
 {
   
@@ -52,6 +62,46 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
   }
   
 /*
+ * Handle Coditional Compilation
+ */
+  
+  switch (ptree->production_id) {
+    case PRD_ifStatement:
+      if (ifCount == MAX_IF_STACK) {
+        errno = ERR_TOO_MANY_NESTED_IFS;
+        return FAIL;
+      }
+      int parent_assemble = (ifCount == 0) || (ifStack[ifCount-1].assemble);
+      ifCount++;
+      if (parent_assemble) {
+        ifStack[ifCount-1].assemble = 1;
+        if ( ! execute ( ptree->args[ 1 ], pass, lineno ) ) {
+          return FAIL ;
+        }
+      }
+      ifStack[ifCount-1].assemble = parent_assemble && (ptree->args[1]->value.i != 0);
+      ifStack[ifCount-1].satisfied = ifStack[ifCount-1].assemble || (! parent_assemble);
+      break;
+    case PRD_elseifStatement:
+      ifStack[ifCount-1].assemble = 1;
+      if ( ! execute ( ptree->args[ 1 ], pass, lineno ) ) {
+        return FAIL ;
+      }
+      ifStack[ifCount-1].assemble = (!ifStack[ifCount-1].satisfied) && (ptree->args[1]->value.i != 0);
+      ifStack[ifCount-1].satisfied = ifStack[ifCount-1].satisfied || ifStack[ifCount-1].assemble;
+      break;
+    case PRD_elseStatement:
+      ifStack[ifCount-1].assemble = (!ifStack[ifCount-1].satisfied) ;
+      ifStack[ifCount-1].satisfied = 1;
+      break;
+    case PRD_endifStatement:
+      ifCount--;
+      break;
+  }
+  
+  assembleIt = (ifCount == 0) || (ifStack[ifCount-1].assemble);
+  
+/*
  * Evaluate all the nodes from the bottom up and left to right.
  */
   
@@ -60,12 +110,12 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       return FAIL ;
     }
   }
-  
+
 /*
  * Skip non-action productions.
  */
   
-  if ( ptree->exec_type == XT_IGNORE ) {
+  if ( ! assembleIt || ptree->exec_type == XT_IGNORE ) {
     return SUCCESS ;
   }
   
@@ -116,6 +166,39 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
 
   switch ( ptree->production_id ) {
       
+    case PRD_textList:
+    {
+      unsigned long l, l1 = strlen(ptree->args[0]->value.s), l2 = strlen(ptree->args[2]->value.s);
+      l = l1 + l2;
+      char *t;
+      if ((t = (char *) malloc(l+1)) == NULL) {
+        errno = ERR_OUT_OF_MEMORY;
+        return FAIL;
+      }
+      strcpy(t, ptree->args[0]->value.s);
+      strcat(t, ptree->args[2]->value.s);
+      ptree->value.s = t;
+      ptree->value_type = TOK_STRING;
+      break;
+    }
+    case PRD_textItem:
+    {
+      char buffer[32];
+      switch (ptree->variant) {
+        case 0:
+          sprintf(buffer, "%i", ptree->args[1]->value.i) ;
+          setstr(&ptree->value.s, buffer);
+          ptree->value_type = TOK_STRING;
+          break;
+        case 2: // id
+          break;
+      }
+      break;
+    }
+    case PRD_bool:
+      ptree->value_type = TOK_INTEGERDEC;
+      ptree->value.i = (ptree->variant == 0) ? 0 : -1;
+      break;
     case PRD_endDir:
     {
       main_routine = ptree->args[1]->value.i;
@@ -133,10 +216,22 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       }
       break;
     }
+    case PRD_e12:
+    {
+      ptree->value.i = ptree->args[1]->value.i;
+      ptree->value_type = ptree->args[1]->value_type;
+      break;
+    }
     case PRD_e11:
     {
       switch (ptree->variant) {
-        case 7: // $
+        case 6: // defined
+        {
+          ptree->value_type = TOK_INTEGERDEC;
+          ptree->value.i = (get_symbol_index(ptree->args[1]->value.s) == -1) ? 0 : -1;
+          break;
+        }
+        case 8: // $
         {
           unsigned int value;
           
@@ -147,7 +242,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
           ptree->value.i = value;
           break;
         }
-        case 12: // identifier
+        case 13: // identifier
         {
           int value;
           if (get_symbol_value(ptree->args[0]->value.s, &value)) {
@@ -267,12 +362,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
     }
     case PRD_echoDir:
       if (pass2) {
-        if (ptree->variant == 0) {
-          printf("%i\n", ptree->args[2]->value.i);
-        }
-        else {
-          printf("%s\n", ptree->args[1]->value.s);
-        }
+        printf("%s\n", ptree->args[1]->value.s);
       }
       break;
     case PRD_e07:
@@ -336,22 +426,22 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
           result = i1 ^ i2;
           break;
         case TOK_EQ:
-          result = (i1 == i2) ? 0 : -1;
+          result = (i1 == i2) ? -1 : 0;
           break;
         case TOK_NE:
-          result = (i1 != i2) ? 0 : -1;
+          result = (i1 != i2) ? -1 : 0;
           break;
         case TOK_LT:
-          result = (i1 < i2) ? 0 : -1;
+          result = (i1 < i2) ? -1 : 0;
           break;
         case TOK_GT:
-          result = (i1 > i2) ? 0 : -1;
+          result = (i1 > i2) ? -1 : 0;
           break;
         case TOK_LE:
-          result = (i1 <= i2) ? 0 : -1;
+          result = (i1 <= i2) ? -1 : 0;
           break;
         case TOK_GE:
-          result = (i1 >= i2) ? 0 : -1;
+          result = (i1 >= i2) ? -1 : 0;
           break;
         default:
           result = 0;
