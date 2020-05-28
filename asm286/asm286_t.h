@@ -45,9 +45,12 @@ enum {
   ERR_INVALID_INSTRUCTION      = 15,
   ERR_IDENTIFIER_NOT_FOUND     = 16,
   ERR_TOO_MANY_NESTED_IFS      = 17,
+  ERR_CONSTANT_REDEFINED       = 18,
+  ERR_SYMBOL_REDEFINED         = 19,
+  ERR_NOT_DATA_SYMBOL          = 20,
 } ;
 
-#define NUM_ERR ( 17 )
+#define NUM_ERR ( 20 )
 
 /*
  * Symbol Table stuff.
@@ -74,6 +77,7 @@ enum DataType {
   DT_REAL4  = 9,
   DT_REAL8  = 10,
   DT_REAL10 = 11,
+  DT_STRING = 12,
 };
 
 enum Distance {

@@ -60,7 +60,7 @@
  * Token string constants.
  */
 
-#define NUM_PATTERN ( 396 )  /* Number of token patterns */
+#define NUM_PATTERN ( 394 )  /* Number of token patterns */
 
 #define STK_UNDERSCORE  "\001\001"
 #define STK_MINUS       "\001\002"
@@ -114,17 +114,17 @@
  * END OF AUTONUBER SECTION
  */
 
-#define STK_INTEGERBIN  "\004\005"
-#define STK_INTEGEROCT  "\004\006"
-#define STK_INTEGERDEC  "\004\007"
-#define STK_INTEGERHEX  "\004\010"
-#define STK_DOUBLE      "\004\011"
-#define STK_STRING      "\004\012"
-#define STK_IDENTIFIER  "\004\013"
-#define STK_INST_LABEL  "\004\014"
-#define STK_NEWLINE     "\004\015"
-#define STK_WHITESPACE  "\004\016"
-#define STK_TEXT        "\004\017"
+#define STK_INTEGERBIN  "\004\003"
+#define STK_INTEGEROCT  "\004\004"
+#define STK_INTEGERDEC  "\004\005"
+#define STK_INTEGERHEX  "\004\006"
+#define STK_DOUBLE      "\004\007"
+#define STK_STRING      "\004\010"
+#define STK_IDENTIFIER  "\004\011"
+#define STK_INST_LABEL  "\004\012"
+#define STK_NEWLINE     "\004\013"
+#define STK_WHITESPACE  "\004\014"
+#define STK_TEXT        "\004\015"
 
 /*
  * Production string constants.
@@ -180,17 +180,17 @@ enum {
   
 #include "TOK.h"
   
-  TOK_INTEGERBIN  = 385,
-  TOK_INTEGEROCT  = 386,
-  TOK_INTEGERDEC  = 387,
-  TOK_INTEGERHEX  = 388,
-  TOK_DOUBLE      = 389,
-  TOK_STRING      = 390,
-  TOK_IDENTIFIER  = 391,
-  TOK_INST_LABEL  = 392,
-  TOK_NEWLINE     = 393,
-  TOK_WHITESPACE  = 394,
-  TOK_TEXT        = 395,
+  TOK_INTEGERBIN  = 383,
+  TOK_INTEGEROCT  = 384,
+  TOK_INTEGERDEC  = 385,
+  TOK_INTEGERHEX  = 386,
+  TOK_DOUBLE      = 387,
+  TOK_STRING      = 388,
+  TOK_IDENTIFIER  = 389,
+  TOK_INST_LABEL  = 390,
+  TOK_NEWLINE     = 391,
+  TOK_WHITESPACE  = 392,
+  TOK_TEXT        = 393,
   
 /*
  * Productions
@@ -268,9 +268,16 @@ int match_pattern2(FILE *, const char *, char **, unsigned long *);
 void printProdName(int);
 int checkInstruction(int);
 char *get_segment_name(int);
-int set_sumbol_visibility(const char *, enum Visibility);
+int set_symbol_visibility(const char *, enum Visibility);
 void trim(char *);
 void dump_segment_table(void);
+int set_strconstant(const char *, char *);
+int set_constant(const char *, enum DataType, int);
+int get_strsymbol_value(const char *, char **);
+int get_number_of_elements(const char *, int *);
+int get_array_size(const char *, int *);
+int datatype_size(enum DataType);
+int get_element_length(const char *, int *);
 
 // COMMON DATA
 

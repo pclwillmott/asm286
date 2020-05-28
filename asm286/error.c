@@ -44,6 +44,9 @@ void error()
     "Invalid Instruction",
     "Identifier Not Found",
     "Too Many Nested IF Statements",
+    "Constant Redefined",
+    "Symbol Redefined",
+    "Not Data Symbol",
   } ;
   
   char tmp_str[ 128 ] ;

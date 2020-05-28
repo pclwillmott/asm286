@@ -166,6 +166,33 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
 
   switch ( ptree->production_id ) {
       
+    case PRD_type:
+    {
+      ptree->value.i = ptree->args[0]->variant;
+      ptree->value_type = TOK_INTEGERDEC;
+      break;
+    }
+    case PRD_equalDir:
+    {
+      if (set_variable(ptree->args[0]->value.s, DT_SDWORD, ptree->args[2]->value.i)) {
+        return FAIL;
+      }
+      break;
+    }
+    case PRD_equDir:
+    {
+      if (set_constant(ptree->args[0]->value.s, DT_SDWORD, ptree->args[2]->value.i)) {
+        return FAIL;
+      }
+      break;
+    }
+    case PRD_textEquDir:
+    {
+      if (set_strconstant(ptree->args[0]->value.s, ptree->args[2]->value.s)) {
+        return FAIL;
+      }
+      break;
+    }
     case PRD_textList:
     {
       unsigned long l, l1 = strlen(ptree->args[0]->value.s), l2 = strlen(ptree->args[2]->value.s);
@@ -191,6 +218,9 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
           ptree->value_type = TOK_STRING;
           break;
         case 2: // id
+          if (get_strsymbol_value(ptree->args[0]->value.s, &ptree->value.s)) {
+            return FAIL;
+          }
           break;
       }
       break;
@@ -225,13 +255,51 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
     case PRD_e11:
     {
       switch (ptree->variant) {
-        case 6: // defined
+        case 2: // sizeof
+        {
+          switch (ptree->args[1]->variant) {
+            case 0: // type
+            {
+              ptree->value.i = datatype_size(ptree->args[1]->value.i);
+              break;
+            }
+            case 1: // identifier
+            {
+              if (get_array_size(ptree->args[1]->value.s, &ptree->value.i)) {
+                return FAIL;
+              }
+              break;
+            }
+          }
+          ptree->value_type = TOK_INTEGERDEC;
+          break;
+        }
+        case 3: // lengthof
+        {
+          if (get_array_size(ptree->args[1]->value.s, &ptree->value.i)) {
+            return FAIL;
+          }
+          ptree->value_type = TOK_INTEGERDEC;
+          break;
+        }
+        case 12: // string
+        {
+          unsigned int dw = 0;
+          char *s = ptree->args[0]->value.s;
+          for (int i = 0; *s && i < 4; i++, s++) {
+            dw |= (unsigned int)*s << (i << 3);
+          }
+          ptree->value.i = dw;
+          ptree->value_type = TOK_INTEGERDEC;
+          break;
+        }
+        case 4: // defined
         {
           ptree->value_type = TOK_INTEGERDEC;
           ptree->value.i = (get_symbol_index(ptree->args[1]->value.s) == -1) ? 0 : -1;
           break;
         }
-        case 8: // $
+        case 6: // $
         {
           unsigned int value;
           
@@ -242,13 +310,27 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
           ptree->value.i = value;
           break;
         }
-        case 13: // identifier
+        case 11: // identifier
         {
           int value;
           if (get_symbol_value(ptree->args[0]->value.s, &value)) {
             return FAIL;
           }
           ptree->value.i = value;
+          ptree->value_type = TOK_INTEGERDEC;
+          break;
+        }
+      }
+      break;
+    }
+    case PRD_e09:
+    {
+      switch (ptree->variant) {
+        case 2: // type
+        {
+          if (get_element_length(ptree->args[1]->value.s, &ptree->value.i)) {
+            return FAIL;
+          }
           ptree->value_type = TOK_INTEGERDEC;
           break;
         }
@@ -302,7 +384,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
     }
     case PRD_pubDef:
     {
-      if (set_sumbol_visibility(ptree->args[(ptree->variant == 0) ? 1 : 0]->value.s, VS_PUBLIC)) {
+      if (set_symbol_visibility(ptree->args[(ptree->variant == 0) ? 1 : 0]->value.s, VS_PUBLIC)) {
         errno = ERR_IDENTIFIER_NOT_FOUND;
         return FAIL;
       }
