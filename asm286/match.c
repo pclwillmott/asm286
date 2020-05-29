@@ -365,6 +365,35 @@ void delete_ptree
 }
 
 int indent = 0;
+int *prdIndex = NULL;
+
+int build_index() {
+  
+  int count = 0;
+  
+  extern char * prdlst[] ;
+
+  while ( pid ( prdlst [ count ] ) != PRD_LAST ) {
+    count++ ;
+  }
+  
+  if ((prdIndex = (int *) malloc (count * sizeof(int))) == NULL) {
+    errno = ERR_OUT_OF_MEMORY;
+    return -1;
+  }
+
+  int last = -1;
+  for (int i = 0; i < count; i++) {
+    int j = pid(prdlst[i]);
+    if (last != j) {
+      last = j;
+      prdIndex[j-PRODUCTION_OFFSET] = i;
+    }
+  }
+
+  return 0;
+  
+}
 
 ptree_node_t * match2
 (
@@ -383,6 +412,10 @@ ptree_node_t * match2
   int islist ;
   
   ptree_node_t *ptree, *safe_ptree ;
+  
+  if (prdIndex == NULL) {
+    build_index();
+  }
   
   long int safe_tp, tp ;
   
@@ -414,20 +447,22 @@ ptree_node_t * match2
    * Find production code in production list.
    */
   
-  while ( ( ( j = pid ( prdlst [ prd_base ] ) ) != PRD_LAST ) && ( j != production_id ) ) {
-    prd_base++ ;
-  }
+//  while ( ( ( j = pid ( prdlst [ prd_base ] ) ) != PRD_LAST ) && ( j != production_id ) ) {
+//    prd_base++ ;
+//  }
+  
+  prd_base = prdIndex[production_id-PRODUCTION_OFFSET];
   
   /*
    * Throw error if production not found. This should never occur
    * outside of development.
    */
   
-  if ( j == PRD_LAST ) {
-    errno = ERR_PRODUCTION_NOT_FOUND ;
-    printProdName(production_id);
-    return NULL ;
-  }
+//  if ( j == PRD_LAST ) {
+//    errno = ERR_PRODUCTION_NOT_FOUND ;
+//    printProdName(production_id);
+//    return NULL ;
+//  }
   
   /*
    * If the first production variant is a recursive list and

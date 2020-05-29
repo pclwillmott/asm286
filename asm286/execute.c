@@ -49,6 +49,12 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
   
 //  extern unsigned int current_position, dep_count;
   
+  static enum SegAlign segAlign = SA_PARA;
+  static enum CombineType combineType = CT_PRIVATE;
+  static char *className = NULL;
+  static int readonly = 0;
+  static int combine_at = 0;
+  
 /*
  *-----------------------------------------------------------------------------
  */
@@ -165,7 +171,145 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
   int disp = 0;
 
   switch ( ptree->production_id ) {
+     
+    case PRD_segDir:
+    {
+      char *name = NULL;
+      int access = 0;
+      enum SegAlign align;
+      enum CombineType combine;
+      int at = 0;
+      char *class = NULL;
+      char *group = NULL;
+      close_all_segments();
+      switch (ptree->variant) {
+        case 0: // code id
+          name = ptree->args[1]->value.s;
+        case 1: // code
+          if (name == NULL) {
+            name = "_TEXT";
+          }
+          align = SA_WORD;
+          combine = CT_PUBLIC;
+          class = "CODE";
+          if (get_model() == MODEL_TINY) {
+            group = "DGROUP";
+          }
+          break;
+        case 2: // data?
+          name = "_BSS";
+          align = SA_WORD;
+          combine = CT_PUBLIC;
+          class = "BSS";
+          group = "DGROUP";
+          break;
+        case 3: // data
+          name = "_DATA";
+          align = SA_WORD;
+          combine = CT_PUBLIC;
+          class = "DATA";
+          group = "DGROUP";
+          break;
+        case 4: // const
+          name = "CONST";
+          align = SA_WORD;
+          combine = CT_PUBLIC;
+          class = "CONST";
+          group = "DGROUP";
+          break;
+        case 5: // fardata? id
+          name = ptree->args[1]->value.s;
+        case 6: // fardata?
+          if (name == NULL) {
+            name = "FAR_BSS";
+          }
+          align = SA_PARA;
+          combine = CT_PRIVATE;
+          class = "FAR_BSS";
+          break;
+        case 7: // fardata id
+          name = ptree->args[1]->value.s;
+        case 8: // fardata
+          if (name == NULL) {
+            name = "FAR_DATA";
+          }
+          align = SA_PARA;
+          combine = CT_PRIVATE;
+          class = "FAR_DATA";
+          break;
+        case 9: // stack expr
+          at = ptree->args[1]->value.i;
+        case 10: // stack
+          if (get_model() == MODEL_TINY) {
+            errno = ERR_INVALID_DIRECTIVE;
+            return FAIL;
+          }
+          if (at == 0) {
+            at = 1024;
+          }
+          name = "STACK";
+          group = "DGROUP";
+          align = SA_PARA;
+          combine = CT_STACK;
+          class = name;
+          break;
+      }
       
+      if (open_segment_with_attributes(name, access, align, combine, at, class)) {
+        return FAIL;
+      }
+      if (group != NULL) {
+        set_segment_group(name, group);
+      }
+      if (strcmp(name,"_TEXT") == 0) {
+        set_assume(SR_CS, name);
+      }
+      else {
+        set_assume(SR_CS, "ERROR");
+        set_assume(SR_DS, name);
+        set_assume(SR_ES, name);
+      }
+      if (get_model() != MODEL_TINY) {
+        set_assume(SR_SS, "STACK");
+      }
+      else {
+        set_assume(SR_SS, "DGROUP");
+      }
+
+      break;
+    }
+    case PRD_assumeDir:
+    {
+      for (int i = 0; i < 4; i++) {
+        if (set_assume(i, "NOTHING")) {
+          return FAIL;
+        }
+      }
+      break;
+    }
+    case PRD_segOption:
+    {
+      readonly = -1;
+      break;
+    }
+    case PRD_className:
+    {
+      setstr(&className, ptree->args[0]->value.s);
+      break;
+    }
+    case PRD_segAttrib:
+    {
+      combineType = (ptree->variant == 5) ? CT_PUBLIC : ptree->variant;
+      if (combineType == CT_AT) {
+        combine_at = ptree->args[1]->value.i;
+      }
+      break;
+    }
+    case PRD_segAlign:
+    {
+      segAlign = ptree->variant;
+      break;
+    }
     case PRD_type:
     {
       ptree->value.i = ptree->args[0]->variant;
@@ -417,12 +561,23 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       break;
     }
     case PRD_segmentDir:
-      if (open_segment(ptree->args[0]->value.s, lineno)) {
+    {
+      int res = open_segment_with_attributes(ptree->args[0]->value.s, readonly, segAlign, combineType, combine_at, className);
+      readonly = 0;
+      segAlign = SA_PARA;
+      combineType = CT_PRIVATE;
+      combine_at = 0;
+      if (className != NULL) {
+        free(className);
+        className = NULL;
+      }
+      if (res) {
         return FAIL;
       }
       break;
+    }
     case PRD_endsDir:
-      if (close_segment(ptree->args[0]->value.s, lineno)) {
+      if (close_segment(ptree->args[0]->value.s)) {
         return FAIL;
       }
       break;

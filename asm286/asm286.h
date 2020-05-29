@@ -248,9 +248,9 @@ int set_model(enum MemoryModel);
 int add_label(const char *, enum Distance, int);
 int segment_stack_top_index(void);
 void dump_symbol_table(void);
-int open_segment(const char *, int);
-int open_segment_with_attributes(const char *, int, int);
-int close_segment(const char *, int);
+int open_segment(const char *);
+int open_segment_with_attributes(const char *, int, enum SegAlign, enum CombineType, int, char *);
+int close_segment(const char *);
 int get_current_position(unsigned int *);
 void reset_for_pass(int);
 segment_table_t *segment_stack_top(void);
@@ -278,6 +278,11 @@ int get_number_of_elements(const char *, int *);
 int get_array_size(const char *, int *);
 int datatype_size(enum DataType);
 int get_element_length(const char *, int *);
+int set_assume(enum SegReg, const char *);
+int set_segment_group(const char *, const char *);
+segment_table_t * get_segment(const char *);
+int close_all_segments(void);
+enum MemoryModel get_model(void);
 
 // COMMON DATA
 

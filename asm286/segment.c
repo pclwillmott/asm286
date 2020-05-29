@@ -42,6 +42,9 @@ enum Distance default_distance[6][2] = {
   { DIST_FAR,  DIST_FAR },
 };
 
+enum MemoryModel get_model() {
+  return model;
+}
 
 int set_model(enum MemoryModel mod) {
   model = mod;
@@ -59,6 +62,14 @@ char *get_segment_name(int idx) {
   return segment_table[idx].name;
 }
 
+segment_table_t * get_segment(const char *name) {
+  int idx ;
+  if ((idx = get_segment_index(name)) == -1) {
+    return NULL;
+  }
+  return &segment_table[idx];
+}
+
 int get_segment_index(const char *name) {
   for (int i = 0; i < segment_count; i++) {
     if (strcmp(name, segment_table[i].name) == 0) {
@@ -68,12 +79,12 @@ int get_segment_index(const char *name) {
   return -1;
 }
 
-int open_segment(const char *name, int lineno)
+int open_segment(const char *name)
 {
-  return open_segment_with_attributes(name, 0, lineno);
+  return open_segment_with_attributes(name, 0, SA_PARA, CT_PRIVATE, 0, NULL);
 }
 
-int open_segment_with_attributes(const char *name, int attributes, int lineno)
+int open_segment_with_attributes(const char *name, int readonly, enum SegAlign segAlign, enum CombineType combineType, int at, char *className)
 {
   if (stack_count == MAX_SEGMENT_STACK) {
     errno = ERR_SEGMENT_STACK_OVERFLOW;
@@ -87,15 +98,50 @@ int open_segment_with_attributes(const char *name, int attributes, int lineno)
     }
     index = segment_count++;
     segment_table_t *segment = &segment_table[index];
+    segment->read_only = readonly;
+    segment->combine_type = combineType;
+    segment->align = segAlign;
+    segment->at_position = at;
+    if (className != NULL) {
+      setstr(&segment->class_name, className);
+    }
     segment->name = NULL;
     setstr(&segment->name, (char *)name);
     segment->position = 0;
+    for (int i = 0; i < 4; i++) {
+      setstr(&segment->assume[i], "NOTHING");
+    }
+    segment->group = NULL;
   }
   segment_stack[stack_count++] = index;
   return 0;
 }
 
-int close_segment(const char *name, int lineno)
+int set_assume(enum SegReg seg, const char *value)
+{
+  segment_table_t *segment;
+  if ((segment = segment_stack_top()) == NULL) {
+    return -1;
+  }
+  free(segment->assume[seg]);
+  setstr(&segment->assume[seg], (char *)value);
+  return 0;
+}
+
+int set_segment_group(const char *name, const char *group)
+{
+  segment_table_t *segment;
+  if ((segment = get_segment(name)) == NULL) {
+    return -1;
+  }
+  if (segment->group != NULL) {
+    free(segment->group);
+  }
+  setstr(&segment->group, (char *)group);
+  return 0;
+}
+
+int close_segment(const char *name)
 {
   segment_table_t *segment;
   if ((segment = segment_stack_top()) == NULL) {
@@ -106,6 +152,12 @@ int close_segment(const char *name, int lineno)
     return 1;
   }
   stack_count--;
+  return 0;
+}
+
+int close_all_segments()
+{
+  stack_count = 0;
   return 0;
 }
 
@@ -196,24 +248,31 @@ void dump_segment_table() {
   };
   
   char *combine[] = {
+    "PRIVATE",
     "PUBLIC",
     "STACK",
     "COMMON",
     "AT",
-    "PRIVATE",
   };
   
-  printf("\n%-32s %-10s %-10s %-10s %-10s\n", "segment name", "access", "alignment", "combine", "at");
-  printf(  "%-32s %-10s %-10s %-10s %-10s\n", "------------", "------", "---------", "-------", "--");
+  printf("\n%-32s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n", "segment name", "access", "alignment", "combine", "at", "class","group", "CS","DS","ES","SS");
+  printf(  "%-32s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n", "------------", "------", "---------", "-------", "--", "-----","-----", "--","--","--","--");
   char buffer[16];
   for (int i = 0; i < segment_count; i++) {
     struct segment_table_t *t = &segment_table[i];
     sprintf(buffer,"%04x", t->at_position );
-    printf("%-32s %-10s %-10s %-10s %-10s\n", t->name,
+    printf("%-32s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n", t->name,
            (t->read_only) ? "read only" : "read/write",
            align[t->align],
            combine[t->combine_type],
-           (t->combine_type == CT_AT) ? buffer : "");
+           (t->combine_type == CT_AT) ? buffer : "",
+           (t->class_name == NULL) ? "" : t->class_name,
+           (t->group == NULL) ? "" : t->group,
+           t->assume[0],
+           t->assume[1],
+           t->assume[2],
+           t->assume[3]
+           );
   }
 }
 

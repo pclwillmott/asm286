@@ -47,6 +47,7 @@ void error()
     "Constant Redefined",
     "Symbol Redefined",
     "Not Data Symbol",
+    "Invalid Directive",
   } ;
   
   char tmp_str[ 128 ] ;

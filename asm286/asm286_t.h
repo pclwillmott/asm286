@@ -48,9 +48,10 @@ enum {
   ERR_CONSTANT_REDEFINED       = 18,
   ERR_SYMBOL_REDEFINED         = 19,
   ERR_NOT_DATA_SYMBOL          = 20,
+  ERR_INVALID_DIRECTIVE        = 21,
 } ;
 
-#define NUM_ERR ( 20 )
+#define NUM_ERR ( 21 )
 
 /*
  * Symbol Table stuff.
@@ -178,6 +179,13 @@ enum SegAlign {
   SA_PAGE = 4,
 };
 
+enum SegReg {
+  SR_CS = 0,
+  SR_DS = 1,
+  SR_ES = 2,
+  SR_SS = 3,
+};
+
 struct segment_table_t {
   char *name ;
   signed char read_only;
@@ -186,6 +194,8 @@ struct segment_table_t {
   enum CombineType combine_type;
   unsigned int at_position;
   char *class_name;
+  char *assume[4];
+  char *group;
 };
 
 #endif /* asm286_t_h */

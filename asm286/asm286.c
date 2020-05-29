@@ -46,10 +46,10 @@ int main(int argc, const char * argv[]) {
     if ( process("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE 2.ASM", pass ) ) {
       goto fail;
     }
-    if (segment_stack_count()) {
+/*    if (segment_stack_count()) {
       errno = ERR_SEGMENT_NOT_ENDED;
       goto fail;
-    }
+    } */
   }
   
   dump_symbol_table();
