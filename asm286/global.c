@@ -33,6 +33,7 @@ int errno = 0;
 enum Language language_type = LG_UNASSIGNED;
 enum Distance stack_distance = DIST_NEAR;
 int main_routine = 0;
+char *module_name = NULL;
 
 /*
  *------------------------------------------------------------------------------

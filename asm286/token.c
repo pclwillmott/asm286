@@ -554,6 +554,7 @@ char * prod_list[] = {
   "segmentRegister",
   "segOption",
   "segOptionList",
+  "simpleEndsDir",
   "simpleSegDir",
   "sizeArg",
   "stackOption",

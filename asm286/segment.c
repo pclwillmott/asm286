@@ -31,6 +31,29 @@ unsigned int segment_count = 0;
 unsigned int segment_stack[MAX_SEGMENT_STACK];
 unsigned int stack_count = 0;
 
+char *segid_list[MAX_SEGMENT];
+unsigned int segid_list_count = 0;
+
+int add_to_segid_list(const char * segId) {
+  if (segid_list_count == MAX_SEGMENT) {
+    errno = ERR_TOO_MANY_SEGMENTS;
+    return -1;
+  }
+  setstr(&segid_list[segid_list_count++], (char *)segId);
+  return 0;
+}
+
+int set_segment_group_from_list(const char *group) {
+  for (int i = 0; i < segid_list_count; i++) {
+    if (set_segment_group(segid_list[i], group)) {
+      return -1;
+    }
+    free(segid_list[i]);
+  }
+  segid_list_count = 0;
+  return 0;
+}
+
 enum MemoryModel model = MODEL_TINY;
 
 enum Distance default_distance[6][2] = {
@@ -101,7 +124,14 @@ int open_segment_with_attributes(const char *name, int readonly, enum SegAlign s
     segment->read_only = readonly;
     segment->combine_type = combineType;
     segment->align = segAlign;
-    segment->at_position = at;
+    segment->at_position = 0;
+    if (combineType == CT_AT) {
+      segment->at_position = at;
+    }
+    segment->size = 0;
+    if (combineType == CT_STACK) {
+      segment->size = at;
+    }
     if (className != NULL) {
       setstr(&segment->class_name, className);
     }
@@ -255,19 +285,21 @@ void dump_segment_table() {
     "AT",
   };
   
-  printf("\n%-32s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n", "segment name", "access", "alignment", "combine", "at", "class","group", "CS","DS","ES","SS");
-  printf(  "%-32s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n", "------------", "------", "---------", "-------", "--", "-----","-----", "--","--","--","--");
-  char buffer[16];
+  printf("\n%-32s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n", "segment name", "access", "alignment", "combine", "at", "class","group", "size", "CS","DS","ES","SS");
+  printf(  "%-32s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n", "------------", "------", "---------", "-------", "--", "-----","-----", "----", "--","--","--","--");
+  char buffer[16], buffer2[16];
   for (int i = 0; i < segment_count; i++) {
     struct segment_table_t *t = &segment_table[i];
-    sprintf(buffer,"%04x", t->at_position );
-    printf("%-32s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n", t->name,
+    sprintf(buffer,"%04x", t->at_position);
+    sprintf(buffer2,"%04i", t->size);
+    printf("%-32s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n", t->name,
            (t->read_only) ? "read only" : "read/write",
            align[t->align],
            combine[t->combine_type],
            (t->combine_type == CT_AT) ? buffer : "",
            (t->class_name == NULL) ? "" : t->class_name,
            (t->group == NULL) ? "" : t->group,
+           buffer2,
            t->assume[0],
            t->assume[1],
            t->assume[2],

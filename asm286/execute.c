@@ -172,6 +172,58 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
 
   switch ( ptree->production_id ) {
      
+    case PRD_nameDir:
+    {
+      if (module_name != NULL) {
+        free(module_name);
+      }
+      setstr(&module_name, ptree->args[1]->value.s);
+      break;
+    }
+    case PRD_listDir:
+    {
+      list = ptree->args[0]->variant == 0;
+      break;
+    }
+    case PRD_titleDir: {
+      switch (ptree->args[0]->variant) {
+        case 0:
+          setstr(&title, ptree->args[1]->value.s);
+          break;
+        case 1:
+          setstr(&subtitle, ptree->args[1]->value.s);
+          break;
+      }
+      break;
+    }
+    case PRD_assumeSegReg:
+    {
+      if (set_assume(ptree->args[0]->value.i, ptree->args[2]->value.s)) {
+        return FAIL;
+      }
+      break;
+    }
+    case PRD_segmentRegister:
+    {
+      ptree->value.i = ptree->variant;
+      ptree->value_type = TOK_INTEGERDEC;
+      break;
+    }
+    case PRD_groupDir:
+    {
+      if (set_segment_group_from_list(ptree->args[0]->value.s)) {
+        return FAIL;
+      }
+      break;
+    }
+    case PRD_segIdList:
+    {
+      int idx = (ptree->variant == 0) ? 2 : 0;
+      if (add_to_segid_list(ptree->args[idx]->value.s)) {
+        return FAIL;
+      }
+      break;
+    }
     case PRD_segDir:
     {
       char *name = NULL;

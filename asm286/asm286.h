@@ -283,6 +283,8 @@ int set_segment_group(const char *, const char *);
 segment_table_t * get_segment(const char *);
 int close_all_segments(void);
 enum MemoryModel get_model(void);
+int add_to_segid_list(const char *);
+int set_segment_group_from_list(const char *);
 
 // COMMON DATA
 
@@ -296,6 +298,7 @@ extern int errno;
 extern enum Language language_type;
 extern enum Distance stack_distance;
 extern int main_routine;
+extern char *module_name;
 
 #endif /* asm286_h */
 

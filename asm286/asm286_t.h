@@ -193,6 +193,7 @@ struct segment_table_t {
   enum SegAlign align;
   enum CombineType combine_type;
   unsigned int at_position;
+  unsigned int size;
   char *class_name;
   char *assume[4];
   char *group;

@@ -52,10 +52,20 @@ int main(int argc, const char * argv[]) {
     } */
   }
   
-  dump_symbol_table();
-  
-  dump_segment_table();
-
+  if (list) {
+    if (module_name != NULL) {
+      printf("MODULE: %s\n", module_name);
+    }
+    if (title != NULL) {
+      printf("%s\n", title);
+    }
+    if (subtitle != NULL) {
+      printf("%s\n", subtitle);
+    }
+    dump_symbol_table();
+    
+    dump_segment_table();
+  }
 fail:
   
 /*
