@@ -60,7 +60,7 @@
  * Token string constants.
  */
 
-#define NUM_PATTERN ( 395 )  /* Number of token patterns */
+#define NUM_PATTERN ( 403 )  /* Number of token patterns */
 
 #define STK_UNDERSCORE  "\001\001"
 #define STK_MINUS       "\001\002"
@@ -114,17 +114,18 @@
  * END OF AUTONUBER SECTION
  */
 
-#define STK_INTEGERBIN  "\004\004"
-#define STK_INTEGEROCT  "\004\005"
-#define STK_INTEGERDEC  "\004\006"
-#define STK_INTEGERHEX  "\004\007"
-#define STK_DOUBLE      "\004\010"
-#define STK_STRING      "\004\011"
-#define STK_IDENTIFIER  "\004\012"
-#define STK_INST_LABEL  "\004\013"
-#define STK_NEWLINE     "\004\014"
-#define STK_WHITESPACE  "\004\015"
-#define STK_TEXT        "\004\016"
+#define STK_INTEGERBIN  "\004\013"
+#define STK_INTEGEROCT  "\004\014"
+#define STK_INTEGERDEC  "\004\015"
+#define STK_INTEGERHEX  "\004\016"
+#define STK_DOUBLE      "\004\017"
+#define STK_STRING      "\004\020"
+#define STK_IDENTIFIER  "\004\021"
+#define STK_INST_LABEL  "\004\022"
+#define STK_NEWLINE     "\004\023"
+#define STK_WHITESPACE  "\004\024"
+#define STK_TEXT        "\004\025"
+#define STK_TOKSEQUENCE "\004\026"
 
 /*
  * Production string constants.
@@ -180,18 +181,19 @@ enum {
   
 #include "TOK.h"
   
-  TOK_INTEGERBIN  = 384,
-  TOK_INTEGEROCT  = 385,
-  TOK_INTEGERDEC  = 386,
-  TOK_INTEGERHEX  = 387,
-  TOK_DOUBLE      = 388,
-  TOK_STRING      = 389,
-  TOK_IDENTIFIER  = 390,
-  TOK_INST_LABEL  = 391,
-  TOK_NEWLINE     = 392,
-  TOK_WHITESPACE  = 393,
-  TOK_TEXT        = 394,
-  
+  TOK_INTEGERBIN  = 391,
+  TOK_INTEGEROCT  = 392,
+  TOK_INTEGERDEC  = 393,
+  TOK_INTEGERHEX  = 394,
+  TOK_DOUBLE      = 395,
+  TOK_STRING      = 396,
+  TOK_IDENTIFIER  = 397,
+  TOK_INST_LABEL  = 398,
+  TOK_NEWLINE     = 399,
+  TOK_WHITESPACE  = 400,
+  TOK_TEXT        = 401,
+  TOK_TOKSEQUENCE = 402,
+
 /*
  * Productions
  */
@@ -290,7 +292,7 @@ int close_all_segments(void);
 enum MemoryModel get_model(void);
 int add_to_segid_list(const char *);
 int set_segment_group_from_list(const char *);
-
+int add_numbers(char *[]);
 int openStream(const char *);
 int closeStreams(void);
 int saveStreamContext(stream_context_t *);

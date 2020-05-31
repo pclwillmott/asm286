@@ -179,6 +179,7 @@ char *prdlst[] = {
   SPD_type PT_EXECUTE SPD_dataType,
   
   SPD_generalDir PT_IGNORE SPD_echoDir,
+  SPD_generalDir PT_IGNORE SPD_lineDir,
   SPD_generalDir PT_IGNORE SPD_equalDir,
   SPD_generalDir PT_IGNORE SPD_equDir,
   SPD_generalDir PT_IGNORE SPD_publicDir,
@@ -195,6 +196,8 @@ char *prdlst[] = {
   SPD_generalDir PT_IGNORE SPD_processorDir,
   SPD_generalDir PT_IGNORE SPD_optionDir,
 
+  SPD_lineDir PT_IGNORE STK_LINE SPD_constExpr SPD_fileSpec STK_NEWLINE,
+  
   SPD_modelDir PT_EXECUTE STK_MODEL SPD_memOption STK_COMMA SPD_modelOptList STK_NEWLINE,
   SPD_modelDir PT_EXECUTE STK_MODEL SPD_memOption STK_NEWLINE,
 
@@ -218,8 +221,6 @@ char *prdlst[] = {
   SPD_stackOption PT_IGNORE STK_FARSTACK,
 
   SPD_nameDir PT_EXECUTE STK_NAME STK_IDENTIFIER STK_NEWLINE,
-  
-  SPD_includeDir PT_IGNORE STK_INCLUDE SPD_fileSpec STK_NEWLINE,
   
   SPD_fileSpec PT_IGNORE STK_STRING,
   

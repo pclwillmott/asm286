@@ -240,7 +240,6 @@ const char *pattern[ NUM_PATTERN ] = {
   KEYWORD          "IMUL",
   KEYWORD          "IN",
   KEYWORD          "INC",
-  RESERVED         "INCLUDE",
   KEYWORD          "INS",
   KEYWORD          "INSB",
   KEYWORD          "INSW",
@@ -292,6 +291,7 @@ const char *pattern[ NUM_PATTERN ] = {
   KEYWORD          "LES",
   KEYWORD_286P     "LGDT",
   KEYWORD_286P     "LIDT",
+  RESERVED         "LINE",
   RESERVED         "LJMP",
   KEYWORD_286P     "LLDT",
   KEYWORD_286P     "LMSW",
@@ -416,6 +416,13 @@ const char *pattern[ NUM_PATTERN ] = {
   KEYWORD          "XLAT",
   KEYWORD          "XLATB",
   KEYWORD_RESERVED "XOR",
+  RESERVED         "#DEFINE",
+  RESERVED         "#ELSE",
+  RESERVED         "#ELSEIF",
+  RESERVED         "#ENDIF",
+  RESERVED         "#IF",
+  RESERVED         "#INCLUDE",
+  RESERVED         "#UNDEF",
   SPECIAL          "[0-1]+B",
   SPECIAL          "[0-7]+O|Q",
   SPECIAL          "(-|+)?[0-9]+D?",
@@ -427,6 +434,7 @@ const char *pattern[ NUM_PATTERN ] = {
   SPECIAL          "(\n|(;[^\n]*\n))+",
   SPECIAL          "(\010|\011|\013|\014|\015|\032|\040|(\\[^\n]*\n))*",
   SPECIAL          "[^\n]*",
+  SPECIAL          "[^#\n]*[\n]",
 } ;
 
 int checkInstruction(int tokenId) {
@@ -513,6 +521,7 @@ char * prod_list[] = {
   "labelDef",
   "labelDir",
   "langType",
+  "lineDir",
   "listDir",
   "listOption",
   "mapType",
@@ -538,6 +547,21 @@ char * prod_list[] = {
   "pageExpr",
   "pageLength",
   "pageWidth",
+  "ppDefineDir",
+  "ppDir",
+  "ppDirectiveList",
+  "ppelseBlock",
+  "ppelseifBlock",
+  "ppelseifList",
+  "ppelseifStatement",
+  "ppelseStatement",
+  "ppendifStatement",
+  "ppifBlock",
+  "ppifDir",
+  "ppifStatement",
+  "ppIncludeDir",
+  "ppModule",
+  "ppUndefDir",
   "processor",
   "processorDir",
   "pubDef",
@@ -566,6 +590,8 @@ char * prod_list[] = {
   "textItem",
   "titleDir",
   "titleType",
+  "tokenSequence",
+  "tokenSequenceList",
   "type",
   "",
 } ;
@@ -579,11 +605,11 @@ void dump_productions()
   for (unsigned int idx = 0; strlen(prod_list[idx]) > 0; idx++ ) {
     unsigned int B = (idx + PRODUCTION_OFFSET) % 127 + 1 ;
     unsigned int A = (idx + PRODUCTION_OFFSET) / 127 + 1 ;
-    printf("#define SPD_%-15s \"\\%03o\\%03o\"\n", prod_list[idx], A, B ) ;
+    printf("#define SPD_%-17s \"\\%03o\\%03o\"\n", prod_list[idx], A, B ) ;
   }
 
   for ( unsigned int idx = 0; strlen(prod_list[idx]) > 0; idx++  ) {
-    printf("  PRD_%-15s = %3i,\n", prod_list[idx], idx + PRODUCTION_OFFSET) ;
+    printf("  PRD_%-17s = %3i,\n", prod_list[idx], idx + PRODUCTION_OFFSET) ;
   }
 }
 
@@ -593,15 +619,26 @@ void dump_pattern()
   
   unsigned int idx, line ;
 
-  for ( idx = 0; idx < NUM_PATTERN -11; idx++ ) {
+  for ( idx = 0; idx < NUM_PATTERN  ; idx++ ) {
+    if (*(pattern[idx]+1)=='#') {
+      printf("  TOK_HASH%-7s = %3i,\n", pattern[idx]+2, idx ) ;
+    }
+    else {
+      printf("  TOK_%-11s = %3i,\n", pattern[idx]+1, idx ) ;
+    }
+  }
+
+  for ( idx = 0; idx < NUM_PATTERN ; idx++ ) {
     unsigned int B = idx % 127 + 1 ;
     unsigned int A = idx / 127 + 1 ;
-    printf("#define STK_%-11s \"\\%03o\\%03o\"\n", pattern[idx]+1, A, B ) ;
+    if (*(pattern[idx]+1)=='#') {
+      printf("#define STK_HASH%-7s \"\\%03o\\%03o\"\n", pattern[idx]+2, A, B ) ;
+    }
+    else {
+      printf("#define STK_%-11s \"\\%03o\\%03o\"\n", pattern[idx]+1, A, B ) ;
+    }
   }
  
-  for ( idx = 0; idx < NUM_PATTERN ; idx++ ) {
-    printf("  TOK_%-11s = %3i,\n", pattern[idx]+1, idx ) ;
-  }
   
   return;
   const char *keywords[500];

@@ -29,6 +29,8 @@ int main(int argc, const char * argv[]) {
   
   extern long int maxPos;
   
+  char *fname[2];
+  
 /*
  *------------------------------------------------------------------------------
  */
@@ -38,18 +40,21 @@ int main(int argc, const char * argv[]) {
   processor = i86;
   coprocessor = none;
   
+  fname[0] = "/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE 2.ASM";
+  fname[1] = "/Users/paul/Documents/Projects/LEGACY/asm286/TEMP1.ASM";
+  
+  if (add_numbers(fname)) {
+    goto fail;
+  }
+  
   for (int pass = 0; pass < 2; pass++) {
     maxPos = 0;
     check_instructions = pass == 1;
     printf("Pass %i\n",pass+1);
     reset_for_pass(pass);
-    if ( process("/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE 2.ASM", pass ) ) {
+    if ( process(fname[0], pass ) ) {
       goto fail;
     }
-/*    if (segment_stack_count()) {
-      errno = ERR_SEGMENT_NOT_ENDED;
-      goto fail;
-    } */
   }
   
   if (list) {
@@ -76,6 +81,42 @@ fail:
   
 }
 
+int add_numbers(char *fname[]){
+  
+  if (fname[0] == NULL || fname[1] == NULL) {
+    return -1;
+  }
+  
+  FILE *fp1 = NULL, *fp2 = NULL;
+  
+  if ((fp1 = fopen(fname[0], "r")) == NULL) {
+    goto fail;
+  }
+
+  if ((fp2 = fopen(fname[1], "w")) == NULL) {
+    goto fail;
+  }
+
+  char buffer[512], buffer2[512];
+  int lineno = 1;
+  while (fgets(buffer, sizeof(buffer), fp1) != NULL) {
+    sprintf(buffer2, "LINE %i '%s'\n", lineno++, fname[0]);
+    fputs(buffer2, fp2);
+    fputs(buffer, fp2);
+  }
+  
+fail:
+  
+  if (fp1 != NULL) {
+    fclose(fp1);
+  }
+  if (fp2 != NULL) {
+    fclose(fp2);
+  }
+  
+  return 0 ;
+  
+}
 /*
  * This routine assembles a single file.
  * It returns 0 on success and -1 on failure.
@@ -85,9 +126,7 @@ long int maxPos = 0L;
 
 int process(const char *filename, int pass) {
 
-#ifdef OLD
   FILE *fp = NULL ;
-#endif
   
   int result = -1;
 
@@ -97,21 +136,11 @@ int process(const char *filename, int pass) {
  *------------------------------------------------------------------------------
  */
 
-#ifdef OLD
   if ( ( fp = fopen(filename, "r")) == NULL ) {
     goto fail;
   }
-#else
-  if (openStream(filename)) {
-    goto fail;
-  }
-#endif
 
-#ifdef OLD
   if ((pt = match2 (PRD_module, fp, 0)) == NULL) {
-#else
-    if ((pt = match2 (PRD_module, 0)) == NULL) {
-#endif
     
     if (errno == 0) {
       errno = ERR_SYNTAX_ERROR;
@@ -143,7 +172,6 @@ int process(const char *filename, int pass) {
   
 fail:
 
-#ifdef OLD
   if (result) {
     error();
     char buffer[256];
@@ -156,15 +184,9 @@ fail:
     buffer[n] = '\0';
     printf(">%s<\n", buffer);
   }
-#endif
-  
-#ifdef OLD
   if ( fp != NULL ) {
     fclose(fp) ;
   }
-#else
-  closeStreams();
-#endif
   
   /*
    * Finished.

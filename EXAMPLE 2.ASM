@@ -9,10 +9,9 @@ IF 1
 @start:
 fred:
 
-INCLUDE '/Users/paul/Documents/Projects/LEGACY/asm286/INCLUDE.txt'
 barry TEXTEQU '''FRED', 'GEO''RGE',
  'HARRY', % 1 + 2, ''''
-
+ECHO freddy is text
 lab1:
 lab2::
 IF DEFINED fred
