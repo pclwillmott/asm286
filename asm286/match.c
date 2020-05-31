@@ -76,252 +76,6 @@ unsigned int pid( const char *str )
   
 }
 
-ptree_node_t * match
-(
- int production_id,
- tlist_node_t **toklst,
- int start_arg
-)
-{
-
-  extern char * prdlst[] ;
-  
-  unsigned int prd_base = 0 ;
-  int prd_index = 0 ;
-  unsigned long num_args = 0L ;
-  int arg_index ;
-  int islist ;
-  
-  ptree_node_t *ptree, *safe_ptree ;
-  
-  tlist_node_t *safe_tp, *tp ;
-  
-  int arg ;
-  
-  unsigned int j ;
-  
-/*
- *-----------------------------------------------------------------------------
- */
-
-/*
- * Find production code in production list.
- */
-  
-  while ( ( ( j = pid ( prdlst [ prd_base ] ) ) != PRD_LAST ) && ( j != production_id ) ) {
-    prd_base++ ;
-  }
-  
-/*
- * Throw error if production not found. This should never occur
- * outside of development.
- */
-  
-  if ( j == PRD_LAST ) {
-    errno = ERR_PRODUCTION_NOT_FOUND ;
-    return NULL ;
-  }
-  
-/*
- * If the first production variant is a recursive list and
- * a search from the first arg is requested then skip to the next one.
- * Note: recursive lists are always listed first in the
- * production list.
- */
-  
-  islist = ( production_id == pid ( &prdlst [ prd_base ][ 3 ] ) ) ;
-  
-  if ( ( start_arg == 0 ) && ( islist ) ) {
-    prd_index++ ;
-  }
-  
-/*
- * Create production tree node.
- */
-  
-  if ( ( ptree = ( ptree_node_t * ) malloc ( sizeof ( ptree_node_t ) ) ) == NULL ) {
-    errno = ERR_OUT_OF_MEMORY ;
-    return NULL ;
-  }
-  
-  ptree->production_id = production_id ;
-  ptree->value_type = production_id ;
-  memset ( &ptree->value, 0, sizeof ( value_t ) ) ;
-  
-/*
- * Try each production variant, return if found.
- */
-  
-  while ( pid ( prdlst [ prd_base + prd_index ] ) == production_id ) {
-    
-/*
- * Store production variant for "execute".
- */
-    
-    ptree->variant = prd_index ;
-    ptree->num_args = 0 ;
-    ptree->exec_type = to_byte ( prdlst [ prd_base + prd_index ][ 2 ] ) ;
-    
-/*
- * Find number of arguments (tokens/productions) to match.
- */
-    
-    num_args = ( strlen ( prdlst [ prd_base + prd_index ] ) - 3 ) >> 1 ;
-    
-/*
- * Create argument pointers.
- */
-    
-    if ( ( ptree->args = ( ptree_node_t ** ) malloc ( sizeof ( ptree_node_t * ) * num_args ) ) == NULL ) {
-      errno = ERR_OUT_OF_MEMORY ;
-      free ( ptree ) ;
-      return NULL ;
-    }
-    
-/*
- * Try and find each symbol in turn.
- */
-    
-    tp = (*toklst) ;
-    
-    ptree->num_args = ( prd_index == 0 ) ? start_arg : 0 ;
-    arg_index = ptree->num_args ;
-    
-    while ( ( tp != NULL ) && ( arg_index < num_args ) ) {
-      
-      /*
-       * Get target argument.
-       */
-      
-      arg = pid ( &prdlst [ prd_base + prd_index ][ arg_index * 2 + 3 ] ) ;
-      
-      /*
-       * Handle terminals.
-       */
-      
-      if ( arg < PRODUCTION_OFFSET ) {
-        
-        if ( arg == tp->token_id ) {
-          
-          if ( ( ptree->args[ arg_index ] = ( ptree_node_t * ) malloc ( sizeof ( ptree_node_t ) ) ) == NULL ) {
-            errno = ERR_OUT_OF_MEMORY ;
-            delete_ptree ( ptree, 1, 1, start_arg ) ;
-            return NULL ;
-          }
-          
-          ptree->args[ arg_index ]->production_id = arg ;
-          ptree->args[ arg_index ]->value_type = tp->value_type ;
-          ptree->args[ arg_index ]->num_args = 0 ;
-          
-          ptree->num_args++ ;
-          
-          if ( ptree->args[ arg_index ]->value_type == TOK_STRING ) {
-            
-            if ( ( ptree->args[ arg_index ]->value.s = ( char * ) malloc ( strlen ( tp->value.s ) + 1 ) ) == NULL ) {
-              errno = ERR_OUT_OF_MEMORY ;
-              delete_ptree ( ptree, 1, 1, start_arg ) ;
-              return NULL ;
-            }
-            
-            strcpy ( ptree->args[ arg_index ]->value.s, tp->value.s ) ;
-            
-          }
-          else {
-            CPYVALUE( ptree->args[ arg_index ]->value, tp->value ) ;
-          }
-          
-          tp = tp->next ;
-          
-        }
-        else {
-          break ;
-        }
-        
-      }
-      
-/*
- * Handle productions.
- */
-      
-      else {
-        
-        if ( ( ptree->args[ arg_index ] = match ( arg, &tp, 0 ) ) != NULL ) {
-          ptree->num_args++ ;
-        }
-        else {
-          break ;
-        }
-      }
-      
-      arg_index++ ;
-      
-    }
-    
-/*
- * All arguments found, so return.
- */
-    
-    if ( arg_index == num_args ) {
-      
-/*
- * Check for first element in recursive list.
- */
-      
-      safe_tp = tp ;
-      
-      if ( ( islist ) && ( prd_index != 0 ) ) {
-        
-        while ( ( tp != NULL ) && ( ( safe_ptree = match ( production_id, &tp, 1 ) ) != NULL ) ) {
-          
-          safe_ptree->args[ 0 ] = ptree ;
-          
-          ptree = safe_ptree ;
-          
-          (*toklst) = tp ;
-          
-          safe_tp = tp ;
-          
-        }
-        
-      }
-      
-      (*toklst) = safe_tp ;
-      
-      return ptree ;
-      
-    }
-    
-/*
- * Tidy-Up.
- */
-    
-    delete_ptree ( ptree, 0, 1, ( prd_index == 0 ) ? start_arg : 0 ) ;
-    
-    if ( start_arg ) {
-      
-      free ( ptree ) ;
-      
-      return NULL ;
-    }
-    
-    prd_index++ ;
-    
-  }
-  
-/*
- * Tidy-Up.
- */
-  
-  free ( ptree ) ;
-  
-  return NULL ;
-  
-/*
- * Finished
- */
-  
-}
-
 void delete_ptree
 (
  ptree_node_t *ptree,
@@ -395,12 +149,21 @@ int build_index() {
   
 }
 
+#ifdef OLD
 ptree_node_t * match2
 (
  int production_id,
  FILE *fp,
  int start_arg
 )
+#else
+ptree_node_t * match2
+(
+ int production_id,
+ int start_arg
+ )
+#endif
+
 {
   
   extern char * prdlst[] ;
@@ -417,52 +180,33 @@ ptree_node_t * match2
     build_index();
   }
   
-  long int safe_tp, tp ;
-  
   int arg ;
   
   unsigned int j ;
+
+  extern long int maxPos;
   
+#ifdef OLD
+  long int safe_tp, tp ;
   long int toklst = ftell(fp);
   fseek(fp, 0L, SEEK_END);
   long int end_of_file = ftell(fp);
-  
-  extern long int maxPos;
+#else
+  stream_context_t toklst, safe_tp, tp;
+  if (saveStreamContext(&toklst)) {
+    return NULL;
+  }
+#endif
   
   /*
    *-----------------------------------------------------------------------------
    */
-#ifdef DEBUG2
-  for (int i=0; i<indent; i++) {
-    printf(" ");
-  }
-  indent++;
-  switch (production_id) {
-    default:
-      printf("Searching for: %o %o\n", production_id / 127 + 1, production_id % 127 + 1);
-      break;
-  }
-#endif
+
   /*
    * Find production code in production list.
    */
   
-//  while ( ( ( j = pid ( prdlst [ prd_base ] ) ) != PRD_LAST ) && ( j != production_id ) ) {
-//    prd_base++ ;
-//  }
-  
   prd_base = prdIndex[production_id-PRODUCTION_OFFSET];
-  
-  /*
-   * Throw error if production not found. This should never occur
-   * outside of development.
-   */
-  
-//  if ( j == PRD_LAST ) {
-//    errno = ERR_PRODUCTION_NOT_FOUND ;
-//    printProdName(production_id);
-//    return NULL ;
-//  }
   
   /*
    * If the first production variant is a recursive list and
@@ -524,14 +268,24 @@ ptree_node_t * match2
      * Try and find each symbol in turn.
      */
     
+#ifdef OLD
     tp = toklst ;
     fseek(fp, tp, SEEK_SET);
+#else
+    copyStreamContext(&tp, &toklst);
+    if (restoreStreamContext(&tp)) {
+      return NULL;
+    }
+#endif
     
     ptree->num_args = ( prd_index == 0 ) ? start_arg : 0 ;
     arg_index = ptree->num_args ;
-    
+
+#ifdef OLD
     while ( ( !feof(fp) ) && ( arg_index < num_args ) ) {
-      
+#else
+    while (!endOfInput() && (arg_index < num_args)) {
+#endif
       /*
        * Get target argument.
        */
@@ -543,15 +297,22 @@ ptree_node_t * match2
        */
       
       if ( arg < PRODUCTION_OFFSET ) {
-        
+
+#ifdef OLD
         if ( (ptree->args[ arg_index ] = find_token(arg, fp)) != NULL ) {
+#else
+        if ( (ptree->args[ arg_index ] = find_token(arg)) != NULL ) {
+#endif
+          
           ptree->num_args++ ;
         }
         else {
+#ifdef OLD
           long int x = ftell(fp);
           if (x>maxPos) {
             maxPos = x;
           }
+#endif
           break ;
         }
         
@@ -562,8 +323,12 @@ ptree_node_t * match2
        */
       
       else {
-        
+
+#ifdef OLD
         if ( ( ptree->args[ arg_index ] = match2 ( arg, fp, 0 ) ) != NULL ) {
+#else
+        if ( ( ptree->args[ arg_index ] = match2 ( arg, 0 ) ) != NULL ) {
+#endif
           ptree->num_args++ ;
         }
         else {
@@ -584,30 +349,63 @@ ptree_node_t * match2
       /*
        * Check for first element in recursive list.
        */
-      
+ 
+#ifdef OLD
       safe_tp = ftell(fp) ;
+#else
+      if (saveStreamContext(&safe_tp)) {
+        return NULL;
+      }
+#endif
       
       if ( ( islist ) && ( prd_index != 0 ) ) {
-        
+
+#ifdef OLD
         while ( ( safe_tp < end_of_file ) && ( ( safe_ptree = match2 ( production_id, fp, 1 ) ) != NULL ) ) {
-          
+#else
+        while ( !endOfInput() && ( ( safe_ptree = match2 ( production_id, 1 ) ) != NULL ) ) {
+#endif
           safe_ptree->args[ 0 ] = ptree ;
           
           ptree = safe_ptree ;
-          
+
+#ifdef OLD
           toklst = ftell(fp) ;
-          
           safe_tp = toklst;
+#else
+          if (saveStreamContext(&toklst)) {
+            return NULL;
+          }
+          copyStreamContext(&safe_tp, &toklst);
+#endif
           
         }
         
       }
-      
+#ifdef OLD
       toklst = safe_tp ;
       fseek(fp, toklst, SEEK_SET);
+#else
+      copyStreamContext(&toklst, &safe_tp);
+      if (restoreStreamContext(&toklst)) {
+        return NULL;
+      }
+#endif
+        
       indent--;
-      return ptree ;
-      // AT THIS POINT HANDLE INCLUDE FILES
+        
+        // AT THIS POINT HANDLE INCLUDE FILES
+#ifndef OLD
+        if (ptree->production_id == PRD_includeDir) {
+          if (openStream(ptree->args[1]->args[0]->value.s)) {
+            return NULL;
+          }
+        }
+#endif
+        
+        
+
+        return ptree ;
     }
     
     /*
@@ -620,8 +418,14 @@ ptree_node_t * match2
       
       free ( ptree ) ;
       indent--;
+      
+#ifdef OLD
       fseek(fp, toklst, SEEK_SET);
+#else
+      restoreStreamContext(&toklst);
+#endif
       return NULL ;
+      
     }
     
     prd_index++ ;
@@ -635,8 +439,13 @@ ptree_node_t * match2
   free ( ptree ) ;
   
   indent--;
-  
+
+#ifdef OLD
   fseek(fp, toklst, SEEK_SET);
+#else
+        restoreStreamContext(&toklst);
+#endif
+        
   return NULL ;
   
   /*

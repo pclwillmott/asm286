@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DA32C3002483C5950097F9DC /* stream.c in Sources */ = {isa = PBXBuildFile; fileRef = DA32C2FF2483C5950097F9DC /* stream.c */; };
 		DA67D7D724798EBE006A7F74 /* global.c in Sources */ = {isa = PBXBuildFile; fileRef = DA67D7D624798EBE006A7F74 /* global.c */; };
 		DA72D9C5237726BE0009CA4A /* token.c in Sources */ = {isa = PBXBuildFile; fileRef = DA72D9C4237726BE0009CA4A /* token.c */; };
 		DA72D9C723782DCD0009CA4A /* action.c in Sources */ = {isa = PBXBuildFile; fileRef = DA72D9C623782DCD0009CA4A /* action.c */; };
@@ -32,6 +33,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DA32C2FF2483C5950097F9DC /* stream.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = stream.c; sourceTree = "<group>"; };
 		DA67D7D624798EBE006A7F74 /* global.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = global.c; sourceTree = "<group>"; };
 		DA72D9C3237726400009CA4A /* asm286.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = asm286.h; sourceTree = "<group>"; };
 		DA72D9C4237726BE0009CA4A /* token.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = token.c; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 				DA9F56E4243A3B03003164DB /* symbol_table.c */,
 				DA8B7D4F2440D28A009B3F64 /* segment.c */,
 				DA67D7D624798EBE006A7F74 /* global.c */,
+				DA32C2FF2483C5950097F9DC /* stream.c */,
 			);
 			path = asm286;
 			sourceTree = "<group>";
@@ -165,6 +168,7 @@
 				DA9F56E5243A3B03003164DB /* symbol_table.c in Sources */,
 				DA67D7D724798EBE006A7F74 /* global.c in Sources */,
 				DA72D9C923788BFF0009CA4A /* assemble.c in Sources */,
+				DA32C3002483C5950097F9DC /* stream.c in Sources */,
 				DA72D9CB2381833B0009CA4A /* error.c in Sources */,
 				DA72D9CF238192840009CA4A /* execute.c in Sources */,
 			);

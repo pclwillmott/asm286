@@ -30,7 +30,7 @@
 #ifndef asm286_h
 #define asm286_h
 
-//#define DEBUG2 1
+#define OLD 1
 
 #define MAX_SYMBOLS 128
 
@@ -60,7 +60,7 @@
  * Token string constants.
  */
 
-#define NUM_PATTERN ( 394 )  /* Number of token patterns */
+#define NUM_PATTERN ( 395 )  /* Number of token patterns */
 
 #define STK_UNDERSCORE  "\001\001"
 #define STK_MINUS       "\001\002"
@@ -114,17 +114,17 @@
  * END OF AUTONUBER SECTION
  */
 
-#define STK_INTEGERBIN  "\004\003"
-#define STK_INTEGEROCT  "\004\004"
-#define STK_INTEGERDEC  "\004\005"
-#define STK_INTEGERHEX  "\004\006"
-#define STK_DOUBLE      "\004\007"
-#define STK_STRING      "\004\010"
-#define STK_IDENTIFIER  "\004\011"
-#define STK_INST_LABEL  "\004\012"
-#define STK_NEWLINE     "\004\013"
-#define STK_WHITESPACE  "\004\014"
-#define STK_TEXT        "\004\015"
+#define STK_INTEGERBIN  "\004\004"
+#define STK_INTEGEROCT  "\004\005"
+#define STK_INTEGERDEC  "\004\006"
+#define STK_INTEGERHEX  "\004\007"
+#define STK_DOUBLE      "\004\010"
+#define STK_STRING      "\004\011"
+#define STK_IDENTIFIER  "\004\012"
+#define STK_INST_LABEL  "\004\013"
+#define STK_NEWLINE     "\004\014"
+#define STK_WHITESPACE  "\004\015"
+#define STK_TEXT        "\004\016"
 
 /*
  * Production string constants.
@@ -180,17 +180,17 @@ enum {
   
 #include "TOK.h"
   
-  TOK_INTEGERBIN  = 383,
-  TOK_INTEGEROCT  = 384,
-  TOK_INTEGERDEC  = 385,
-  TOK_INTEGERHEX  = 386,
-  TOK_DOUBLE      = 387,
-  TOK_STRING      = 388,
-  TOK_IDENTIFIER  = 389,
-  TOK_INST_LABEL  = 390,
-  TOK_NEWLINE     = 391,
-  TOK_WHITESPACE  = 392,
-  TOK_TEXT        = 393,
+  TOK_INTEGERBIN  = 384,
+  TOK_INTEGEROCT  = 385,
+  TOK_INTEGERDEC  = 386,
+  TOK_INTEGERHEX  = 387,
+  TOK_DOUBLE      = 388,
+  TOK_STRING      = 389,
+  TOK_IDENTIFIER  = 390,
+  TOK_INST_LABEL  = 391,
+  TOK_NEWLINE     = 392,
+  TOK_WHITESPACE  = 393,
+  TOK_TEXT        = 394,
   
 /*
  * Productions
@@ -226,11 +226,8 @@ enum {
  */
 
 int assemble(const char *, int, int );
-tlist_node_t * tokenize(const char *, int);
-void delete_tlist( tlist_node_t ** );
 void dump_pattern( void );
 void error(void);
-ptree_node_t * match( int, tlist_node_t **, int );
 void delete_ptree( ptree_node_t *, int, int, int );
 int execute ( ptree_node_t *, int, int );
 unsigned int pid( const char * );
@@ -262,9 +259,17 @@ unsigned char rm_disp_mod(ptree_node_t *, int *, int *);
 int dep_opcodes(unsigned char [], int, int, int);
 int is_word(int);
 int process(const char *, int);
+
+#ifdef OLD
 ptree_node_t * match2(int, FILE *, int);
 ptree_node_t *find_token(int, FILE *);
 int match_pattern2(FILE *, const char *, char **, unsigned long *);
+#else
+ptree_node_t *match2(int, int);
+ptree_node_t *find_token(int);
+int match_pattern2(const char *, char **, long *);
+#endif
+
 void printProdName(int);
 int checkInstruction(int);
 char *get_segment_name(int);
@@ -285,6 +290,15 @@ int close_all_segments(void);
 enum MemoryModel get_model(void);
 int add_to_segid_list(const char *);
 int set_segment_group_from_list(const char *);
+
+int openStream(const char *);
+int closeStreams(void);
+int saveStreamContext(stream_context_t *);
+int restoreStreamContext(stream_context_t *);
+int readStream(int *);
+int endOfInput(void);
+void copyStreamContext(stream_context_t *, stream_context_t *);
+int seekStream(stream_context_t *, long);
 
 // COMMON DATA
 

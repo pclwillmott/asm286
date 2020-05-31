@@ -23,6 +23,8 @@
 #ifndef asm286_t_h
 #define asm286_t_h
 
+#include <stdio.h>
+
 /*
  * Error codes.
  */
@@ -49,9 +51,14 @@ enum {
   ERR_SYMBOL_REDEFINED         = 19,
   ERR_NOT_DATA_SYMBOL          = 20,
   ERR_INVALID_DIRECTIVE        = 21,
+  ERR_TOO_MANY_INCLUDE_FILES   = 22,
+  ERR_FILE_OPEN_ERROR          = 23,
+  ERR_FILE_READ_ERROR          = 24,
+  ERR_FILE_CLOSE_ERROR         = 25,
+  ERR_FILE_POSITION_ERROR      = 26,
 } ;
 
-#define NUM_ERR ( 21 )
+#define NUM_ERR ( 26 )
 
 /*
  * Symbol Table stuff.
@@ -148,17 +155,23 @@ struct ptree_node_t {
 } ;
 
 /*
- * Token List Node
+ * Stream
  */
 
-typedef struct tlist_node_t tlist_node_t ;
+#define MAX_INCLUDE_FILES 16
 
-struct tlist_node_t {
-  unsigned int token_id ;
-  char *token ;
-  unsigned int value_type ;
-  value_t value ;
-  tlist_node_t *next ;
+typedef struct stream_node_t stream_node_t ;
+
+struct stream_node_t {
+  FILE *fp;
+  long int size;
+} ;
+
+typedef struct stream_context_t stream_context_t ;
+
+struct stream_context_t {
+  int node_id;
+  long int position;
 } ;
 
 typedef struct segment_table_t segment_table_t;

@@ -240,6 +240,7 @@ const char *pattern[ NUM_PATTERN ] = {
   KEYWORD          "IMUL",
   KEYWORD          "IN",
   KEYWORD          "INC",
+  RESERVED         "INCLUDE",
   KEYWORD          "INS",
   KEYWORD          "INSB",
   KEYWORD          "INSW",
@@ -488,6 +489,7 @@ char * prod_list[] = {
   "externDir",
   "externList",
   "externType",
+  "fileSpec",
   "fpInstruction",
   "fpMnemonicOne",
   "fpMnemonicTwo",
@@ -501,6 +503,7 @@ char * prod_list[] = {
   "ifDir",
   "ifStatement",
   "immExpr",
+  "includeDir",
   "initValue",
   "inSegDir",
   "inSegDirList",
@@ -587,8 +590,6 @@ void dump_productions()
 void dump_pattern() 
 {
   dump_productions();
-//    printf("%i\n", 0177 * 127 + 0177 -1) ;
-
   
   unsigned int idx, line ;
 
@@ -597,7 +598,6 @@ void dump_pattern()
     unsigned int A = idx / 127 + 1 ;
     printf("#define STK_%-11s \"\\%03o\\%03o\"\n", pattern[idx]+1, A, B ) ;
   }
-
  
   for ( idx = 0; idx < NUM_PATTERN ; idx++ ) {
     printf("  TOK_%-11s = %3i,\n", pattern[idx]+1, idx ) ;
@@ -685,459 +685,31 @@ void dump_pattern()
 
 }
 
-int match_pattern
-(
-  const char *statement,
-  const char *pattern,
-  char **match,
-  unsigned long *matchlen
-)
-{
-  
-  int result = -1 ;
-  
-  const char *sptr = statement ;
-  
-  char cv[128] ;
-  
-  char *expression = NULL, *ptr ;
-  
-/*
- *------------------------------------------------------------------------------
- */
-
-/*
- * Keep going until all of the pattern has been matched.
- */
-  
-  int skip_next = 0 ;
-  
-  while ( *pattern ) {
-    
-    unsigned long seglen = 0 ;
-    
-    char start = *pattern, stop = '\0' ;
-    
-    const char *save = sptr ;
-    
-    switch ( *pattern ) {
-      case '(':
-        stop = ')' ;
-        break ;
-      case '[':
-        stop = ']' ;
-        break ;
-      case '{':
-        stop = '}' ;
-        break ;
-      default:
-        seglen = 1 ;
-        break ;
-    }
-    
-    if ( ! seglen ) {
-      
-      int count = 1 ;
-      
-      const char *temp = pattern + 1 ;
-      
-      while ( *temp && count ) {
-        if ( *temp == start ) {
-          count++ ;
-        }
-        else if ( *temp == stop ) {
-          count-- ;
-        }
-        temp++ ;
-      }
-
-      seglen = temp - pattern ;
-      
-      if ( start == '(' || start == '{' ) {
-        if (expression != NULL ) {
-          free(expression) ;
-        }
-        if ( ( expression = (char *) malloc( seglen + 1 - 2 ) ) == NULL ) {
-          errno = ERR_OUT_OF_MEMORY ;
-          goto fail;
-        }
-        strncpy( expression, pattern + 1 , seglen - 2 ) ;
-        expression[seglen - 2] = '\0' ;
-      }
-      else if ( start == '[' ) {
-        
-        temp = pattern + 1 ;
-        
-        char lc = *temp ;
-        
-        ptr = cv ;
-        
-        if ( lc == '^' ) {
-          
-          unsigned int cc ;
-          
-          for ( cc = 1; cc < 128; cc++ ) {
-            temp = pattern + 1 ;
-            while ( ( lc = *temp++ ) != stop ) {
-              if ( lc == cc ) {
-                break ;
-              }
-            }
-            if ( lc == stop ) {
-              *ptr++ = (char) cc ;
-            }
-          }
-          
-        }
-        else {
-        
-          while ( ( lc = *temp ) != stop ) {
-            
-            if ( *(temp+1) == '-' ) {
-              char cc ;
-              for ( cc = lc; cc <= *(temp+2); cc++ ) {
-                *ptr++ = cc ;
-              }
-              temp += 3 ;
-            }
-            else {
-              *ptr++ = lc ;
-              temp++ ;
-            }
-            
-          }
-          
-        }
-        
-        *ptr = '\0' ;
-        
-      }
-      
-    }
-    
-    char operator = *(pattern+seglen) ;
-    
-    switch ( operator ) {
-      case '?':
-      case '*':
-      case '+':
-        seglen++ ;
-        break;
-    }
-    
-    pattern += seglen ;
-    
-    if ( skip_next ) {
-      skip_next = 0 ;
-      continue;
-    }
-    
-    int found_count = 0 ;
-    
-    int more_to_find ;
-    
-    int is_success ;
-    
-    do {
-      
-      int is_match ;
-      
-      char ct = toupper(*sptr) ;
-      
-      switch ( start ) {
-        case '(':
-          {
-            const char *match ;
-            unsigned long matchlen ;
-            if ( ( is_match = ! match_pattern( sptr, expression, &match, &matchlen ) ) ) {
-              sptr += matchlen;
-            }
-          }
-          break ;
-        case '[':
-          ptr = cv ;
-          while ( *ptr && ct != *ptr ) {
-            ptr++ ;
-          }
-          if ( ( is_match = *ptr ) ) {
-            sptr++;
-          }
-          break ;
-        case '{':
-          ptr = expression ;
-          while ( *sptr && *ptr && *sptr == *ptr ) {
-            sptr++ ;
-            ptr++ ;
-          }
-          is_match = ! *ptr ;
-          break ;
-        default:
-          if ( ( is_match = ( ct == start ) ) ) {
-            sptr++ ;
-          }
-          break ;
-      }
-      
-      if ( is_match ) {
-        found_count++ ;
-      }
- 
-      switch ( operator ) {
-        case '?':
-          is_success = 1 ;
-          more_to_find = 0 ;
-          break;
-        case '*':
-          is_success = 1 ;
-          more_to_find = is_match ;
-          break;
-        case '+':
-          is_success = ( found_count > 0 ) ;
-          more_to_find = is_match ;
-          break;
-        default:
-          is_success = is_match ;
-          more_to_find = 0 ;
-          break;
-      }
-      
-    } while ( more_to_find && *sptr ) ;
-
-/*
- * Handle Or.
- */
-    
-    if ( *pattern == '|' ) {
-      skip_next = is_success ;
-      if ( ! skip_next ) {
-        sptr = save ;
-      }
-      pattern++;
-    }
-    
-/*
- * Bomb if no match.
- */
-
-    else if ( ! is_success ) {
-      goto fail ;
-    }
-
-  }
-
-  *matchlen = sptr - statement ;
-  
-  *match = statement ;
-  
-/*
- * Tidy-Up.
- */
-  
-  result = 0 ;
-  
-fail:
-  
-  if (expression != NULL ) {
-    free(expression) ;
-  }
-  
-/*
- * Finished.
- */
-  
-  return result ;
-  
-}
-
-void delete_tlist( tlist_node_t **tlist )
-{
-  
-  tlist_node_t *ptr = *tlist ;
-  
-/*
- *------------------------------------------------------------------------------
- */
-
-  while ( ptr != NULL ) {
-    tlist_node_t *temp = ptr ;
-    if ( temp->token != NULL ) {
-      free(temp->token) ;
-    }
-    free( temp ) ;
-    ptr = ptr->next ;
-  }
-  
-  *tlist = NULL ;
-  
-/*
- * Finished.
- */
-
-}
-
-tlist_node_t * tokenize( const char *statement, int lineno )
-{
-  
-  int idx, result = -1 ;
-  
-  const char *sptr = statement, *best = NULL ;
-  
-  unsigned long bestlen = 0 ;
-  
-  int bestidx = -1 ;
-  
-  tlist_node_t *tlist = NULL, *last = NULL ;
-  
-/*
- *------------------------------------------------------------------------------
- */
-  
-/*
- * Keep going until all of statement has been tokenized.
- */
-  
-  while ( *sptr ) {
-    
-/*
- * Skip whitespace.
- */
-    
-    while ( *sptr && isspace( *sptr ) ) {
-      sptr++ ;
-    }
-    
-    if ( ! *sptr ) {
-      break;
-    }
-
-/*
- * Check each pattern and find the longest match.
- */
-    
-    bestlen = 0 ;
-    
-    for ( idx = 0; idx < NUM_PATTERN; idx++ ) {
-      
-      const char *match = NULL ;
-      
-      unsigned long matchlen = 0 ;
-      
-      if ( ! match_pattern( sptr, pattern[idx]+1, &match, &matchlen ) ) {
-        if ( matchlen > bestlen ) {
-          bestlen = matchlen ;
-          bestidx = idx ;
-          best = match ;
-        }
-      }
-      
-    }
-
-/*
- * Fail if none found.
- */
-    
-    if ( ! bestlen ) {
-      errno = ERR_SYNTAX_ERROR ;
-      goto fail ;
-    }
-    
-    tlist_node_t *node ;
-    
-    if ( ( node = (tlist_node_t *) malloc( sizeof(tlist_node_t) ) ) == NULL ) {
-      errno = ERR_OUT_OF_MEMORY ;
-      goto fail ;
-    }
-    
-    node->token_id = bestidx ;
-    
-    if ( ( node->token = (char *) malloc( bestlen + 1 ) ) == NULL ) {
-      errno = ERR_OUT_OF_MEMORY ;
-      goto fail ;
-    }
-    
-    strncpy(node->token, best, bestlen) ;
-    node->token[bestlen] = '\0' ;
-    
-    switch (node->token_id) {
-      case TOK_INTEGERBIN:
-        node->value_type = TOK_INTEGERDEC;
-        node->value.i = (int) strtol(node->token, NULL, 2) ;
-        break;
-      case TOK_INTEGERDEC:
-        node->value_type = TOK_INTEGERDEC;
-        node->value.i = (int) strtol(node->token, NULL, 10) ;
-        break;
-      case TOK_INTEGERHEX:
-        node->value_type = TOK_INTEGERDEC;
-        node->value.i = (int) strtol(node->token, NULL, 16) ;
-        break;
-      case TOK_INTEGEROCT:
-        node->value_type = TOK_INTEGERDEC;
-        node->value.i = (int) strtol(node->token, NULL, 8) ;
-        break;
-      case TOK_IDENTIFIER:
-        node->value_type = TOK_STRING;
-        setstr(&node->value.s, node->token);
-        break;
-      case TOK_INST_LABEL:
-        node->value_type = TOK_STRING;
-  //      node->token[strlen(node->token)-1] = '\0';
-        setstr(&node->value.s, node->token);
-        break;
-      case TOK_DOUBLE:
-        node->value_type = TOK_DOUBLE;
-        break;
-      case TOK_STRING:
-        node->value_type = TOK_STRING;
-        setstr(&node->value.s, node->token);
-        break;
-    }
-    
-    node->next = NULL ;
-    
-    if ( last == NULL ) {
-      tlist = node ;
-    }
-    else {
-      last->next = node ;
-    }
-    last = node ;
-    
-/*
- * Move onto the next part of the statement.
- */
-    
-    sptr += bestlen ;
-    
-  }
-  
-/*
- * Tidy-Up.
- */
-  
-  result = 0 ;
-  
-fail:
-  
-  if ( result ) {
-    delete_tlist( &tlist ) ;
-  }
-  
-  /*
-   * Finished.
-   */
-  
-  return tlist ;
-
-}
-
+#ifdef OLD
 ptree_node_t *find_token(int id, FILE *fp)
+#else
+ptree_node_t *find_token(int id)
+#endif
+
 {
   
   char *match;
+#ifdef OLD
   unsigned long matchlen;
+#else
+  long matchlen;
+#endif
+  
   ptree_node_t *ptree = NULL;
+  
+#ifdef OLD
   long pos = ftell(fp);
+#else
+  stream_context_t pos;
+  if (saveStreamContext(&pos)) {
+    return NULL;
+  }
+#endif
   
   char *pat;
   
@@ -1149,7 +721,11 @@ ptree_node_t *find_token(int id, FILE *fp)
   strcpy(pat, pattern[TOK_WHITESPACE]+1);
   strcat(pat, pattern[id]+1);
 
+#ifdef OLD
   if ( ! match_pattern2( fp, pat, &match, &matchlen ) ) {
+#else
+    if ( ! match_pattern2( pat, &match, &matchlen ) ) {
+#endif
     
     if ((ptree = (ptree_node_t *) malloc(sizeof(ptree_node_t))) == NULL) {
       errno = ERR_OUT_OF_MEMORY;
@@ -1222,39 +798,28 @@ ptree_node_t *find_token(int id, FILE *fp)
       
     }
 
-#ifdef DEBUG2
-    printf("found -> %s\n", match);
-#endif
-
-    //    printf("%i %s |%s|\n", id, pattern[id]+1, match);
     if (ptree->value_type != TOK_STRING) {
       free(match);
     }
-    
+
+#ifdef OLD
     fseek(fp, pos + matchlen, SEEK_SET);
-    
-#ifdef DEBUG2
-    printf("success: %lu\n",ftell(fp));
+#else
+    if (seekStream(&pos, matchlen)) {
+      return NULL;
+    }
 #endif
-    
+      
   }
   else {
- //   fseek(fp, pos, SEEK_SET);
-#ifdef DEBUG2
-    printf("failure: %lu\n",pos);
-#endif
   }
-#ifdef DEBUG2
-  if (ptree == NULL) {
-    printf("not found %s\n", pattern[id]+1);
-  }
-#endif
   
   free(pat);
   
   return ptree;
 }
 
+#ifdef OLD
 int match_pattern2
 (
  FILE *fp,
@@ -1262,12 +827,28 @@ int match_pattern2
  char **match,
  unsigned long *matchlen
 )
+#else
+int match_pattern2
+(
+  const char *pattern,
+  char **match,
+  long *matchlen
+)
+#endif
+  
 {
   
-  long int tp, end_of_file;
   int result = -1 ;
-  
+
+#ifdef OLD
+  long int tp, end_of_file;
   long int sptr = ftell(fp) ;
+#else
+  stream_context_t sptr;
+  if (saveStreamContext(&sptr)) {
+    goto fail;
+  }
+#endif
   
   char cv[128] ;
   
@@ -1278,11 +859,13 @@ int match_pattern2
     goto fail;
   }
   **match = '\0';
-  
+
+#ifdef OLD
   tp = ftell(fp);
   fseek(fp, 0L, SEEK_END);
   end_of_file = ftell(fp);
   fseek(fp, tp, SEEK_SET);
+#endif
   
   /*
    *------------------------------------------------------------------------------
@@ -1300,8 +883,16 @@ int match_pattern2
     
     char start = *pattern, stop = '\0' ;
     
+#ifdef OLD
     long int save = sptr ;
     fseek(fp, sptr, SEEK_SET);
+#else
+    stream_context_t save;
+    copyStreamContext(&save, &sptr);
+    if (restoreStreamContext(&sptr)) {
+      goto fail;
+    }
+#endif
     
     switch ( *pattern ) {
       case '(':
@@ -1425,25 +1016,50 @@ int match_pattern2
       
       int is_match ;
       
-      fseek(fp, sptr, SEEK_SET);
       int cti ;
+#ifdef OLD
+      fseek(fp, sptr, SEEK_SET);
       if ((cti = fgetc(fp)) == EOF) {
         sptr++;
         goto fail;
       }
+#else
+      if (restoreStreamContext(&sptr)) {
+        goto fail;
+      }
+      if (readStream(&cti) || cti == EOF) {
+        saveStreamContext(&sptr);
+        goto fail;
+      }
+#endif
       char ct = toupper((char)cti) ;
       
       switch ( start ) {
         case '(':
         {
           char *temp ;
+#ifdef OLD
           unsigned long matchlen ;
           fseek(fp,sptr, SEEK_SET);
           if ( ( is_match = ! match_pattern2( fp, expression, &temp, &matchlen ) ) ) {
             strcat(*match, temp);
             free(temp);
-            sptr = sptr + matchlen; //ftell(fp);
+            sptr = ftell(fp);//sptr + matchlen; //ftell(fp);
           }
+#else
+          long matchlen ;
+          if (restoreStreamContext(&sptr)) {
+            goto fail;
+          }
+          if ( ( is_match = ! match_pattern2( expression, &temp, &matchlen ) ) ) {
+            strcat(*match, temp);
+            free(temp);
+            if (saveStreamContext(&sptr)) {
+              goto fail;
+            }
+          }
+#endif
+          
         }
           break ;
         case '[':
@@ -1453,25 +1069,47 @@ int match_pattern2
           }
           if ( ( is_match = *ptr ) ) {
             strncat(*match, (const char *)&cti, 1);
+#ifdef OLD
             sptr++;
+#else
+            if (saveStreamContext(&sptr)) {
+              goto fail;
+            }
+#endif
           }
           break ;
         case '{':
           {
           int ci;
           ptr = expression ;
+#ifdef OLD
           while ( ((ci = fgetc(fp)) != EOF) && *ptr && (char)ci == *ptr ) {
             strncat(*match, (char *)&ci, 1);
             sptr++ ;
             ptr++ ;
           }
+#else
+          while ( !readStream(&ci) && (ci != EOF) && *ptr && (char)ci == *ptr ) {
+            strncat(*match, (char *)&ci, 1);
+            if (saveStreamContext(&sptr)) {
+              goto fail;
+            }
+            ptr++ ;
+          }
+#endif
           is_match = ! *ptr ;
           }
           break ;
         default:
           if ( ( is_match = ( ct == start ) ) ) {
             strncat(*match, (char *)&cti, 1);
+#ifdef OLD
             sptr++ ;
+#else
+            if (saveStreamContext(&sptr)) {
+              goto fail;
+            }
+#endif
           }
           break ;
       }
@@ -1498,8 +1136,12 @@ int match_pattern2
           more_to_find = 0 ;
           break;
       }
-      
+
+#ifdef OLD
     } while ( more_to_find && sptr < end_of_file ) ;
+#else
+  } while ( more_to_find && ! endOfInput()) ;
+#endif
     
     /*
      * Handle Or.
@@ -1508,7 +1150,11 @@ int match_pattern2
     if ( *pattern == '|' ) {
       skip_next = is_success ;
       if ( ! skip_next ) {
+#ifdef OLD
         sptr = save ;
+#else
+        copyStreamContext(&sptr, &save);
+#endif
      //   fseek(fp, sptr, SEEK_SET);
       }
       pattern++;

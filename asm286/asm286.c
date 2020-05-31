@@ -84,8 +84,10 @@ fail:
 long int maxPos = 0L;
 
 int process(const char *filename, int pass) {
-  
+
+#ifdef OLD
   FILE *fp = NULL ;
+#endif
   
   int result = -1;
 
@@ -94,16 +96,23 @@ int process(const char *filename, int pass) {
 /*
  *------------------------------------------------------------------------------
  */
-  
+
+#ifdef OLD
   if ( ( fp = fopen(filename, "r")) == NULL ) {
     goto fail;
   }
-/*
-  fseek(fp, 0L, SEEK_END);
-  long int end_of_file = ftell(fp);
-  fseek(fp, 0L, SEEK_SET);
-*/
-  if ( ( ( pt = match2 ( PRD_module, fp, 0 ) ) == NULL )/* || ( tp != NULL ) */ ) {
+#else
+  if (openStream(filename)) {
+    goto fail;
+  }
+#endif
+
+#ifdef OLD
+  if ((pt = match2 (PRD_module, fp, 0)) == NULL) {
+#else
+    if ((pt = match2 (PRD_module, 0)) == NULL) {
+#endif
+    
     if (errno == 0) {
       errno = ERR_SYNTAX_ERROR;
     }
@@ -133,7 +142,8 @@ int process(const char *filename, int pass) {
   result = 0 ;
   
 fail:
-  
+
+#ifdef OLD
   if (result) {
     error();
     char buffer[256];
@@ -146,10 +156,15 @@ fail:
     buffer[n] = '\0';
     printf(">%s<\n", buffer);
   }
+#endif
   
+#ifdef OLD
   if ( fp != NULL ) {
     fclose(fp) ;
   }
+#else
+  closeStreams();
+#endif
   
   /*
    * Finished.

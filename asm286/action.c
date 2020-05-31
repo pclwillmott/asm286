@@ -105,6 +105,7 @@ char *prdlst[] = {
 
   SPD_labelDef PT_EXECUTE STK_INST_LABEL,
   
+  SPD_inSegmentDir PT_IGNORE SPD_includeDir,
   SPD_inSegmentDir PT_IGNORE SPD_instruction,
   SPD_inSegmentDir PT_IGNORE SPD_fpInstruction,
   SPD_inSegmentDir PT_IGNORE SPD_dataDir,
@@ -217,6 +218,10 @@ char *prdlst[] = {
   SPD_stackOption PT_IGNORE STK_FARSTACK,
 
   SPD_nameDir PT_EXECUTE STK_NAME STK_IDENTIFIER STK_NEWLINE,
+  
+  SPD_includeDir PT_IGNORE STK_INCLUDE SPD_fileSpec STK_NEWLINE,
+  
+  SPD_fileSpec PT_IGNORE STK_STRING,
   
   SPD_groupDir PT_EXECUTE SPD_groupId STK_GROUP SPD_segIdList,
   

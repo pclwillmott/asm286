@@ -48,6 +48,11 @@ void error()
     "Symbol Redefined",
     "Not Data Symbol",
     "Invalid Directive",
+    "Too Many Nested Include Files",
+    "File Open Error",
+    "File Read Error",
+    "File Close Error",
+    "File Position Error",
   } ;
   
   char tmp_str[ 128 ] ;

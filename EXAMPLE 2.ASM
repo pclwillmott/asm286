@@ -8,6 +8,8 @@ IF 1
 .CODE
 @start:
 fred:
+
+INCLUDE '/Users/paul/Documents/Projects/LEGACY/asm286/INCLUDE.txt'
 barry TEXTEQU '''FRED', 'GEO''RGE',
  'HARRY', % 1 + 2, ''''
 
