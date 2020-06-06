@@ -2,7 +2,7 @@
 .CODE
 fred:
 
-#IF 1
+#IF 0
 
 #INCLUDE '/Users/paul/Documents/Projects/LEGACY/asm286/inc_example.ASM'
 
