@@ -214,6 +214,8 @@ void dump_symbol_table() {
     "LABEL",
     "VAR",
     "CONST",
+    "DATA",
+    "MACRO",
   };
   char *dt[] = {
     "UNASSIGNED",

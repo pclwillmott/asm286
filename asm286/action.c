@@ -221,7 +221,7 @@ char *prdlst[] = {
 
   SPD_nameDir PT_EXECUTE STK_NAME STK_IDENTIFIER STK_NEWLINE,
   
-  SPD_fileSpec PT_IGNORE STK_STRING,
+  SPD_fileSpec PT_DROP STK_STRING,
   
   SPD_groupDir PT_EXECUTE SPD_groupId STK_GROUP SPD_segIdList,
   
@@ -726,23 +726,18 @@ char *prdlst[] = {
 
   SPD_endifStatement PT_IGNORE STK_ENDIF STK_NEWLINE,
   
-  SPD_ppModule PT_IGNORE SPD_ppDirectiveList,
-  
-  SPD_ppDirectiveList PT_IGNORE SPD_ppDirectiveList SPD_ppDir,
-  SPD_ppDirectiveList PT_IGNORE SPD_ppDir,
+  SPD_ppModule PT_IGNORE SPD_tokenSequenceList,
   
   SPD_ppDir PT_IGNORE SPD_ppDefineDir,
   SPD_ppDir PT_IGNORE SPD_ppUndefDir,
   SPD_ppDir PT_IGNORE SPD_ppIncludeDir,
   SPD_ppDir PT_IGNORE SPD_ppifDir,
-  SPD_ppDir PT_IGNORE SPD_tokenSequence,
-  SPD_ppDir PT_IGNORE,
 
   SPD_ppDefineDir PT_IGNORE STK_HASHDEFINE STK_IDENTIFIER SPD_tokenSequence,
   
   SPD_ppUndefDir PT_IGNORE STK_HASHUNDEF STK_IDENTIFIER STK_NEWLINE,
   
-  SPD_ppIncludeDir PT_IGNORE STK_HASHINCLUDE SPD_fileSpec STK_NEWLINE,
+  SPD_ppIncludeDir PT_EXECUTE STK_HASHINCLUDE SPD_fileSpec STK_NEWLINE,
   
   SPD_ppifDir PT_IGNORE SPD_ppifBlock SPD_ppelseifList SPD_ppelseBlock SPD_ppendifStatement,
   
@@ -750,15 +745,15 @@ char *prdlst[] = {
   
   SPD_ppifStatement PT_IGNORE STK_HASHIF SPD_constExpr STK_NEWLINE,
   
-  SPD_ppelseifList PT_IGNORE SPD_ppelseifList SPD_elseifBlock,
-  SPD_ppelseifList PT_IGNORE SPD_elseifBlock,
+  SPD_ppelseifList PT_IGNORE SPD_ppelseifList SPD_ppelseifBlock,
+  SPD_ppelseifList PT_IGNORE SPD_ppelseifBlock,
   SPD_ppelseifList PT_IGNORE,
 
   SPD_ppelseifBlock PT_IGNORE SPD_ppelseifStatement SPD_tokenSequenceList,
   
   SPD_ppelseifStatement PT_IGNORE STK_HASHELSEIF SPD_constExpr STK_NEWLINE,
   
-  SPD_ppelseBlock PT_IGNORE SPD_ppelseStatement SPD_tokenSequenceList STK_NEWLINE,
+  SPD_ppelseBlock PT_IGNORE SPD_ppelseStatement SPD_tokenSequenceList,
   SPD_ppelseBlock PT_IGNORE,
 
   SPD_ppelseStatement PT_IGNORE STK_HASHELSE STK_NEWLINE,
@@ -769,7 +764,8 @@ char *prdlst[] = {
   SPD_tokenSequenceList PT_IGNORE SPD_tokenSequence,
   SPD_tokenSequenceList PT_IGNORE,
   
-  SPD_tokenSequence PT_DROP STK_TOKSEQUENCE STK_NEWLINE,
+  SPD_tokenSequence PT_EXECUTE STK_TOKSEQUENCE,
+  SPD_tokenSequence PT_IGNORE SPD_ppDir,
 
   SPD_LAST,
   

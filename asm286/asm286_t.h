@@ -69,6 +69,7 @@ enum SymbolType {
   ST_VARIABLE = 1,
   ST_CONSTANT = 2,
   ST_DATA     = 3,
+  ST_MACRO    = 4,
 };
 
 enum DataType {

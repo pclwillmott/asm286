@@ -548,7 +548,6 @@ char * prod_list[] = {
   "pageWidth",
   "ppDefineDir",
   "ppDir",
-  "ppDirectiveList",
   "ppelseBlock",
   "ppelseifBlock",
   "ppelseifList",
@@ -827,6 +826,7 @@ ptree_node_t *find_token(int id)
           break;
         }
         case TOK_TEXT:
+        case TOK_TOKSEQUENCE:
           ptree->value_type = TOK_STRING;
           ptree->value.s = match;
           break;

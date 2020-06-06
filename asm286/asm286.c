@@ -25,12 +25,18 @@
 #include <ctype.h>
 #include "asm286.h"
 
+char *fname[2];
+
+int ppModified = 0;
+
 int main(int argc, const char * argv[]) {
   
   extern long int maxPos;
   
-  char *fname[2];
+  extern char *fname[];
   
+  extern int ppModified;
+
 /*
  *------------------------------------------------------------------------------
  */
@@ -46,13 +52,28 @@ int main(int argc, const char * argv[]) {
   if (add_numbers(fname)) {
     goto fail;
   }
+
+  fname[0] = fname[1];
+  fname[1] = "/Users/paul/Documents/Projects/LEGACY/asm286/TEMP2.ASM";
+
+  do {
+    ppModified = 0;
+    if (processPP()) {
+      goto fail;
+    }
+    if (ppModified) {
+      char *temp = fname[0];
+      fname[0] = fname[1];
+      fname[1] = temp;
+    }
+  } while (ppModified);
   
   for (int pass = 0; pass < 2; pass++) {
     maxPos = 0;
     check_instructions = pass == 1;
     printf("Pass %i\n",pass+1);
     reset_for_pass(pass);
-    if ( process(fname[0], pass ) ) {
+    if ( process(fname[1], pass ) ) {
       goto fail;
     }
   }
@@ -78,6 +99,77 @@ fail:
  */
   
   return 0 ;
+  
+}
+
+FILE *ppFP2 = NULL ;
+
+int processPP() {
+  
+  extern char *fname[];
+  
+  int result = -1;
+  
+  FILE *ppFP1 = NULL;
+  
+  extern FILE *ppFP2 ;
+  
+
+  ptree_node_t *pt ;
+  
+  /*
+   *------------------------------------------------------------------------------
+   */
+  
+  if ( ( ppFP1 = fopen(fname[0], "r")) == NULL ) {
+    goto fail;
+  }
+  
+  if ( ( ppFP2 = fopen(fname[1], "w")) == NULL ) {
+    goto fail;
+  }
+  
+  if ((pt = match2 (PRD_ppModule, ppFP1, 0)) == NULL) {
+    
+    if (errno == 0) {
+      errno = ERR_SYNTAX_ERROR;
+    }
+    goto fail ;
+  }
+  
+  /*
+   * Execute command.
+   */
+  
+  else if ( ! execute ( pt, 0, 0 ) ) {
+    goto fail ;
+  }
+  
+  /*
+   * Tidy-Up
+   */
+  
+  if ( pt != NULL ) {
+    delete_ptree ( pt, 1, 1, 0 ) ;
+  }
+  
+  /*
+   * Tidy-Up.
+   */
+  
+  result = 0 ;
+  
+fail:
+  
+  if ( ppFP1 != NULL ) {
+    fclose(ppFP1) ;
+  }
+
+  if ( ppFP2 != NULL ) {
+    fclose(ppFP2) ;
+  }
+  
+  return result;
   
 }
 
@@ -117,6 +209,7 @@ fail:
   return 0 ;
   
 }
+
 /*
  * This routine assembles a single file.
  * It returns 0 on success and -1 on failure.

@@ -73,6 +73,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
   
   switch (ptree->production_id) {
     case PRD_ifStatement:
+    case PRD_ppifStatement:
       if (ifCount == MAX_IF_STACK) {
         errno = ERR_TOO_MANY_NESTED_IFS;
         return FAIL;
@@ -89,6 +90,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       ifStack[ifCount-1].satisfied = ifStack[ifCount-1].assemble || (! parent_assemble);
       break;
     case PRD_elseifStatement:
+    case PRD_ppelseifStatement:
       ifStack[ifCount-1].assemble = 1;
       if ( ! execute ( ptree->args[ 1 ], pass, lineno ) ) {
         return FAIL ;
@@ -97,10 +99,12 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       ifStack[ifCount-1].satisfied = ifStack[ifCount-1].satisfied || ifStack[ifCount-1].assemble;
       break;
     case PRD_elseStatement:
+    case PRD_ppelseStatement:
       ifStack[ifCount-1].assemble = (!ifStack[ifCount-1].satisfied) ;
       ifStack[ifCount-1].satisfied = 1;
       break;
     case PRD_endifStatement:
+    case PRD_ppendifStatement:
       ifCount--;
       break;
   }
@@ -168,10 +172,36 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
   int literal_word[2] ;
   int literal_count = 0;
   
+  extern FILE *ppFP2;
+  extern int ppModified;
+  
   int disp = 0;
 
   switch ( ptree->production_id ) {
      
+    case PRD_ppIncludeDir:
+    {
+      FILE *fp = NULL;
+      if ((fp = fopen(ptree->args[1]->value.s, "r")) == NULL) {
+        errno = ERR_FILE_OPEN_ERROR;
+        return FAIL;
+      }
+      char buffer[512], buffer2[512];
+      int lineno = 1;
+      while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+        sprintf(buffer2, "LINE %i '%s'\n", lineno++, ptree->args[1]->value.s);
+        fputs(buffer2, ppFP2);
+        fputs(buffer, ppFP2);
+      }
+      ppModified = -1;
+      fclose(fp);
+      break;
+    }
+    case PRD_tokenSequence:
+    {
+      fprintf(ppFP2, "%s", ptree->args[0]->value.s);
+      break;
+    }
     case PRD_nameDir:
     {
       if (module_name != NULL) {

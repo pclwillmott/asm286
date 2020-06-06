@@ -200,7 +200,7 @@ enum {
 
 #include "PRD.h"
 
-  PRD_LAST            = 16128,
+  PRD_LAST        = 16128,
 
   XT_IGNORE       = 0001,
   XT_DROP         = 0002,
@@ -301,6 +301,7 @@ int readStream(int *);
 int endOfInput(void);
 void copyStreamContext(stream_context_t *, stream_context_t *);
 int seekStream(stream_context_t *, long);
+int processPP(void);
 
 // COMMON DATA
 
