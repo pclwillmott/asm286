@@ -122,12 +122,13 @@ int indent = 0;
 int *prdIndex = NULL;
 
 int build_index() {
-  
+ 
   int count = 0;
   
   extern char * prdlst[] ;
-
-  while ( pid ( prdlst [ count ] ) != PRD_LAST ) {
+  extern char * prod_list[];
+  
+  for (int i = 0; *prod_list[i]; i++ ) {
     count++ ;
   }
   
@@ -136,12 +137,22 @@ int build_index() {
     return -1;
   }
 
+  for (int i = 0; i < count; i++ ) {
+    prdIndex[i] = -1 ;
+  }
+
   int last = -1;
-  for (int i = 0; i < count; i++) {
+  for (int i = 0; pid(prdlst[i]) != PRD_LAST; i++ ) {
     int j = pid(prdlst[i]);
     if (last != j) {
       last = j;
       prdIndex[j-PRODUCTION_OFFSET] = i;
+    }
+  }
+  
+  for (int i = 0; i < count; i++ ) {
+    if (prdIndex[i] == -1) {
+      printf("%s undefined\n", prod_list[i]);
     }
   }
 
@@ -167,6 +178,8 @@ ptree_node_t * match2
 {
   
   extern char * prdlst[] ;
+  
+  extern int *prdIndex;
   
   unsigned int prd_base = 0 ;
   int prd_index = 0 ;
@@ -207,6 +220,7 @@ ptree_node_t * match2
    */
   
   prd_base = prdIndex[production_id-PRODUCTION_OFFSET];
+  prd_index = 0;
   
   /*
    * If the first production variant is a recursive list and

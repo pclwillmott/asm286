@@ -1,57 +1,6 @@
-NAME EXAMPLE2
 .LIST
-TITLE EXAMPLE 2
-SUBTITLE TODAY
-IF 1
-.MODEL SMALL
-.STACK
 .CODE
-@start:
 fred:
-
-barry TEXTEQU '''FRED', 'GEO''RGE',
- 'HARRY', % 1 + 2, ''''
-ECHO freddy is text
-lab1:
-lab2::
-IF DEFINED fred
-IF 0
-NOP
-ELSEIF 0
-DAA
-DAA
-DAA
-ELSEIF 0
-ELSEIF 1
-DAA
-DAA
-CLI
-DAA
-ELSE
-CLI
-ENDIF
-ENDIF
-IF 0
-ENDIF
-NOP
-_TEXT ENDS
-.DATA
-ASSUME DS:FARDATA
-NOP
-;_DATA ENDS
-.DATA?
-.FARDATA
-.FARDATA?
-jerry EQU 42 * 10
-jerry3 = 12
-jerry3 = 13
-john TEXTEQU barry, % 234
-
-ECHO % jerry3 + 12
-ENDIF
-ECHO % 'ABCD'
-ECHO 'TBYTE = ', % SIZEOF TBYTE
-HELLO GROUP _TEXT, _DATA, FAR_BSS
-END @start
+END fred
 
 Everything after END is ignored!

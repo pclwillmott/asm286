@@ -434,7 +434,7 @@ const char *pattern[ NUM_PATTERN ] = {
   SPECIAL          "(\n|(;[^\n]*\n))+",
   SPECIAL          "(\010|\011|\013|\014|\015|\032|\040|(\\[^\n]*\n))*",
   SPECIAL          "[^\n]*",
-  SPECIAL          "[^#\n]*[\n]",
+  SPECIAL          "[^#\n]*\n",
 } ;
 
 int checkInstruction(int tokenId) {
@@ -511,7 +511,6 @@ char * prod_list[] = {
   "ifDir",
   "ifStatement",
   "immExpr",
-  "includeDir",
   "initValue",
   "inSegDir",
   "inSegDirList",
