@@ -213,7 +213,9 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
     }
     case PRD_ppTokenSequence:
     {
-      fprintf(ppFP2, "%s\n", ptree->args[0]->value.s);
+      if (ptree->variant == 1) {
+        fprintf(ppFP2, "%s\n", ptree->args[0]->value.s);
+      }
       break;
     }
     case PRD_nameDir:

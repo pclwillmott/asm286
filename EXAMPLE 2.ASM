@@ -14,16 +14,19 @@ DB \
 \
 'fred' ; this is. a comment
 
+           
 
-
+#define typo some text\
+some more text\
+yet more text
 
 
 
          #IF 1
-polly:
+            polly:
 #ELSEIF 0
 polly3:
-#ELSEIF 1
+         #ELSEIF 1
 polly4:
 #ELSE
 polly2:

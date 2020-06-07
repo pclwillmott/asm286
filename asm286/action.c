@@ -772,6 +772,7 @@ char *prdlst[] = {
   
   SPD_ppTokenSequence PT_IGNORE SPD_ppDir,
   SPD_ppTokenSequence PT_EXECUTE STK_PPTEXT STK_NEWLINE,
+  SPD_ppTokenSequence PT_EXECUTE STK_NEWLINE,
 
   SPD_ppItemList PT_IGNORE SPD_ppItemList SPD_ppItem,
   SPD_ppItemList PT_IGNORE SPD_ppItem,
