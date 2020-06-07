@@ -41,14 +41,14 @@ int main(int argc, const char * argv[]) {
  *------------------------------------------------------------------------------
  */
 
-//  dump_pattern();
+ // dump_pattern();
 
   processor = i86;
   coprocessor = none;
   
   fname[0] = "/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE 2.ASM";
   fname[1] = "/Users/paul/Documents/Projects/LEGACY/asm286/TEMP1.ASM";
-  
+ 
   if (add_numbers(fname)) {
     goto fail;
   }
@@ -57,18 +57,40 @@ int main(int argc, const char * argv[]) {
   fname[1] = "/Users/paul/Documents/Projects/LEGACY/asm286/TEMP2.ASM";
 
   do {
+    
     ppModified = 0;
-    if (processPP()) {
+    
+    in_preprocessor = -1;
+    
+    if (processPP(PRD_ppItemList)) {
       goto fail;
     }
+  
+    char *temp = fname[0];
+    fname[0] = fname[1];
+    fname[1] = temp;
+    
+    in_preprocessor = 0;
+    ifCount = 0;
+    assembleIt = 1;
+
+    if (processPP(PRD_ppTokenSequenceList)) {
+      goto fail;
+    }
+    
     if (ppModified) {
       char *temp = fname[0];
       fname[0] = fname[1];
       fname[1] = temp;
     }
+    
   } while (ppModified);
   
+  in_preprocessor = 0;
+  
   for (int pass = 0; pass < 2; pass++) {
+    ifCount = 0;
+    assembleIt = 1;
     maxPos = 0;
     check_instructions = pass == 1;
     printf("Pass %i\n",pass+1);
@@ -104,7 +126,7 @@ fail:
 
 FILE *ppFP2 = NULL ;
 
-int processPP() {
+int processPP(int production_id) {
   
   extern char *fname[];
   
@@ -129,7 +151,7 @@ int processPP() {
     goto fail;
   }
   
-  if ((pt = match2 (PRD_ppModule, ppFP1, 0)) == NULL) {
+  if ((pt = match2 (production_id, ppFP1, 0)) == NULL) {
     
     if (errno == 0) {
       errno = ERR_SYNTAX_ERROR;
@@ -193,7 +215,7 @@ int add_numbers(char *fname[]){
   int lineno = 1;
   while (fgets(buffer, sizeof(buffer), fp1) != NULL) {
     sprintf(buffer2, "LINE %i '%s'\n", lineno++, fname[0]);
-    fputs(buffer2, fp2);
+ //   fputs(buffer2, fp2);
     fputs(buffer, fp2);
   }
   

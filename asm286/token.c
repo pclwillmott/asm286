@@ -434,7 +434,10 @@ const char *pattern[ NUM_PATTERN ] = {
   SPECIAL          "(\n|(;[^\n]*\n))+",
   SPECIAL          "(\010|\011|\013|\014|\015|\032|\040|(\\[^\n]*\n))*",
   SPECIAL          "[^\n]*",
-  SPECIAL          "[^#\n]*\n",
+  SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*{(}",
+  SPECIAL          "[^\n\010\011\013\014\015\032\040\\]*",
+  SPECIAL          "[^\n#]([^\n]*)?",
+  SPECIAL          "(\010|\011|\013|\014|\015|\032|\040|(\\[^\n]*\n))+",
 } ;
 
 int checkInstruction(int tokenId) {
@@ -558,7 +561,13 @@ char * prod_list[] = {
   "ppifDir",
   "ppifStatement",
   "ppIncludeDir",
+  "ppItem",
+  "ppItemList",
+  "ppMacroParameter",
+  "ppMacroParameterList",
   "ppModule",
+  "ppTokenSequence",
+  "ppTokenSequenceList",
   "ppUndefDir",
   "processor",
   "processorDir",
@@ -588,8 +597,6 @@ char * prod_list[] = {
   "textItem",
   "titleDir",
   "titleType",
-  "tokenSequence",
-  "tokenSequenceList",
   "type",
   "",
 } ;
@@ -603,11 +610,11 @@ void dump_productions()
   for (unsigned int idx = 0; strlen(prod_list[idx]) > 0; idx++ ) {
     unsigned int B = (idx + PRODUCTION_OFFSET) % 127 + 1 ;
     unsigned int A = (idx + PRODUCTION_OFFSET) / 127 + 1 ;
-    printf("#define SPD_%-17s \"\\%03o\\%03o\"\n", prod_list[idx], A, B ) ;
+    printf("#define SPD_%-20s \"\\%03o\\%03o\"\n", prod_list[idx], A, B ) ;
   }
 
   for ( unsigned int idx = 0; strlen(prod_list[idx]) > 0; idx++  ) {
-    printf("  PRD_%-17s = %3i,\n", prod_list[idx], idx + PRODUCTION_OFFSET) ;
+    printf("  PRD_%-20s = %3i,\n", prod_list[idx], idx + PRODUCTION_OFFSET) ;
   }
 }
 
@@ -720,31 +727,16 @@ void dump_pattern()
 
 }
 
-#ifdef OLD
 ptree_node_t *find_token(int id, FILE *fp)
-#else
-ptree_node_t *find_token(int id)
-#endif
 
 {
   
   char *match;
-#ifdef OLD
   unsigned long matchlen;
-#else
-  long matchlen;
-#endif
   
   ptree_node_t *ptree = NULL;
   
-#ifdef OLD
   long pos = ftell(fp);
-#else
-  stream_context_t pos;
-  if (saveStreamContext(&pos)) {
-    return NULL;
-  }
-#endif
   
   char *pat;
   
@@ -753,14 +745,13 @@ ptree_node_t *find_token(int id)
     return NULL;
   }
   
-  strcpy(pat, pattern[TOK_WHITESPACE]+1);
+//  printf("find_token: %i\n", id);
+  
+  strcpy(pat, (id == TOK_LINECONT) ? "" : pattern[TOK_WHITESPACE]+1);
+//  strcpy(pat, pattern[TOK_WHITESPACE]+1);
   strcat(pat, pattern[id]+1);
 
-#ifdef OLD
   if ( ! match_pattern2( fp, pat, &match, &matchlen ) ) {
-#else
-    if ( ! match_pattern2( pat, &match, &matchlen ) ) {
-#endif
     
     if ((ptree = (ptree_node_t *) malloc(sizeof(ptree_node_t))) == NULL) {
       errno = ERR_OUT_OF_MEMORY;
@@ -777,9 +768,13 @@ ptree_node_t *find_token(int id)
       return NULL;
     }
 
+ //   printf("find_token: |%s|\n", match);
+    
     if (*pattern[id] == '\004') { // SPECIAL
       
-      trim(match);
+      if (!in_preprocessor) {
+        trim(match);
+      }
       
       switch (id) {
         case TOK_INTEGERBIN:
@@ -799,10 +794,12 @@ ptree_node_t *find_token(int id)
           ptree->value.i = (int) strtol(match, NULL, 8) ;
           break;
         case TOK_IDENTIFIER:
-          ptree->value_type = TOK_STRING;
-          ptree->value.s = match;
-          break;
+        case TOK_MACRO_ID:
         case TOK_INST_LABEL:
+        case TOK_LINECONT:
+        case TOK_TEXT:
+        case TOK_PPTEXT:
+        case TOK_SYMBOL:
           ptree->value_type = TOK_STRING;
           ptree->value.s = match;
           break;
@@ -812,24 +809,25 @@ ptree_node_t *find_token(int id)
         case TOK_STRING:
         {
           ptree->value_type = TOK_STRING;
-          unsigned long l = strlen(match), lim = l - 1;
-          match[l-1] = '\0';
-          for (int y = 2; y < lim; y++) {
-            if ( match[y] == '\'' && match[y-1] == '\'') {
-              for (int x = y-1; x < lim; x++) {
-                match[x] = match[x+1];
-              }
-              lim--;
-            }
+          if (in_preprocessor) {
+            ptree->value.s = match;
           }
-          ptree->value.s = match+1;
+          else {
+            unsigned long l = strlen(match), lim = l - 1;
+            match[l-1] = '\0';
+            for (int y = 2; y < lim; y++) {
+              if ( match[y] == '\'' && match[y-1] == '\'') {
+                for (int x = y-1; x < lim; x++) {
+                  match[x] = match[x+1];
+                }
+                lim--;
+              }
+            }
+            setstr(&ptree->value.s, match+1);
+            free(match);
+          }
           break;
         }
-        case TOK_TEXT:
-        case TOK_TOKSEQUENCE:
-          ptree->value_type = TOK_STRING;
-          ptree->value.s = match;
-          break;
       }
       
     }
@@ -838,14 +836,8 @@ ptree_node_t *find_token(int id)
       free(match);
     }
 
-#ifdef OLD
     fseek(fp, pos + matchlen, SEEK_SET);
-#else
-    if (seekStream(&pos, matchlen)) {
-      return NULL;
-    }
-#endif
-      
+    
   }
   else {
   }
@@ -855,7 +847,6 @@ ptree_node_t *find_token(int id)
   return ptree;
 }
 
-#ifdef OLD
 int match_pattern2
 (
  FILE *fp,
@@ -863,28 +854,13 @@ int match_pattern2
  char **match,
  unsigned long *matchlen
 )
-#else
-int match_pattern2
-(
-  const char *pattern,
-  char **match,
-  long *matchlen
-)
-#endif
-  
+
 {
   
   int result = -1 ;
 
-#ifdef OLD
   long int tp, end_of_file;
   long int sptr = ftell(fp) ;
-#else
-  stream_context_t sptr;
-  if (saveStreamContext(&sptr)) {
-    goto fail;
-  }
-#endif
   
   char cv[128] ;
   
@@ -896,12 +872,10 @@ int match_pattern2
   }
   **match = '\0';
 
-#ifdef OLD
   tp = ftell(fp);
   fseek(fp, 0L, SEEK_END);
   end_of_file = ftell(fp);
   fseek(fp, tp, SEEK_SET);
-#endif
   
   /*
    *------------------------------------------------------------------------------
@@ -915,20 +889,14 @@ int match_pattern2
   
   while ( *pattern ) {
     
+//    printf("match_pattern2 : 1 %s\n", pattern);
+    
     unsigned long seglen = 0 ;
     
     char start = *pattern, stop = '\0' ;
     
-#ifdef OLD
     long int save = sptr ;
     fseek(fp, sptr, SEEK_SET);
-#else
-    stream_context_t save;
-    copyStreamContext(&save, &sptr);
-    if (restoreStreamContext(&sptr)) {
-      goto fail;
-    }
-#endif
     
     switch ( *pattern ) {
       case '(':
@@ -1053,28 +1021,17 @@ int match_pattern2
       int is_match ;
       
       int cti ;
-#ifdef OLD
       fseek(fp, sptr, SEEK_SET);
       if ((cti = fgetc(fp)) == EOF) {
         sptr++;
         goto fail;
       }
-#else
-      if (restoreStreamContext(&sptr)) {
-        goto fail;
-      }
-      if (readStream(&cti) || cti == EOF) {
-        saveStreamContext(&sptr);
-        goto fail;
-      }
-#endif
       char ct = toupper((char)cti) ;
       
       switch ( start ) {
         case '(':
         {
           char *temp ;
-#ifdef OLD
           unsigned long matchlen ;
           fseek(fp,sptr, SEEK_SET);
           if ( ( is_match = ! match_pattern2( fp, expression, &temp, &matchlen ) ) ) {
@@ -1082,19 +1039,6 @@ int match_pattern2
             free(temp);
             sptr = ftell(fp);//sptr + matchlen; //ftell(fp);
           }
-#else
-          long matchlen ;
-          if (restoreStreamContext(&sptr)) {
-            goto fail;
-          }
-          if ( ( is_match = ! match_pattern2( expression, &temp, &matchlen ) ) ) {
-            strcat(*match, temp);
-            free(temp);
-            if (saveStreamContext(&sptr)) {
-              goto fail;
-            }
-          }
-#endif
           
         }
           break ;
@@ -1105,47 +1049,25 @@ int match_pattern2
           }
           if ( ( is_match = *ptr ) ) {
             strncat(*match, (const char *)&cti, 1);
-#ifdef OLD
             sptr++;
-#else
-            if (saveStreamContext(&sptr)) {
-              goto fail;
-            }
-#endif
           }
           break ;
         case '{':
           {
           int ci;
           ptr = expression ;
-#ifdef OLD
           while ( ((ci = fgetc(fp)) != EOF) && *ptr && (char)ci == *ptr ) {
             strncat(*match, (char *)&ci, 1);
             sptr++ ;
             ptr++ ;
           }
-#else
-          while ( !readStream(&ci) && (ci != EOF) && *ptr && (char)ci == *ptr ) {
-            strncat(*match, (char *)&ci, 1);
-            if (saveStreamContext(&sptr)) {
-              goto fail;
-            }
-            ptr++ ;
-          }
-#endif
           is_match = ! *ptr ;
           }
           break ;
         default:
           if ( ( is_match = ( ct == start ) ) ) {
             strncat(*match, (char *)&cti, 1);
-#ifdef OLD
             sptr++ ;
-#else
-            if (saveStreamContext(&sptr)) {
-              goto fail;
-            }
-#endif
           }
           break ;
       }
@@ -1173,11 +1095,7 @@ int match_pattern2
           break;
       }
 
-#ifdef OLD
     } while ( more_to_find && sptr < end_of_file ) ;
-#else
-  } while ( more_to_find && ! endOfInput()) ;
-#endif
     
     /*
      * Handle Or.
@@ -1186,11 +1104,7 @@ int match_pattern2
     if ( *pattern == '|' ) {
       skip_next = is_success ;
       if ( ! skip_next ) {
-#ifdef OLD
         sptr = save ;
-#else
-        copyStreamContext(&sptr, &save);
-#endif
      //   fseek(fp, sptr, SEEK_SET);
       }
       pattern++;

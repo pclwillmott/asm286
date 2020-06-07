@@ -1,12 +1,25 @@
-.LIST
+    .LIST
 .CODE
 fred:
 
-#IF 0
+#IF 1
 
 #INCLUDE '/Users/paul/Documents/Projects/LEGACY/asm286/inc_example.ASM'
 
-#IF 0
+DB 'hello'
+             
+DB \
+\
+\
+\
+'fred' ; this is. a comment
+
+
+
+
+
+
+         #IF 1
 polly:
 #ELSEIF 0
 polly3:

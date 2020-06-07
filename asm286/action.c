@@ -726,22 +726,28 @@ char *prdlst[] = {
 
   SPD_endifStatement PT_IGNORE STK_ENDIF STK_NEWLINE,
   
-  SPD_ppModule PT_IGNORE SPD_tokenSequenceList,
+  SPD_ppModule PT_IGNORE SPD_ppTokenSequenceList,
   
+  SPD_ppDir PT_IGNORE SPD_ppifDir,
   SPD_ppDir PT_IGNORE SPD_ppDefineDir,
   SPD_ppDir PT_IGNORE SPD_ppUndefDir,
   SPD_ppDir PT_IGNORE SPD_ppIncludeDir,
-  SPD_ppDir PT_IGNORE SPD_ppifDir,
 
+  SPD_ppDefineDir PT_IGNORE STK_HASHDEFINE STK_MACRO_ID SPD_ppMacroParameterList STK_CBRACE STK_TEXT STK_NEWLINE,
   SPD_ppDefineDir PT_IGNORE STK_HASHDEFINE STK_IDENTIFIER STK_TEXT STK_NEWLINE,
+
+  SPD_ppMacroParameterList PT_IGNORE SPD_ppMacroParameterList STK_COMMA SPD_ppMacroParameter,
+  SPD_ppMacroParameterList PT_IGNORE SPD_ppMacroParameter,
   
+  SPD_ppMacroParameter PT_IGNORE STK_IDENTIFIER,
+
   SPD_ppUndefDir PT_IGNORE STK_HASHUNDEF STK_IDENTIFIER STK_NEWLINE,
   
   SPD_ppIncludeDir PT_EXECUTE STK_HASHINCLUDE SPD_fileSpec STK_NEWLINE,
   
   SPD_ppifDir PT_IGNORE SPD_ppifBlock SPD_ppelseifList SPD_ppelseBlock SPD_ppendifStatement,
   
-  SPD_ppifBlock PT_IGNORE SPD_ppifStatement SPD_tokenSequenceList,
+  SPD_ppifBlock PT_IGNORE SPD_ppifStatement SPD_ppTokenSequenceList,
   
   SPD_ppifStatement PT_IGNORE STK_HASHIF SPD_constExpr STK_NEWLINE,
   
@@ -749,23 +755,31 @@ char *prdlst[] = {
   SPD_ppelseifList PT_IGNORE SPD_ppelseifBlock,
   SPD_ppelseifList PT_IGNORE,
 
-  SPD_ppelseifBlock PT_IGNORE SPD_ppelseifStatement SPD_tokenSequenceList,
+  SPD_ppelseifBlock PT_IGNORE SPD_ppelseifStatement SPD_ppTokenSequenceList,
   
   SPD_ppelseifStatement PT_IGNORE STK_HASHELSEIF SPD_constExpr STK_NEWLINE,
   
-  SPD_ppelseBlock PT_IGNORE SPD_ppelseStatement SPD_tokenSequenceList,
+  SPD_ppelseBlock PT_IGNORE SPD_ppelseStatement SPD_ppTokenSequenceList,
   SPD_ppelseBlock PT_IGNORE,
 
   SPD_ppelseStatement PT_IGNORE STK_HASHELSE STK_NEWLINE,
   
   SPD_ppendifStatement PT_IGNORE STK_HASHENDIF STK_NEWLINE,
   
-  SPD_tokenSequenceList PT_IGNORE SPD_tokenSequenceList SPD_tokenSequence,
-  SPD_tokenSequenceList PT_IGNORE SPD_tokenSequence,
-  SPD_tokenSequenceList PT_IGNORE,
+  SPD_ppTokenSequenceList PT_IGNORE SPD_ppTokenSequenceList SPD_ppTokenSequence,
+  SPD_ppTokenSequenceList PT_IGNORE SPD_ppTokenSequence,
+  SPD_ppTokenSequenceList PT_IGNORE,
   
-  SPD_tokenSequence PT_EXECUTE STK_TOKSEQUENCE,
-  SPD_tokenSequence PT_IGNORE SPD_ppDir,
+  SPD_ppTokenSequence PT_IGNORE SPD_ppDir,
+  SPD_ppTokenSequence PT_EXECUTE STK_PPTEXT STK_NEWLINE,
+
+  SPD_ppItemList PT_IGNORE SPD_ppItemList SPD_ppItem,
+  SPD_ppItemList PT_IGNORE SPD_ppItem,
+  
+  SPD_ppItem PT_EXECUTE STK_LINECONT,
+  SPD_ppItem PT_EXECUTE STK_NEWLINE,
+  SPD_ppItem PT_EXECUTE STK_STRING,
+  SPD_ppItem PT_EXECUTE STK_SYMBOL,
 
   SPD_LAST,
   

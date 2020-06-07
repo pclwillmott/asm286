@@ -37,8 +37,6 @@ struct ifContext {
   int assemble;
 };
 
-int ifCount = 0;
-int assembleIt = 1;
 
 struct ifContext ifStack[MAX_IF_STACK];
 
@@ -179,6 +177,22 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
 
   switch ( ptree->production_id ) {
      
+    case PRD_ppItem:
+    {
+      switch (ptree->variant) {
+        case 0:
+          fprintf(ppFP2, " ");
+          break;
+        case 1:
+          fprintf(ppFP2, "\n");
+          break;
+        case 2:
+        case 3:
+          fprintf(ppFP2, "%s", ptree->args[0]->value.s);
+          break;
+      }
+      break;
+    }
     case PRD_ppIncludeDir:
     {
       FILE *fp = NULL;
@@ -190,16 +204,16 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       int lineno = 1;
       while (fgets(buffer, sizeof(buffer), fp) != NULL) {
         sprintf(buffer2, "LINE %i '%s'\n", lineno++, ptree->args[1]->value.s);
-        fputs(buffer2, ppFP2);
+     //   fputs(buffer2, ppFP2);
         fputs(buffer, ppFP2);
       }
       ppModified = -1;
       fclose(fp);
       break;
     }
-    case PRD_tokenSequence:
+    case PRD_ppTokenSequence:
     {
-      fprintf(ppFP2, "%s", ptree->args[0]->value.s);
+      fprintf(ppFP2, "%s\n", ptree->args[0]->value.s);
       break;
     }
     case PRD_nameDir:

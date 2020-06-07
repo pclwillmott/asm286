@@ -60,7 +60,7 @@
  * Token string constants.
  */
 
-#define NUM_PATTERN ( 403 )  /* Number of token patterns */
+#define NUM_PATTERN ( 406 )  /* Number of token patterns */
 
 #define STK_UNDERSCORE  "\001\001"
 #define STK_MINUS       "\001\002"
@@ -125,7 +125,10 @@
 #define STK_NEWLINE     "\004\023"
 #define STK_WHITESPACE  "\004\024"
 #define STK_TEXT        "\004\025"
-#define STK_TOKSEQUENCE "\004\026"
+#define STK_MACRO_ID    "\004\026"
+#define STK_SYMBOL      "\004\027"
+#define STK_PPTEXT      "\004\030"
+#define STK_LINECONT    "\004\031"
 
 /*
  * Production string constants.
@@ -192,7 +195,10 @@ enum {
   TOK_NEWLINE     = 399,
   TOK_WHITESPACE  = 400,
   TOK_TEXT        = 401,
-  TOK_TOKSEQUENCE = 402,
+  TOK_MACRO_ID    = 402,
+  TOK_SYMBOL      = 403,
+  TOK_PPTEXT      = 404,
+  TOK_LINECONT    = 405,
 
 /*
  * Productions
@@ -301,7 +307,7 @@ int readStream(int *);
 int endOfInput(void);
 void copyStreamContext(stream_context_t *, stream_context_t *);
 int seekStream(stream_context_t *, long);
-int processPP(void);
+int processPP(int);
 
 // COMMON DATA
 
@@ -316,6 +322,9 @@ extern enum Language language_type;
 extern enum Distance stack_distance;
 extern int main_routine;
 extern char *module_name;
+extern int in_preprocessor;
+extern int ifCount;
+extern int assembleIt;
 
 #endif /* asm286_h */
 
