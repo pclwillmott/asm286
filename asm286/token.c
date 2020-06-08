@@ -437,7 +437,7 @@ const char *pattern[ NUM_PATTERN ] = {
   SPECIAL          "[A-Z_@{?}][A-Z_@{?}0-9]*{(}",
   SPECIAL          "[^\n\010\011\013\014\015\032\040\\]*",
   SPECIAL          "[^\n#]([^\n]*)?",
-  SPECIAL          "(\010|\011|\013|\014|\015|\032|\040|(\\[^\n]*\n))+",
+  SPECIAL          "(\010|\011|\013|\014|\015|\032|\040|(\\[^\n]*\n(LINE [0-9]+ [']([^']|(''))*[']\n)?))+",
 } ;
 
 int checkInstruction(int tokenId) {
@@ -748,7 +748,6 @@ ptree_node_t *find_token(int id, FILE *fp)
 //  printf("find_token: %i\n", id);
   
   strcpy(pat, (id == TOK_LINECONT) ? "" : pattern[TOK_WHITESPACE]+1);
-//  strcpy(pat, pattern[TOK_WHITESPACE]+1);
   strcat(pat, pattern[id]+1);
 
   if ( ! match_pattern2( fp, pat, &match, &matchlen ) ) {
@@ -768,8 +767,6 @@ ptree_node_t *find_token(int id, FILE *fp)
       return NULL;
     }
 
- //   printf("find_token: |%s|\n", match);
-    
     if (*pattern[id] == '\004') { // SPECIAL
       
       if (!in_preprocessor) {
@@ -796,7 +793,6 @@ ptree_node_t *find_token(int id, FILE *fp)
         case TOK_IDENTIFIER:
         case TOK_MACRO_ID:
         case TOK_INST_LABEL:
-        case TOK_LINECONT:
         case TOK_TEXT:
         case TOK_PPTEXT:
         case TOK_SYMBOL:

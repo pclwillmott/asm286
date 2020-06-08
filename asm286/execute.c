@@ -203,8 +203,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       char buffer[512], buffer2[512];
       int lineno = 1;
       while (fgets(buffer, sizeof(buffer), fp) != NULL) {
-        sprintf(buffer2, "LINE %i '%s'\n", lineno++, ptree->args[1]->value.s);
-     //   fputs(buffer2, ppFP2);
+        fprintf(ppFP2,"LINE %i '%s'\n", lineno++, ptree->args[1]->value.s );
         fputs(buffer, ppFP2);
       }
       ppModified = -1;
@@ -213,9 +212,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
     }
     case PRD_ppTokenSequence:
     {
-      if (ptree->variant == 1) {
-        fprintf(ppFP2, "%s\n", ptree->args[0]->value.s);
-      }
+      fprintf(ppFP2, "%s\n", ptree->args[0]->value.s);
       break;
     }
     case PRD_nameDir:

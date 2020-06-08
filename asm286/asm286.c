@@ -48,14 +48,12 @@ int main(int argc, const char * argv[]) {
   
   fname[0] = "/Users/paul/Documents/Projects/LEGACY/asm286/EXAMPLE 2.ASM";
   fname[1] = "/Users/paul/Documents/Projects/LEGACY/asm286/TEMP1.ASM";
- 
-  if (add_numbers(fname)) {
-    goto fail;
-  }
-
+  
+  add_numbers(fname);
+  
   fname[0] = fname[1];
   fname[1] = "/Users/paul/Documents/Projects/LEGACY/asm286/TEMP2.ASM";
-
+  
   do {
     
     ppModified = 0;
@@ -114,6 +112,7 @@ int main(int argc, const char * argv[]) {
     
     dump_segment_table();
   }
+  
 fail:
   
 /*
@@ -215,7 +214,7 @@ int add_numbers(char *fname[]){
   int lineno = 1;
   while (fgets(buffer, sizeof(buffer), fp1) != NULL) {
     sprintf(buffer2, "LINE %i '%s'\n", lineno++, fname[0]);
- //   fputs(buffer2, fp2);
+    fputs(buffer2, fp2);
     fputs(buffer, fp2);
   }
   

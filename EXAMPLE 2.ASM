@@ -14,15 +14,14 @@ DB \
 \
 'fred' ; this is. a comment
 
-           
 
-#define typo some text\
+echo typo some text\
 some more text\
 yet more text
 
 
 
-         #IF 1
+         #IF 0
             polly:
 #ELSEIF 0
 polly3:
