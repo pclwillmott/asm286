@@ -514,6 +514,7 @@ char * prod_list[] = {
   "ifDir",
   "ifStatement",
   "immExpr",
+  "includeTag",
   "initValue",
   "inSegDir",
   "inSegDirList",

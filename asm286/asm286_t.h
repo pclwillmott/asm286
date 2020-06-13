@@ -175,8 +175,6 @@ struct stream_context_t {
   long int position;
 } ;
 
-typedef struct segment_table_t segment_table_t;
-
 enum CombineType {
   CT_PRIVATE = 0,
   CT_PUBLIC = 1,
@@ -199,6 +197,16 @@ enum SegReg {
   SR_ES = 2,
   SR_SS = 3,
 };
+
+typedef struct src_file_t src_file_t;
+
+struct src_file_t {
+  char *filename;
+  int cur_line;
+  long int cur_pos;
+};
+
+typedef struct segment_table_t segment_table_t;
 
 struct segment_table_t {
   char *name ;

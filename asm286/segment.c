@@ -213,6 +213,7 @@ segment_table_t *segment_stack_top()
 }
 
 void reset_for_pass(int pass) {
+  extern int in_print ;
   for (int i = 0; i < segment_count; i++) {
     free(segment_table[i].name);
   }
@@ -240,31 +241,116 @@ int set_current_position(unsigned int position, int lineno)
   return 0;
 }
 
-int dep(unsigned char db, int pass, int lineno)
+//int in_print = 0;
+
+int print_src_start() {
+  
+  extern char xxbuffer[512];
+  extern char xxcodes[32];
+  FILE *fp = NULL;
+  int result = 1;
+  segment_table_t *segment;
+
+  if (src_file_count == 0 ) {
+    return 0;
+  }
+
+  if ((fp = fopen(src_file[cur_file].filename, "r")) == NULL) {
+    errno = ERR_FILE_OPEN_ERROR;
+    return 1;
+  }
+  
+  fseek(fp, src_file[cur_file].cur_pos, SEEK_SET);
+  
+  while ( src_file[cur_file].cur_line < cur_line && fgets(xxbuffer, 512, fp) != NULL) {
+    src_file[cur_file].cur_line++;
+    if (src_file[cur_file].cur_line < cur_line) {
+      if (list) {
+        printf("%16s %s", "", xxbuffer);
+      }
+    }
+    src_file[cur_file].cur_pos = ftell(fp);
+  }
+  
+  if ((segment = segment_stack_top()) == NULL) {
+    strcpy(xxcodes, "     ");
+  }
+  else {
+    sprintf(xxcodes, "%04x ",segment->position);
+  }
+  result = 0;
+  
+fail:
+  
+  if (fp != NULL) {
+    fclose(fp);
+  }
+  
+  return result;
+  
+}
+
+int print_src_end() {
+  
+  extern char xxbuffer[512];
+  extern char xxcodes[32];
+  
+  if (src_file_count == 0 ) {
+    return 0;
+  }
+  
+  if (list) {
+    printf("%-16s %s", xxcodes, xxbuffer);
+  }
+  
+  return 0;
+  
+}
+
+char xxbuffer[512];
+char xxcodes[32];
+
+int _dep(unsigned char db, int pass, int lineno)
 {
   segment_table_t *segment;
   if ((segment = segment_stack_top()) == NULL) {
     return 1;
   }
   if (pass == 1) {
-    printf("%s: %04x %02x\n",segment->name, segment->position, db);
+//    sprintf("%04x %02x ","", segment->name, segment->position, db);
   }
   segment->position++;
   return 0;
 }
 
+int dep(unsigned char db, int pass, int lineno) {
+  extern char xxcodes[32];
+  char temp[16];
+  sprintf(temp, "%02x ", db);
+  strcat(xxcodes, temp);
+  return _dep(db,pass, lineno);
+}
+
 int depw(unsigned short dw, int pass, int lineno)
 {
-  return (dep( dw & 0xff, pass, lineno) ||
-          dep( dw >> 8,   pass, lineno)) ;
+  extern char xxcodes[32];
+  char temp[16];
+  sprintf(temp, "%4x ", dw);
+  strcat(xxcodes, temp);
+  return (_dep( dw & 0xff, pass, lineno) ||
+          _dep( dw >> 8,   pass, lineno)) ;
 }
 
 int depd(unsigned int dd, int pass, int lineno)
 {
-  return (dep((dd)       & 0xff, pass, lineno) ||
-          dep((dd >>  8) & 0xff, pass, lineno) ||
-          dep((dd >> 16) & 0xff, pass, lineno) ||
-          dep((dd >> 24) & 0xff, pass, lineno));
+  extern char xxcodes[32];
+  char temp[16];
+  sprintf(temp, "%8x ", dd);
+  strcat(xxcodes, temp);
+  return (_dep((dd)       & 0xff, pass, lineno) ||
+          _dep((dd >>  8) & 0xff, pass, lineno) ||
+          _dep((dd >> 16) & 0xff, pass, lineno) ||
+          _dep((dd >> 24) & 0xff, pass, lineno));
 }
 
 void dump_segment_table() {

@@ -1,4 +1,4 @@
-    .LIST
+.LIST
 .CODE
 fred:
 
@@ -7,7 +7,8 @@ fred:
 #INCLUDE '/Users/paul/Documents/Projects/LEGACY/asm286/inc_example.ASM'
 
 DB 'hello'
-             
+.NOLIST 
+            
 DB \
 \
 \
@@ -19,14 +20,18 @@ echo typo some text\
 some more text\
 yet more text
 
+.NOLIST
+.LIST
 
-
-         #IF 0
-            polly:
+#IF 1
+polly:
 #ELSEIF 0
 polly3:
-         #ELSEIF 1
+#ELSEIF 0
 polly4:
+NOP
+#ELSEIF 2
+DAA
 #ELSE
 polly2:
 #ENDIF
@@ -34,6 +39,10 @@ polly2:
 #ENDIF
 
 wally:
+
+NOP
+NOP
+NOP
 
 END fred
 

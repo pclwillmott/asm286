@@ -40,6 +40,8 @@ struct ifContext {
 
 struct ifContext ifStack[MAX_IF_STACK];
 
+int no_print = 0;
+
 int execute( ptree_node_t *ptree, int pass, int lineno )
 {
   
@@ -52,6 +54,8 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
   static char *className = NULL;
   static int readonly = 0;
   static int combine_at = 0;
+  
+  extern int no_print ;
   
 /*
  *-----------------------------------------------------------------------------
@@ -80,7 +84,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       ifCount++;
       if (parent_assemble) {
         ifStack[ifCount-1].assemble = 1;
-        if ( ! execute ( ptree->args[ 1 ], pass, lineno ) ) {
+        if ( ! execute ( ptree->args[ 1 ], pass, -1 ) ) {
           return FAIL ;
         }
       }
@@ -90,7 +94,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
     case PRD_elseifStatement:
     case PRD_ppelseifStatement:
       ifStack[ifCount-1].assemble = 1;
-      if ( ! execute ( ptree->args[ 1 ], pass, lineno ) ) {
+      if ( ! execute ( ptree->args[ 1 ], pass, -1 ) ) {
         return FAIL ;
       }
       ifStack[ifCount-1].assemble = (!ifStack[ifCount-1].satisfied) && (ptree->args[1]->value.i != 0);
@@ -177,6 +181,16 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
 
   switch ( ptree->production_id ) {
      
+    case PRD_lineDir:
+    {
+      if (pass2) {
+        if (add_src_file(ptree->args[2]->value.s, &cur_file)) {
+          return FAIL;
+        }
+        cur_line = ptree->args[1]->value.i;
+      }
+      break;
+    }
     case PRD_ppItem:
     {
       switch (ptree->variant) {
@@ -195,19 +209,24 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
     }
     case PRD_ppIncludeDir:
     {
-      FILE *fp = NULL;
-      if ((fp = fopen(ptree->args[1]->value.s, "r")) == NULL) {
-        errno = ERR_FILE_OPEN_ERROR;
-        return FAIL;
-      }
-      char buffer[512], buffer2[512];
       int lineno = 1;
-      while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+      fputs("#INCLUDE\n", ppFP2);
+      if (ptree->variant == 0) {
+        FILE *fp = NULL;
+        if ((fp = fopen(ptree->args[1]->value.s, "r")) == NULL) {
+          errno = ERR_FILE_OPEN_ERROR;
+          return FAIL;
+        }
+        char buffer[512], buffer2[512];
+        while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+          fprintf(ppFP2,"LINE %i '%s'\n", lineno++, ptree->args[1]->value.s );
+          fputs(buffer, ppFP2);
+        }
+        ppModified = -1;
+        fclose(fp);
         fprintf(ppFP2,"LINE %i '%s'\n", lineno++, ptree->args[1]->value.s );
-        fputs(buffer, ppFP2);
+        fputs("#INCLUDE\n", ppFP2);
       }
-      ppModified = -1;
-      fclose(fp);
       break;
     }
     case PRD_ppTokenSequence:
@@ -225,7 +244,9 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
     }
     case PRD_listDir:
     {
-      list = ptree->args[0]->variant == 0;
+      if (pass2) {
+        list = ptree->args[0]->variant == 0;
+      }
       break;
     }
     case PRD_titleDir: {
@@ -471,6 +492,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
     case PRD_endDir:
     {
       main_routine = ptree->args[1]->value.i;
+      list = 0;
       break;
     }
     case PRD_modelOpt:
@@ -783,280 +805,17 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       ptree->value.i = result;
       break;
     }
-#ifdef WALLY
-    case PRD_ROTATE:
-      {
-        int w = 1;
-        int num = ptree->args[3]->value.i;
-        switch (ptree->variant) {
-          case 0:
-            w = 0;
-          case 1:
-            opcode[opcode_count++] = ((num == 1) ? 0xd0 : 0xc0) | w;
-            opcode[opcode_count++] = 0xc0 | ptree->args[1]->variant | (ptree->args[0]->variant << 3);
-            if (num != 1) {
-              literal[literal_count] = num;
-              literal_word[literal_count++] = 0;
-            }
-            break;
-          case 2:
-            opcode[opcode_count++] = ((num == 1) ? 0xd0 : 0xc0) ;
-            opcode[opcode_count++] = rm_disp_mod(ptree->args[1], &disp, &w) | (ptree->args[0]->variant << 3);
-            opcode[opcode_count-2] |= w;
-            if (num != 1) {
-              literal[literal_count] = num;
-              literal_word[literal_count++] = 0;
-            }
-           break;
-          case 3:
-            w = 0;
-          case 4:
-            opcode[opcode_count++] = 0xd0 | w | 0x02;
-            opcode[opcode_count++] = 0xc0 | ptree->args[1]->variant | (ptree->args[0]->variant << 3);
-            break;
-          case 5:
-            break;
-          default:
-            break;
-        }
-      }
-      break;
-    case PRD_ARPL:
-      {
-        int w = 0;
-        opcode[opcode_count++] = 0x63;
-        if (ptree->variant == 0) {
-          op2 = rm_disp_mod(ptree->args[1], &disp, &w);
-        }
-        else {
-          op2 = 0xc0 | ptree->args[1]->variant;
-        }
-        opcode[opcode_count++] = op2 | (ptree->args[3]->variant << 3);
-      }
-      break;
-    case PRD_BOUND:
-      {
-        int w = 0;
-        opcode[opcode_count++] = 0x62;
-        op2 = rm_disp_mod(ptree->args[3], &disp, &w) | (ptree->args[1]->variant << 3) ;
-        if (op2 == 0x0e) {
-          op2 = 0x4e;
-          disp = 0;
-        }
-        opcode[opcode_count++] = op2;
-      }
-      break;
-    case PRD_ALU:
-      {
-        unsigned char w = 0x01;
-        switch (ptree->variant) {
-          case 0: // rb, num
-            w = 0x00;
-          case 1: // rw, num
-            opcode[opcode_count++] = (ptree->args[0]->variant << 3) | 0x04 | w;
-            literal_word[literal_count] = w;
-            literal[literal_count++] = ptree->args[3]->value.i;
-           break;
-          case 2: // rb, rb
-            w = 0x00;
-          case 3: // rw, rw
-            opcode[opcode_count++] = (ptree->args[0]->variant << 3) | 0x02 | w;
-            opcode[opcode_count++] = 0xc0 | (ptree->args[1]->variant << 3) | ptree->args[3]->variant ;
-            break;
-          case 4: // rb, rm_disp
-            w = 0x00;
-          case 5: // rw, rm_disp
-            {
-              opcode[opcode_count++] = (ptree->args[0]->variant << 3) | 0x02 | w;
-       //       op2 = rm_disp_mod(ptree->args[3], &disp) | (ptree->args[1]->variant << 3);
-              if (op2 == 0x06) {
-                op2 = 0x46;
-                disp = 0;
-              }
-              opcode[opcode_count++] = op2;
-            }
-            break;
-          case 6: // rm_disp, rb
-            w = 0x00;
-          case 7: // rm_disp, rw
-            opcode[opcode_count++] = (ptree->args[0]->variant << 3) | 0x00 | w;
-       //     op2 = rm_disp_mod(ptree->args[1], &disp, &w) | (ptree->args[3]->variant << 3);
-            if (op2 == 0x06) {
-              op2 = 0x46;
-              disp = 0;
-            }
-            opcode[opcode_count++] = op2;
-           break;
-          case 8: // rb, num
-            w = 0x00;
-          case 9: // rw, num
-            opcode[opcode_count++] = 0x80 | w;
-            opcode[opcode_count++] = 0xc0 | (ptree->args[0]->variant << 3) | ptree->args[1]->variant ;
-            literal_word[literal_count] = w;
-            literal[literal_count++] = ptree->args[3]->value.i;
-            break;
-          case 10: // rm_disp, num
-            {
-              literal[literal_count] = ptree->args[3]->value.i;
-              w = is_word(literal[literal_count]);
-              literal_word[literal_count++] = w;
-              int w2 = 0;
-              op2 = rm_disp_mod(ptree->args[1], &disp, &w2) | (ptree->args[0]->variant << 3);
-              opcode[opcode_count++] = 0x80 | ((w) ? 0x01 : 0x03 );
-              if (op2 == 0x36) {
-                op2 = 0x76;
-                disp = 0;
-              }
-              opcode[opcode_count++] = op2;
-            }
-            break;
-        }
-      }
-      break;
-    case PRD_WARNING:
-      if (pass2) {
-        ptree->value.i = ptree->args[1]->value.i;
-        printf("PRD_WARNING: %i\n", ptree->value.i);
-      }
-      break;
-    case PRD_DBITEM:
-      switch (ptree->args[ 0 ]->value_type) {
-        case TOK_INTEGERDEC:
-          if (dep((unsigned char)ptree->args[ 0 ]->value.i, pass, lineno)) {
-            return FAIL;
-          }
-          break;
-        case TOK_STRING:
-          for (str = ptree->args[ 0 ]->value.s; *str; str++) {
-            if (dep((unsigned char)*str, pass, lineno)) {
-              return FAIL;
-            }
-          }
-          break;
-        default:
-          if ( ptree->args[ 0 ]->production_id == TOK_QMARK) {
-            if (dep(0x00, pass, lineno)) {
-              return FAIL;
-            }
-          }
-          break;
-      }
-      break;
-    case PRD_DWITEM:
-      if ( ptree->args[ 0 ]->production_id == TOK_QMARK) {
-        if (depw(0x0000, pass, lineno)) {
-          return FAIL;
-        }
-      }
-      else {
-        if (depw((unsigned short)ptree->args[ 0 ]->value.i, pass, lineno)) {
-          return FAIL;
-        }
-      }
-      break;
-    case PRD_DDITEM:
-      if ( ptree->args[ 0 ]->production_id == TOK_QMARK) {
-        if (depd(0x00000000, pass, lineno)) {
-          return FAIL;
-        }
-      }
-      else {
-        if (depd((unsigned int)ptree->args[ 0 ]->value.i, pass, lineno)) {
-          return FAIL;
-        }
-      }
-      break;
-    case PRD_VAR_NAME:
-      if (pass1) {
-        if (get_current_position(&pos, lineno)) {
-          return FAIL;
-        }
-        if (add_symbol(ptree->args[0]->value.s, SYMBOL_VARIABLE, pos)) {
-          return FAIL;
-        }
-      }
-      break;
-    case PRD_ORG:
-      if (set_current_position(ptree->args[1]->value.i, lineno)) {
-        return FAIL;
-      }
-      break;
-    case PRD_CON_NUM:
-      ptree->value_type = ptree->args[0]->value_type;
-      ptree->value.i = ptree->args[0]->value.i;
-      break;
-    case PRD_GRP0_EXP:
-      ptree->value_type = TOK_INTEGERDEC;
-      switch (ptree->variant) {
-        case 1:
-          ptree->value.i = ptree->args[1]->value.i;
-          break;
-        case 2:
-          if (pass2) {
-            if (get_symbol_value(ptree->args[0]->value.s, &i1)) {
-              return FAIL;
-            }
-          }
-          ptree->value.i = i1;
-          break;
-        case 3:
-          if (get_current_position((unsigned int *)&ptree->value.i, lineno)) {
-            return FAIL;
-          }
-          break;
-      }
-      break;
-    case PRD_GRP7_EXP:
-      ptree->value_type = ptree->args[1]->value_type;
-      ptree->value.i = ~ ptree->args[1]->value.i;
-      break;
-    case PRD_JR:
-      {
-        const unsigned char jr[] = {
-          0x70,
-          0x71,
-          0x72,
-          0x72,
-          0x72,
-          0x73,
-          0x73,
-          0x73,
-          0x74,
-          0x74,
-          0x75,
-          0x75,
-          0x76,
-          0x76,
-          0x77,
-          0x77,
-          0x78,
-          0x79,
-          0x7a,
-          0x7a,
-          0x7b,
-          0x7b,
-          0x7c,
-          0x7c,
-          0x7d,
-          0x7d,
-          0x7e,
-          0x7e,
-          0x7f,
-          0x7f,
-          0xe3,
-        };
-        opcode[opcode_count++] = jr[ptree->args[0]->variant];
-        int cp = 0;
-        if (get_current_position((unsigned int *)&cp, lineno)) {
-          return FAIL;
-        }
-        opcode[opcode_count++] = (unsigned char)((signed char)(ptree->args[1]->value.i - cp - 2));
-      }
-      break;
-#endif
   }
 
   // Do the code deposits
+  
+  int do_print = pass2 && ptree->production_id != PRD_lineDir; // && ( opcode_count > 0 || literal_count > 0);
+  
+  if (do_print) {
+    if (print_src_start()) {
+      return FAIL;
+    }
+  }
   
   if (dep_disp(opcode, opcode_count, disp, pass, lineno)) {
     return FAIL;
@@ -1072,6 +831,12 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       if (dep((unsigned char)literal[i], pass, lineno)) {
         return FAIL;
       }
+    }
+  }
+  
+  if (do_print) {
+    if (print_src_end()) {
+      return FAIL;
     }
   }
 
@@ -1180,6 +945,42 @@ int dep_opcodes(unsigned char opcodes[], int opcode_count, int pass, int lineno)
 int is_word(int value)
 {
   return ( value < -128 || value > 255);
+}
+
+int add_src_file(char *filename, int *filenum)
+{
+  int index;
+  
+  for (index = 0; index < src_file_count; index++) {
+    if (strcmp(src_file[index].filename, filename) == 0) {
+      *filenum = index;
+      return 0;
+    }
+  }
+  
+  *filenum = src_file_count;
+  
+  if (!src_file_count) {
+    if ((src_file = (src_file_t *) malloc(sizeof(src_file_t))) == NULL) {
+      errno = ERR_OUT_OF_MEMORY;
+      return -1;
+    }
+  }
+  else {
+    if ((src_file = (src_file_t *) realloc(src_file, sizeof(src_file_t) * (src_file_count + 1))) == NULL) {
+      errno = ERR_OUT_OF_MEMORY;
+      return -1;
+    }
+  }
+  
+  src_file_t *ptr = &src_file[src_file_count++];
+  
+  setstr(&ptr->filename, filename);
+  ptr->cur_line = 0;
+  ptr->cur_pos = 0L;
+  
+  return 0;
+  
 }
 
 /*

@@ -240,6 +240,7 @@ void delete_ptree( ptree_node_t *, int, int, int );
 int execute ( ptree_node_t *, int, int );
 unsigned int pid( const char * );
 unsigned char to_byte( char );
+int _dep(unsigned char, int, int);
 int dep(unsigned char, int, int);
 int depw(unsigned short, int, int);
 int depd(unsigned int, int, int);
@@ -308,6 +309,9 @@ int endOfInput(void);
 void copyStreamContext(stream_context_t *, stream_context_t *);
 int seekStream(stream_context_t *, long);
 int processPP(int);
+int add_src_file(char *, int *);
+int print_src_start(void);
+int print_src_end(void);
 
 // COMMON DATA
 
@@ -325,6 +329,10 @@ extern char *module_name;
 extern int in_preprocessor;
 extern int ifCount;
 extern int assembleIt;
+extern int src_file_count;
+extern src_file_t *src_file;
+extern int cur_file;
+extern int cur_line;
 
 #endif /* asm286_h */
 

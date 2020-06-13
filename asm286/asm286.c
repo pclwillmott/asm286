@@ -41,7 +41,7 @@ int main(int argc, const char * argv[]) {
  *------------------------------------------------------------------------------
  */
 
- // dump_pattern();
+//  dump_pattern();
 
   processor = i86;
   coprocessor = none;
@@ -99,6 +99,7 @@ int main(int argc, const char * argv[]) {
   }
   
   if (list) {
+    
     if (module_name != NULL) {
       printf("MODULE: %s\n", module_name);
     }
@@ -111,6 +112,7 @@ int main(int argc, const char * argv[]) {
     dump_symbol_table();
     
     dump_segment_table();
+    
   }
   
 fail:

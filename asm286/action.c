@@ -107,6 +107,7 @@ char *prdlst[] = {
   
   SPD_inSegmentDir PT_IGNORE SPD_instruction,
   SPD_inSegmentDir PT_IGNORE SPD_fpInstruction,
+  SPD_inSegmentDir PT_IGNORE SPD_lineDir,
   SPD_inSegmentDir PT_IGNORE SPD_dataDir,
   SPD_inSegmentDir PT_IGNORE SPD_offsetDir,
   SPD_inSegmentDir PT_IGNORE SPD_labelDir,
@@ -194,8 +195,11 @@ char *prdlst[] = {
   SPD_generalDir PT_IGNORE SPD_listDir,
   SPD_generalDir PT_IGNORE SPD_processorDir,
   SPD_generalDir PT_IGNORE SPD_optionDir,
+  SPD_generalDir PT_IGNORE SPD_includeTag,
 
-  SPD_lineDir PT_IGNORE STK_LINE SPD_constExpr SPD_fileSpec STK_NEWLINE,
+  SPD_includeTag PT_EXECUTE STK_HASHINCLUDE STK_NEWLINE,
+  
+  SPD_lineDir PT_EXECUTE STK_LINE SPD_constExpr SPD_fileSpec STK_NEWLINE,
   
   SPD_modelDir PT_EXECUTE STK_MODEL SPD_memOption STK_COMMA SPD_modelOptList STK_NEWLINE,
   SPD_modelDir PT_EXECUTE STK_MODEL SPD_memOption STK_NEWLINE,
@@ -744,6 +748,7 @@ char *prdlst[] = {
   SPD_ppUndefDir PT_IGNORE STK_HASHUNDEF STK_IDENTIFIER STK_NEWLINE,
   
   SPD_ppIncludeDir PT_EXECUTE STK_HASHINCLUDE SPD_fileSpec STK_NEWLINE,
+  SPD_ppIncludeDir PT_EXECUTE STK_HASHINCLUDE,
   
   SPD_ppifDir PT_IGNORE SPD_ppifBlock SPD_ppelseifList SPD_ppelseBlock SPD_ppendifStatement,
   
