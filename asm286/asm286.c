@@ -164,7 +164,7 @@ int processPP(int production_id) {
    * Execute command.
    */
   
-  else if ( ! execute ( pt, 0, 0 ) ) {
+  else if ( ! execute ( pt, -1, 0 ) ) {
     goto fail ;
   }
   

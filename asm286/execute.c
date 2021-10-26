@@ -183,11 +183,12 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
      
     case PRD_lineDir:
     {
-      if (pass2) {
-        if (add_src_file(ptree->args[2]->value.s, &cur_file)) {
-          return FAIL;
-        }
-        cur_line = ptree->args[1]->value.i;
+      if (add_src_file(ptree->args[2]->value.s, &cur_file)) {
+        return FAIL;
+      }
+      cur_line = ptree->args[1]->value.i;
+      if (pass == -1) {
+  //      fprintf(ppFP2, "LINE %i %s\n", ptree->args[1]->value.i, ptree->args[2]->value.s);
       }
       break;
     }
@@ -197,11 +198,11 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
         case 0:
           fprintf(ppFP2, " ");
           break;
-        case 1:
+        case 2:
           fprintf(ppFP2, "\n");
           break;
-        case 2:
         case 3:
+        case 4:
           fprintf(ppFP2, "%s", ptree->args[0]->value.s);
           break;
       }
@@ -209,6 +210,8 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
     }
     case PRD_ppIncludeDir:
     {
+      int last_file = cur_file;
+      int last_line = cur_line;
       int lineno = 1;
       fputs("#INCLUDE\n", ppFP2);
       if (ptree->variant == 0) {
@@ -217,14 +220,14 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
           errno = ERR_FILE_OPEN_ERROR;
           return FAIL;
         }
-        char buffer[512], buffer2[512];
+        char buffer[512];
         while (fgets(buffer, sizeof(buffer), fp) != NULL) {
           fprintf(ppFP2,"LINE %i '%s'\n", lineno++, ptree->args[1]->value.s );
           fputs(buffer, ppFP2);
         }
         ppModified = -1;
         fclose(fp);
-        fprintf(ppFP2,"LINE %i '%s'\n", lineno++, ptree->args[1]->value.s );
+        fprintf(ppFP2,"LINE %i %s\n", last_line-1, src_file[last_file].filename);
         fputs("#INCLUDE\n", ppFP2);
       }
       break;
@@ -246,6 +249,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
     {
       if (pass2) {
         list = ptree->args[0]->variant == 0;
+        printf("LIST = %i\n", list);
       }
       break;
     }
