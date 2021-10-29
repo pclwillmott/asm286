@@ -38,7 +38,7 @@ int in_preprocessor = -1;
 int ifCount = 0;
 int assembleIt = 1;
 int src_file_count = 0;
-src_file_t *src_file;
+src_file_t *src_file; 
 int cur_file = -1;
 int cur_line = -1;
 

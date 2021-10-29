@@ -41,7 +41,7 @@ void error()
     "Segment Nesting Fault",
     "Segment Not Ended",
     "Production Not Found",
-    "Invalid Instruction",
+    "Invalid Instruction", 
     "Identifier Not Found",
     "Too Many Nested IF Statements",
     "Constant Redefined",

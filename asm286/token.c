@@ -53,7 +53,7 @@ const char *pattern[ NUM_PATTERN ] = {
   RESERVED         ">",
   RESERVED         "$",
   RESERVED         ",",
-  RESERVED         "=",
+  RESERVED         "=", 
   RESERVED         "%",
   RESERVED         ".8086",
   RESERVED         ".8087",

@@ -170,7 +170,7 @@ int readStream(int *ci) {
 }
 
 int endOfInput(void) {
-  return (stream_count > 0) ? 0 : -1;
+  return (stream_count > 0) ? 0 : -1; 
 }
 
 void copyStreamContext(stream_context_t *dest, stream_context_t *src) {

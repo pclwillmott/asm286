@@ -178,7 +178,7 @@ int set_strconstant(const char *symbol_name, char *value) {
     errno = ERR_SYMBOL_REDEFINED;
     return -1;
   }
-  else if (strcmp(symbol_value[idx].s,value) != 0) {
+  else if (strcmp(symbol_value[idx].s,value) != 0) { 
     errno = ERR_CONSTANT_REDEFINED;
     return -1;
   }

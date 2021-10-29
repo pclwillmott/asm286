@@ -203,7 +203,7 @@ typedef struct src_file_t src_file_t;
 struct src_file_t {
   char *filename;
   int cur_line;
-  long int cur_pos; 
+  long int cur_pos;  
 };
 
 typedef struct segment_table_t segment_table_t;

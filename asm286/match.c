@@ -255,7 +255,7 @@ ptree_node_t * match2
   while ( pid ( prdlst [ prd_base + prd_index ] ) == production_id ) {
     
     /*
-     * Store production variant for "execute".
+     * Store production variant for "execute". 
      */
     
     ptree->variant = prd_index ;

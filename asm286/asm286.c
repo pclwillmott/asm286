@@ -101,7 +101,7 @@ int main(int argc, const char * argv[]) {
   if (list) {
     
     if (module_name != NULL) {
-      printf("MODULE: %s\n", module_name);
+      printf("MODULE: %s\n", module_name); 
     }
     if (title != NULL) {
       printf("%s\n", title);

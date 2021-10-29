@@ -186,7 +186,7 @@ int execute( ptree_node_t *ptree, int pass, int lineno )
       if (add_src_file(ptree->args[2]->value.s, &cur_file)) {
         return FAIL;
       }
-      cur_line = ptree->args[1]->value.i;
+      cur_line = ptree->args[1]->value.i; 
       if (pass == -1) {
   //      fprintf(ppFP2, "LINE %i %s\n", ptree->args[1]->value.i, ptree->args[2]->value.s);
       }

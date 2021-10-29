@@ -265,7 +265,7 @@ int segment_stack_count(void);
 int set_current_position(unsigned int, int);
 int dep_disp(unsigned char [], int, int, int, int);
 unsigned char rm_disp_mod(ptree_node_t *, int *, int *);
-int dep_opcodes(unsigned char [], int, int, int);
+int dep_opcodes(unsigned char [], int, int, int); 
 int is_word(int);
 int process(const char *, int);
 

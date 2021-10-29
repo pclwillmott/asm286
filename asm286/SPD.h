@@ -165,7 +165,7 @@
 #define SPD_segmentDir           "\102\015"
 #define SPD_segmentRegister      "\102\016"
 #define SPD_segOption            "\102\017"
-#define SPD_segOptionList        "\102\020"
+#define SPD_segOptionList        "\102\020" 
 #define SPD_simpleEndsDir        "\102\021"
 #define SPD_simpleSegDir         "\102\022"
 #define SPD_sizeArg              "\102\023"

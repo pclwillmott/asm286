@@ -30,7 +30,7 @@
 #define STK_ABS         "\001\055"
 #define STK_ADC         "\001\056"
 #define STK_ADD         "\001\057"
-#define STK_AH          "\001\060"
+#define STK_AH          "\001\060" 
 #define STK_AL          "\001\061"
 #define STK_ALL         "\001\062"
 #define STK_ALIGN       "\001\063"
