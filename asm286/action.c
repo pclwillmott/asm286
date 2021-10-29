@@ -5,7 +5,7 @@
  *
  *  Description:
  *
- *    action.c       Production decoder - test 4
+ *    action.c       Production decoder
  *
  *  This revision:
  *
