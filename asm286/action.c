@@ -783,7 +783,7 @@ char *prdlst[] = {
   SPD_ppItemList PT_IGNORE SPD_ppItem,
   
   SPD_ppItem PT_EXECUTE STK_LINECONT, // some real whitespace
-//  SPD_ppItem PT_IGNORE SPD_lineDir,
+//  SPD_ppItem PT_IGNORE SPD_lineDir, 
   SPD_ppItem PT_EXECUTE STK_NEWLINE,
   SPD_ppItem PT_EXECUTE STK_STRING,
   SPD_ppItem PT_EXECUTE STK_SYMBOL,
